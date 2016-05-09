@@ -61,19 +61,19 @@ void set_blocking (int fd, int should_block)
 
 int Serial_Init()
 {
-  serialfd = open (SerialDevice.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+  /*serialfd = open (SerialDevice.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
   if (serialfd < 0)
   {
       cout << KGREEN << "Serial Device " << KRED << " -> Cant open " << SerialDevice << "!" << KNORMAL << endl;
       return -1;
   }
   set_interface_attribs (serialfd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-  set_blocking (serialfd, 0);
+  set_blocking (serialfd, 0);*/
   return 0;
 }
 void Serial_Close()
 {
-   close(serialfd);
+   //close(serialfd);
 }
 
 long map_range(long x, long in_min, long in_max, long out_min, long out_max)
@@ -85,7 +85,7 @@ void Serial_Parse()
 {
   Render_RenderStack();
 
-  long input;
+  /*long input;
 
   char c;
   string line = "";
@@ -136,5 +136,6 @@ void Serial_Parse()
       }
     }
     line.clear();
-  }
+  }*/
+  usleep(100);
 }

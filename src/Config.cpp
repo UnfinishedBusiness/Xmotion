@@ -14,7 +14,7 @@ void Config_Init()
   string line;
   vector<string> array;
   object_t tmpObject;
-  ifs.open("GaugePanel.conf");
+  ifs.open("PlasmaTable.conf");
   if (ifs.is_open())
   {
     ObjectStack.clear();
@@ -256,7 +256,7 @@ void Config_LoadScripts()
   vector<string> array;
   script_t scriptObject;
   bool insideBlock = false;
-  ifs.open("GaugePanel.conf");
+  ifs.open("PlasmaTable.conf");
   if (ifs.is_open())
   {
     ScriptStack.clear();
