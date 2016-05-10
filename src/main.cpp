@@ -17,6 +17,7 @@ std::vector<std::string> split(const std::string &s, char delim) {
     split(s, delim, elems);
     return elems;
 }
+long RenderTimer = 0;
 bool sim = false;
 int main( int argc, char* argv[] )
 {
@@ -38,6 +39,7 @@ int main( int argc, char* argv[] )
 	{
     if (!sim) SDL_ShowCursor(0);
 		Config_Init();
+    CNC_Init();
     if (sim == false)
 		{
 			if (Serial_Init() < 0)
@@ -54,101 +56,135 @@ int main( int argc, char* argv[] )
 		//While application is running
 		while( !quit )
 		{
-			//Handle events on queue
-			while( SDL_PollEvent( &e ) != 0 )
-			{
-				//User requests quit
-				if( e.type == SDL_QUIT )
-				{
-					quit = true;
-				}
-				if (e.type == SDL_KEYDOWN)
-				{
-					switch( e.key.keysym.sym )
-      		{
-      			case SDLK_ESCAPE: quit = true; break;
-						case SDLK_SPACE: Config_Init(); break;
-      		}
-				}
-        if (e.type == SDL_MOUSEMOTION )
-        {
-          //int x = 0, y = 0;
-          //SDL_GetMouseState(&x, &y);
-          //printf("Move: %d,%d\n", x, y);
-        }
-        if( e.type == SDL_MOUSEBUTTONDOWN )
-        {
-          //If the left mouse button was pressed
-          if( e.button.button == SDL_BUTTON_LEFT )
+      if ((RenderTimer + 50) < millis())
+      {
+        RenderTimer = millis();
+  			//Handle events on queue
+  			while( SDL_PollEvent( &e ) != 0 )
+  			{
+  				//User requests quit
+  				if( e.type == SDL_QUIT )
+  				{
+  					quit = true;
+  				}
+  				if (e.type == SDL_KEYDOWN)
+  				{
+  					switch( e.key.keysym.sym )
+        		{
+        			case SDLK_ESCAPE: quit = true; break;
+  						case SDLK_SPACE: Config_Init(); break;
+        		}
+  				}
+          if (e.type == SDL_MOUSEMOTION )
           {
-              //int mx = e.tfinger.x * SCREEN_WIDTH;
-              //int my = e.tfinger.y * SCREEN_HEIGHT;
-
-              //Doesnt work on pi sdl2-2.0.3 but works with sdl2-2.0.4 but with a wierd number set, like 100 - 4020 on x and y
-              int mx, my;
-              if (sim)
-              {
-                mx = e.button.x;
-                my = e.button.y;
-              }
-              else
-              {
-                mx = map_range(e.button.x, 10, 4020, 0, SCREEN_WIDTH);
-                my = map_range(e.button.y, 10, 4020, 0, SCREEN_HEIGHT);
-              }
-
-              /*if (mx > 800 && my > 4000)
-              {
-                printf("Powering down!");
-                Render_Close();
-                system("poweroff");
-              }*/
-              //Doesnt work on PI
-              //int mx, my;
-              //SDL_GetMouseState(&mx, &my);
-
-              printf("Clicked at %d,%d\n", mx , my);
-              string clicked = "";
-              for(int x = 0; x < ObjectStack.size(); x++)
-              {
-                if (ObjectStack[x].type == INPUT && ObjectStack[x].visable == true)
-                //if (ObjectStack[x].visable == true)
-                {
-                  if( ( mx > ObjectStack[x].position.x ) && ( mx < ObjectStack[x].position.x + ObjectStack[x].size.w  ) &&
-                      ( my > ObjectStack[x].position.y ) && ( my < ObjectStack[x].position.y + ObjectStack[x].size.h ) )
-                  {
-                    //printf("Clicked Tag -> %s\n", ObjectStack[x].tagname.c_str());
-                    clicked = ObjectStack[x].tagname;
-                  }
-                  //printf("Tagname - > %s\n", ObjectStack[x].tagname.c_str());
-                  //printf("\tposition.x = %d\n", ObjectStack[x].position.x);
-                  //printf("\tposition.y = %d\n", ObjectStack[x].position.y);
-                  //printf("\tsize.w = %d\n", ObjectStack[x].size.w);
-                  //printf("\tsize.h = %d\n", ObjectStack[x].size.h);
-                }
-              }
-              for(int x = 0; x < ObjectStack.size(); x++)
-              {
-                if (ObjectStack[x].tagname == clicked)
-                {
-                  printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
-                  Config_RunScript(ObjectStack[x].tagname);
-                  break; //Only run one function!
-                }
-              }
-
-            }
+            //int x = 0, y = 0;
+            //SDL_GetMouseState(&x, &y);
+            //printf("Move: %d,%d\n", x, y);
           }
-			}
-			if (sim == false)
-      {
-        Serial_Parse();
+          if( e.type == SDL_MOUSEBUTTONDOWN )
+          {
+            //If the left mouse button was pressed
+            if( e.button.button == SDL_BUTTON_LEFT )
+            {
+                //int mx = e.tfinger.x * SCREEN_WIDTH;
+                //int my = e.tfinger.y * SCREEN_HEIGHT;
+
+                //Doesnt work on pi sdl2-2.0.3 but works with sdl2-2.0.4 but with a wierd number set, like 100 - 4020 on x and y
+                int mx, my;
+                if (sim)
+                {
+                  mx = e.button.x;
+                  my = e.button.y;
+                }
+                else
+                {
+                  mx = map_range(e.button.x, 10, 4020, 0, SCREEN_WIDTH);
+                  my = map_range(e.button.y, 10, 4020, 0, SCREEN_HEIGHT);
+                }
+
+                /*if (mx > 800 && my > 4000)
+                {
+                  printf("Powering down!");
+                  Render_Close();
+                  system("poweroff");
+                }*/
+                //Doesnt work on PI
+                //int mx, my;
+                //SDL_GetMouseState(&mx, &my);
+
+                printf("Clicked at %d,%d\n", mx , my);
+                string clicked = "";
+                for(int x = 0; x < ObjectStack.size(); x++)
+                {
+                  if (ObjectStack[x].type == INPUT && ObjectStack[x].visable == true)
+                  //if (ObjectStack[x].visable == true)
+                  {
+                    if( ( mx > ObjectStack[x].position.x ) && ( mx < ObjectStack[x].position.x + ObjectStack[x].size.w  ) &&
+                        ( my > ObjectStack[x].position.y ) && ( my < ObjectStack[x].position.y + ObjectStack[x].size.h ) )
+                    {
+                      //printf("Clicked Tag -> %s\n", ObjectStack[x].tagname.c_str());
+                      clicked = ObjectStack[x].tagname;
+                    }
+                    //printf("Tagname - > %s\n", ObjectStack[x].tagname.c_str());
+                    //printf("\tposition.x = %d\n", ObjectStack[x].position.x);
+                    //printf("\tposition.y = %d\n", ObjectStack[x].position.y);
+                    //printf("\tsize.w = %d\n", ObjectStack[x].size.w);
+                    //printf("\tsize.h = %d\n", ObjectStack[x].size.h);
+                  }
+                }
+                for(int x = 0; x < ObjectStack.size(); x++)
+                {
+                  if (ObjectStack[x].tagname == clicked)
+                  {
+                    printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
+                    while(1) //Should add breakout timer so we cant hang!
+                    {
+                      SDL_PollEvent( &e );
+                      if( e.type == SDL_MOUSEBUTTONUP )
+                      {
+                        //printf("Button Release!\n");
+                        break;
+                      }
+                      //printf("Waiting for release!\n");
+                      if (ObjectStack[x].tagname == "JogXPlus")
+                      {
+                        printf("Jogging X+!\n");
+                        CNC_JogXPlus();
+                      }
+                      if (ObjectStack[x].tagname == "JogXMinus")
+                      {
+                        printf("Jogging X-!\n");
+                        CNC_JogXMinus();
+                      }
+                      if (ObjectStack[x].tagname == "JogYPlus")
+                      {
+                        printf("Jogging Y+!\n");
+                        CNC_JogYPlus();
+                      }
+                      if (ObjectStack[x].tagname == "JogYMinus")
+                      {
+                        printf("Jogging Y-!\n");
+                        CNC_JogYMinus();
+                      }
+                    }
+                    //Config_RunScript(ObjectStack[x].tagname);
+                    break; //Only run one function!
+                  }
+                }
+
+              }
+            }
+  			}
+  			if (sim == false)
+        {
+          Serial_Parse();
+        }
+        else
+        {
+          Render_RenderStack();
+        }
       }
-      else
-      {
-        Render_RenderStack();
-      }
-			SDL_Delay(10);
+      CNC_Tick();
 		}
 	}
 

@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #define _USE_MATH_DEFINES
-
+#include <sys/time.h>
 #include <sys/signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +26,10 @@
 #include <Config.h>
 #include <Render.h>
 #include <Serial.h>
+#include <CNC.h>
+#include <Motion.h>
+
+#include <wiringPi.h>
 
 #ifndef APPLICATION_
 #define  APPLICATION_
@@ -35,12 +39,12 @@ const char APPLICATION_TITLE[] = "GaugePanel";
 struct color_t{
   Uint8 r,g,b,a;
 };
-/*struct point_t{
-  int x,y;
-};*/
+struct point_t{
+  float x,y,z;
+};
 #define INDICATOR 0
 #define NEEDLE 1
-#define INPUT 2
+//#define INPUT 2
 #define GAUGE 3
 
 struct object_t{
