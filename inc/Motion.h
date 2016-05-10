@@ -15,6 +15,13 @@ class Stepper
     int map_position = 0;
     int step_position = 0;
     int current_rpm = 0;
+
+    int BitMap[4][4] = {
+      { HIGH, LOW, HIGH, LOW },
+      { LOW, HIGH, HIGH, LOW },
+      { LOW, HIGH, LOW, HIGH },
+      { HIGH, LOW, LOW, HIGH },
+    };
 };
 
 

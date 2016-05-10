@@ -26,6 +26,7 @@ void Stepper::Step(int inc)
     if (inc > 0)
     {
         map_position++;
+
     }
     else
     {
@@ -34,10 +35,14 @@ void Stepper::Step(int inc)
     if (map_position == 4) map_position = 0;
     if (map_position == -1) map_position = 3;
 
-    printf("Map Position: %d\n", map_position);
-    digitalWrite(map[last_map_position], LOW);
-    digitalWrite(map[map_position], HIGH);
-    delay(10);
+    //printf("Map Position: %d\n", map_position);
+    for (int i = 0; i < 4; i++)
+    {
+      digitalWrite(map[i], BitMap[map_position][i]);
+    }
+    //delay(1); //Works!
+    delayMicroseconds(800);
+    //delayMicroseconds(500); //Doesnt work!
 
   }
 }

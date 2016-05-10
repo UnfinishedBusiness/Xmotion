@@ -112,7 +112,7 @@ int main( int argc, char* argv[] )
                 //int mx, my;
                 //SDL_GetMouseState(&mx, &my);
 
-                printf("Clicked at %d,%d\n", mx , my);
+                //printf("Clicked at %d,%d\n", mx , my);
                 string clicked = "";
                 for(int x = 0; x < ObjectStack.size(); x++)
                 {
@@ -136,7 +136,7 @@ int main( int argc, char* argv[] )
                 {
                   if (ObjectStack[x].tagname == clicked)
                   {
-                    printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
+                    //printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
                     while(1) //Should add breakout timer so we cant hang!
                     {
                       SDL_PollEvent( &e );
@@ -148,22 +148,22 @@ int main( int argc, char* argv[] )
                       //printf("Waiting for release!\n");
                       if (ObjectStack[x].tagname == "JogXPlus")
                       {
-                        printf("Jogging X+!\n");
+                        //printf("Jogging X+!\n");
                         CNC_JogXPlus();
                       }
                       if (ObjectStack[x].tagname == "JogXMinus")
                       {
-                        printf("Jogging X-!\n");
+                        //printf("Jogging X-!\n");
                         CNC_JogXMinus();
                       }
                       if (ObjectStack[x].tagname == "JogYPlus")
                       {
-                        printf("Jogging Y+!\n");
+                        //printf("Jogging Y+!\n");
                         CNC_JogYPlus();
                       }
                       if (ObjectStack[x].tagname == "JogYMinus")
                       {
-                        printf("Jogging Y-!\n");
+                        //printf("Jogging Y-!\n");
                         CNC_JogYMinus();
                       }
                     }
