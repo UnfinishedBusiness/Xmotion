@@ -26,7 +26,6 @@ void ctrl_c_handler(int s)
     printf("Bye!\n");
     quit = true; //Shutdown clean!
 }
-
 int main( int argc, char* argv[] )
 {
   signal (SIGINT,ctrl_c_handler);
@@ -205,7 +204,6 @@ int main( int argc, char* argv[] )
           Render_RenderStack();
         }
       }
-      CNC_Tick();
 		}
 	}
 

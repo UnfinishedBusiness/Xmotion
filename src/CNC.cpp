@@ -211,6 +211,13 @@ void CNC_Tick()
     printf("File is not open!\n");
   }
 }
+void *cnc_thread(void *p)
+{
+  while(!quit)
+  {
+    CNC_Tick();
+  }
+}
 void CNC_Init()
 {
   wiringPiSetup();
@@ -232,5 +239,12 @@ void CNC_Init()
 
   nc_file.open("test.nc");
 
+  pthread_t cnc_thread_handle;
+
+  /* create a second thread which executes inc_x(&x) */
+  if(pthread_create(&cnc_thread_handle, NULL, cnc_thread, NULL))
+  {
+    fprintf(stderr, "Error creating CNC thread\n");
+  }
 
 }

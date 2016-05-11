@@ -23,6 +23,7 @@
 #include <iomanip>
 #include <locale>
 #include <regex>
+#include <pthread.h>
 
 #include <Config.h>
 #include <Render.h>
@@ -125,6 +126,7 @@ extern std::string SerialDevice;
 extern int serialfd;
 extern bool sim;
 extern long TimeRendered;
+extern bool quit;
 
 extern point_t MachineCordinates;
 extern point_t OffsetCordinates;
