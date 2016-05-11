@@ -114,6 +114,7 @@ SDL_Texture* Render_loadFont(string font, SDL_Color color, int size, string text
 	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Font, text.c_str(), color);
 	SDL_Texture* newTexture = SDL_CreateTextureFromSurface(gRenderer, surfaceMessage);
 	SDL_FreeSurface(surfaceMessage);
+	TTF_CloseFont(Font);
 	return newTexture;
 }
 void Render_RenderStack()
@@ -169,11 +170,10 @@ void Render_RenderStack()
 		SDL_SetTextureAlphaMod( YCordTexture, 255 );
 		SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 
-    //Update screen
-    SDL_RenderPresent( gRenderer );
-
 		if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
 		if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+    //Update screen
+    SDL_RenderPresent( gRenderer );
 }
 void Render_Close()
 {
