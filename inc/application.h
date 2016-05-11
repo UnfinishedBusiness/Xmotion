@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #define _USE_MATH_DEFINES
 #include <sys/time.h>
 #include <sys/signal.h>
@@ -87,6 +88,16 @@ extern std::vector<script_t> ScriptStack;
 extern std::string SerialDevice;
 extern int serialfd;
 extern bool sim;
+extern long TimeRendered;
+
+extern point_t MachineCordinates;
+extern point_t OffsetCordinates;
+extern point_t OffsetValue;
+
+#define INCH_MIN_DELAY 23610.2979
+#define ONE_STEP_DISTANCE 0.0003935
+#define RAPID_FEED 20
+
 
 #define KNORMAL  "\x1B[0m"
 #define KRED  "\x1B[31m"

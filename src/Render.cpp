@@ -14,8 +14,10 @@ color_t BackgroundColor = color_t{ 0, 0, 0, 0 }; //Default Black
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 480;
 
+long TimeRendered = 0;
 bool Render_Init()
 {
+	long BeginTime = micros();
   //Initialization flag
 	bool success = true;
 
@@ -32,7 +34,7 @@ bool Render_Init()
 		{
 			printf( "Warning: Linear texture filtering not enabled!" );
 		}
-
+		TTF_Init();
 		//Create window
 		if (sim)
 		{
@@ -42,7 +44,7 @@ bool Render_Init()
 		{
 			gWindow = SDL_CreateWindow( APPLICATION_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_FULLSCREEN|SDL_WINDOW_OPENGL );
 		}
-		
+
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -69,7 +71,7 @@ bool Render_Init()
 			}
 		}
 	}
-
+	TimeRendered = micros() - BeginTime;
 	return success;
 }
 SDL_Texture* Render_loadImage( string path )
@@ -100,6 +102,19 @@ SDL_Texture* Render_loadImage( string path )
 SDL_Texture* Render_RotateSurface(SDL_Surface* Surface, double Angle)
 {
   return NULL;
+}
+SDL_Texture* Render_loadFont(string font, SDL_Color color, int size, string text)
+{
+	TTF_Font* Font = TTF_OpenFont(font.c_str(), size);
+	if (Font == NULL)
+	{
+		printf("Cant open font!\n");
+		return NULL;
+	}
+	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Font, text.c_str(), color);
+	SDL_Texture* newTexture = SDL_CreateTextureFromSurface(gRenderer, surfaceMessage);
+	SDL_FreeSurface(surfaceMessage);
+	return newTexture;
 }
 void Render_RenderStack()
 {
@@ -134,8 +149,31 @@ void Render_RenderStack()
         SDL_RenderCopyEx( gRenderer, ObjectStack[x].texture, NULL, &dst, ObjectStack[x].angle, NULL, SDL_FLIP_NONE );
       }
     }
+
+		dst.x = 60;
+		dst.y = 50;
+		char buffer[100];
+		sprintf(buffer, "X: %0.4f", OffsetCordinates.x);
+		SDL_Texture *XCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 50, string(buffer));
+		SDL_QueryTexture(XCordTexture, NULL, NULL, &dst.w, &dst.h);
+		SDL_SetTextureBlendMode( XCordTexture, SDL_BLENDMODE_BLEND );
+		SDL_SetTextureAlphaMod( XCordTexture, 255 );
+		SDL_RenderCopyEx( gRenderer, XCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+		dst.x = 60;
+		dst.y = 160;
+		sprintf(buffer, "Y: %0.4f", OffsetCordinates.y);
+		SDL_Texture *YCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 50, string(buffer));
+		SDL_QueryTexture(YCordTexture, NULL, NULL, &dst.w, &dst.h);
+		SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
+		SDL_SetTextureAlphaMod( YCordTexture, 255 );
+		SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
     //Update screen
     SDL_RenderPresent( gRenderer );
+
+		if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
+		if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
 }
 void Render_Close()
 {
@@ -152,5 +190,6 @@ void Render_Close()
 
 	//Quit SDL subsystems
 	IMG_Quit();
+	TTF_Quit();
 	SDL_Quit();
 }

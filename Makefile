@@ -18,7 +18,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH)/ -I./inc
 # General linker settings
-LINK_FLAGS = -lSDL2_image -lwiringPi
+LINK_FLAGS = -lSDL2_image -lSDL2_ttf -lwiringPi
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings

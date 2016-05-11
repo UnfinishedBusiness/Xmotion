@@ -20,6 +20,7 @@ void CNC_JogYMinus();
 void CNC_Hold();
 void CNC_Stop();
 void CNC_Start();
+void CNC_SetOrigin();
 
 void CNC_Tick();
 void CNC_Init();

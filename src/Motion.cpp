@@ -14,9 +14,9 @@ Stepper::Stepper(int tsteps, int a, int b, int c, int d)
     pinMode(map[x], OUTPUT);
   }
 }
-void Stepper::SetRPM(float rpm)
+void Stepper::SetFeedRate(float feed)
 {
-  current_rpm = rpm;
+  pulse_delay = INCH_MIN_DELAY / feed;
 }
 void Stepper::Step(int inc)
 {
@@ -41,7 +41,7 @@ void Stepper::Step(int inc)
       digitalWrite(map[i], BitMap[map_position][i]);
     }
     //delay(1); //Works!
-    delayMicroseconds(800);
+    delayMicroseconds(pulse_delay);
     //delayMicroseconds(500); //Doesnt work!
 
   }

@@ -19,6 +19,9 @@ std::vector<std::string> split(const std::string &s, char delim) {
 }
 long RenderTimer = 0;
 bool sim = false;
+bool quit = false;
+
+
 int main( int argc, char* argv[] )
 {
   //
@@ -48,10 +51,6 @@ int main( int argc, char* argv[] )
 				exit(1);
 			}
 		}
-		//Main loop flag
-		bool quit = false;
-		//Event handler
-
 		SDL_Event e;
 		//While application is running
 		while( !quit )
@@ -136,37 +135,53 @@ int main( int argc, char* argv[] )
                 {
                   if (ObjectStack[x].tagname == clicked)
                   {
-                    //printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
-                    while(1) //Should add breakout timer so we cant hang!
+                    if (ObjectStack[x].tagname == "SetOrigin")
                     {
-                      SDL_PollEvent( &e );
-                      if( e.type == SDL_MOUSEBUTTONUP )
+                      CNC_SetOrigin();
+                    }
+                    else if (ObjectStack[x].tagname == "Stop")
+                    {
+                      CNC_Stop();
+                    }
+                    else if (ObjectStack[x].tagname == "Start")
+                    {
+                      CNC_Start();
+                    }
+                    else if (ObjectStack[x].tagname == "Hold")
+                    {
+                      CNC_Hold();
+                    }
+                    else
+                    {
+                      //printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
+                      while(1) //Should add breakout timer so we cant hang!
                       {
-                        //printf("Button Release!\n");
-                        break;
-                      }
-                      //printf("Waiting for release!\n");
-                      if (ObjectStack[x].tagname == "JogXPlus")
-                      {
-                        //printf("Jogging X+!\n");
-                        CNC_JogXPlus();
-                      }
-                      if (ObjectStack[x].tagname == "JogXMinus")
-                      {
-                        //printf("Jogging X-!\n");
-                        CNC_JogXMinus();
-                      }
-                      if (ObjectStack[x].tagname == "JogYPlus")
-                      {
-                        //printf("Jogging Y+!\n");
-                        CNC_JogYPlus();
-                      }
-                      if (ObjectStack[x].tagname == "JogYMinus")
-                      {
-                        //printf("Jogging Y-!\n");
-                        CNC_JogYMinus();
+                        SDL_PollEvent( &e );
+                        if( e.type == SDL_MOUSEBUTTONUP )
+                        {
+                          //printf("Button Release!\n");
+                          break;
+                        }
+                        //printf("Waiting for release!\n");
+                        if (ObjectStack[x].tagname == "JogXPlus")
+                        {
+                          CNC_JogXPlus();
+                        }
+                        if (ObjectStack[x].tagname == "JogXMinus")
+                        {
+                          CNC_JogXMinus();
+                        }
+                        if (ObjectStack[x].tagname == "JogYPlus")
+                        {
+                          CNC_JogYPlus();
+                        }
+                        if (ObjectStack[x].tagname == "JogYMinus")
+                        {
+                          CNC_JogYMinus();
+                        }
                       }
                     }
+
                     //Config_RunScript(ObjectStack[x].tagname);
                     break; //Only run one function!
                   }
