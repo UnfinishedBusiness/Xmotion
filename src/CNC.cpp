@@ -7,46 +7,79 @@ point_t OffsetCordinates;
 point_t OffsetValue;
 
 gcode_t GcodePointer;
-bool Hold = false;
+bool Hold = true;
 bool Stop = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
+
+ifstream nc_file;
+long nc_line = 0;
+string nc_buffer;
+
+void CNC_XPlus()
+{
+  MachineCordinates.x += ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+}
+void CNC_XMinus()
+{
+  MachineCordinates.x -= ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+}
+void CNC_YPlus()
+{
+  MachineCordinates.y += ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+}
+void CNC_YMinus()
+{
+  MachineCordinates.y -= ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+}
 
 void CNC_JogXPlus()
 {
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(+1);
-  MachineCordinates.x += ONE_STEP_DISTANCE;
+  CNC_XPlus();
 }
 void CNC_JogXMinus()
 {
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(-1);
-  MachineCordinates.x -= ONE_STEP_DISTANCE;
+  CNC_XMinus();
 }
 void CNC_JogYPlus()
 {
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(+1);
-  MachineCordinates.y += ONE_STEP_DISTANCE;
+  CNC_YPlus();
 }
 void CNC_JogYMinus()
 {
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(-1);
-  MachineCordinates.y -= ONE_STEP_DISTANCE;
+  CNC_YMinus();
 }
 void CNC_Hold()
 {
   Hold = true;
+  printf("Hold!\n");
 }
 void CNC_Stop()
 {
   Stop = true;
+  printf("Stop!\n");
+  nc_file.close();
 }
 void CNC_Start()
 {
   Hold = false;
+  printf("Start!\n");
 }
 void CNC_SetOrigin()
 {
@@ -54,21 +87,129 @@ void CNC_SetOrigin()
   OffsetValue.x = MachineCordinates.x;
   OffsetValue.y = MachineCordinates.y;
 }
+bool InTolerance(float a, float b, float t)
+{
+  float diff;
+  if (a > b)
+  {
+    diff = a - b;
+  }
+  else
+  {
+    diff = b - a;
+  }
+  //printf("(geoInTolerance) Difference: %.6f, Plus: %.6f, Minus: %.6f\n", diff, fabs(t), -fabs(t));
+  if (diff <= fabs(t) && diff >= -fabs(t))
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 void CNC_Tick()
 {
-  if (GcodePointer.MoveDone == false)
+  if (nc_file.is_open())
   {
-    if (Hold == false)
+    if (GcodePointer.MoveDone == false)
     {
-      //Drive axis to position and set GcodePointer.MoveDone = true;
+      //printf("Move Done = false\n");
+      if (Hold == false)
+      {
+        if (GcodePointer.G == 0)
+        {
+          if ((OffsetCordinates.x - GcodePointer.X) < 0)
+          {
+            Xaxis->SetFeedRate(RAPID_FEED);
+            Xaxis->Step(+1);
+            CNC_XPlus();
+          }
+          if ((OffsetCordinates.x - GcodePointer.X) > 0)
+          {
+            Xaxis->SetFeedRate(RAPID_FEED);
+            Xaxis->Step(-1);
+            CNC_XMinus();
+          }
+
+          if (InTolerance(OffsetCordinates.x, GcodePointer.X, ONE_STEP_DISTANCE))
+          {
+            printf("Reached endpoint!\n");
+            GcodePointer.MoveDone = true;
+          }
+        }
+        //Drive axis to position and set GcodePointer.MoveDone = true;
+      }
+    }
+    else
+    {
+      //printf("Move Done = true\n");
+      //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
+      if (getline (nc_file, nc_buffer) == 0)
+      {
+        printf("End of file!\n");
+        nc_file.close(); //End of file!
+      }
+      else
+      {
+        printf("NC Line> %s\n", nc_buffer.c_str());
+
+        string number = "";
+        float val = 0;
+        string letter = "";
+        string::size_type sz;
+        for (int i = 0; i < nc_buffer.size(); i++)
+        {
+          if (nc_buffer[i] == 'G' || nc_buffer[i] == 'X' || nc_buffer[i] == 'Y' || nc_buffer[i] == 'Z' || nc_buffer[i] == 'F')
+          {
+            letter.push_back(nc_buffer[i]);
+            while(i < nc_buffer.size())
+            {
+              if (nc_buffer[i+1] != '.' && isalpha(nc_buffer[i+1]))
+              {
+                break;
+              }
+              number.push_back(nc_buffer[i+1]);
+              i++;
+            }
+            val = stof(number, &sz);
+
+            //printf("Letter: %s, Value: %0.6f\n", letter.c_str(), val);
+            if (letter == "G")
+            {
+              GcodePointer.G = val;
+            }
+            if (letter == "X")
+            {
+              GcodePointer.X = val;
+            }
+            if (letter == "Y")
+            {
+              GcodePointer.Y = val;
+            }
+            if (letter == "Z")
+            {
+              GcodePointer.Z = val;
+            }
+            if (letter == "F")
+            {
+              GcodePointer.F = val;
+            }
+
+            number = "";
+            letter = "";
+          }
+        }
+
+        GcodePointer.MoveDone = false;
+        nc_line++;
+      }
     }
   }
   else
   {
-    //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
+    printf("File is not open!\n");
   }
-  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
-  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
 }
 void CNC_Init()
 {
@@ -86,6 +227,10 @@ void CNC_Init()
 
   OffsetValue.x = 0;
   OffsetValue.y = 0;
+
+  GcodePointer.MoveDone = true;
+
+  nc_file.open("test.nc");
 
 
 }

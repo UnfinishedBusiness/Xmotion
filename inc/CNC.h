@@ -9,7 +9,7 @@ struct gcode_t{
   float Z;
   float F;
 
-  bool MoveDone = true;
+  bool MoveDone;
 };
 
 

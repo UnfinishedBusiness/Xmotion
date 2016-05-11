@@ -37,11 +37,47 @@
 
 const char APPLICATION_TITLE[] = "GaugePanel";
 
+#define INCH_MIN_DELAY 23610.2979
+#define ONE_STEP_DISTANCE 0.0003935
+#define RAPID_FEED 20
+
 struct color_t{
   Uint8 r,g,b,a;
 };
 struct point_t{
-  float x,y,z;
+  float x = 0;
+  float y = 0;
+  float z = 0;
+  bool operator==(const point_t& rhs)
+  {
+    //return x == rhs.x && y == rhs.y && z == rhs.z;
+    auto t = [](float a, float b)
+    {
+      float diff;
+      if (a > b)
+      {
+        diff = a - b;
+      }
+      else
+      {
+        diff = b - a;
+      }
+      //printf("(geoInTolerance) Difference: %.6f, Plus: %.6f, Minus: %.6f\n", diff, fabs(t), -fabs(t));
+      if (diff <= fabs(ONE_STEP_DISTANCE) && diff >= -fabs(ONE_STEP_DISTANCE))
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    };
+    return t(x, rhs.x) && t(y, rhs.y) && t(z, rhs.z);
+  }
+  bool operator!=(const point_t& rhs)
+  {
+    return x != rhs.x && y != rhs.y && z != rhs.z;
+  }
 };
 #define INDICATOR 0
 #define NEEDLE 1
@@ -93,10 +129,6 @@ extern long TimeRendered;
 extern point_t MachineCordinates;
 extern point_t OffsetCordinates;
 extern point_t OffsetValue;
-
-#define INCH_MIN_DELAY 23610.2979
-#define ONE_STEP_DISTANCE 0.0003935
-#define RAPID_FEED 20
 
 
 #define KNORMAL  "\x1B[0m"
