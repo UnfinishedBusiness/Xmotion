@@ -3,7 +3,10 @@
 #include <application.h>
 
 struct gline_meta_t{
-  float fxy;
+  point_t start_pos;
+};
+
+struct garc_meta_t{
   point_t start_pos;
 };
 
@@ -13,11 +16,13 @@ struct gcode_t{
   float Y;
   float Z;
   float F;
-
+  float R;
+  
   bool MoveDone;
 
   bool FirstInstruction;
   gline_meta_t line_meta;
+  garc_meta_t arc_meta;
 };
 
 
