@@ -2,6 +2,11 @@
 #define CNC_
 #include <application.h>
 
+struct gline_meta_t{
+  float fxy;
+  point_t start_pos;
+};
+
 struct gcode_t{
   float G;
   float X;
@@ -10,6 +15,9 @@ struct gcode_t{
   float F;
 
   bool MoveDone;
+
+  bool FirstInstruction;
+  gline_meta_t line_meta;
 };
 
 

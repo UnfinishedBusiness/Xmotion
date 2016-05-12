@@ -17,7 +17,6 @@ std::vector<std::string> split(const std::string &s, char delim) {
     split(s, delim, elems);
     return elems;
 }
-long RenderTimer = 0;
 bool sim = false;
 bool quit = false;
 
@@ -60,10 +59,6 @@ int main( int argc, char* argv[] )
 		//While application is running
 		while( !quit )
 		{
-      if ((RenderTimer + 50) < millis())
-      {
-        RenderTimer = millis();
-  			//Handle events on queue
   			while( SDL_PollEvent( &e ) != 0 )
   			{
   				//User requests quit
@@ -203,7 +198,7 @@ int main( int argc, char* argv[] )
         {
           Render_RenderStack();
         }
-      }
+      SDL_Delay(100);
 		}
 	}
 

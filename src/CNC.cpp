@@ -108,6 +108,9 @@ bool InTolerance(float a, float b, float t)
     return false;
   }
 }
+float fxy, dx, dy = 0;
+float x2, y2 = 0;
+float xo, yo = 0;
 void CNC_Tick()
 {
   if (nc_file.is_open())
@@ -119,24 +122,84 @@ void CNC_Tick()
       {
         if (GcodePointer.G == 0)
         {
-          if ((OffsetCordinates.x - GcodePointer.X) < 0)
+          if (GcodePointer.FirstInstruction == true)
           {
-            Xaxis->SetFeedRate(RAPID_FEED);
-            Xaxis->Step(+1);
-            CNC_XPlus();
-          }
-          if ((OffsetCordinates.x - GcodePointer.X) > 0)
-          {
-            Xaxis->SetFeedRate(RAPID_FEED);
-            Xaxis->Step(-1);
-            CNC_XMinus();
-          }
+            //Calculate meta_data
+            fxy = dx = dy = y2 = x2 = 0;
 
-          if (InTolerance(OffsetCordinates.x, GcodePointer.X, ONE_STEP_DISTANCE))
-          {
-            printf("Reached endpoint!\n");
-            GcodePointer.MoveDone = true;
+            GcodePointer.line_meta.start_pos = OffsetCordinates;
+            GcodePointer.FirstInstruction = false;
+
+            dy = GcodePointer.Y - GcodePointer.line_meta.start_pos.y;
+            if (dy < 0)
+            {
+              yo = -1;
+            }
+            else
+            {
+              yo = 1;
+            }
+            dy = fabs(dy);
+
+            dx = GcodePointer.X - GcodePointer.line_meta.start_pos.x;
+            if (dx < 0)
+            {
+              xo = -1;
+            }
+            else
+            {
+              xo = 1;
+            }
+            dx = fabs(dx);
+
+            fxy = dx - dy;
+
+            printf("\tDirection -> dx = %0.6f, dy = %0.6f, yo = %0.6f, xo = %0.6f, initial_fxy = %0.6f\n", dx, dy, yo, xo, fxy);
+
           }
+          else
+          {
+            //printf("FXY: %0.6f\n", fxy);
+            if (fxy > 0)
+            {
+              if (xo > 0)
+              {
+                Xaxis->SetFeedRate(RAPID_FEED);
+                Xaxis->Step(+1);
+                CNC_XPlus();
+              }
+              else
+              {
+                Xaxis->SetFeedRate(RAPID_FEED);
+                Xaxis->Step(-1);
+                CNC_XMinus();
+              }
+              x2++;
+              fxy = fxy - dy;
+            }
+            else
+            {
+              if (yo > 0)
+              {
+                Yaxis->SetFeedRate(RAPID_FEED);
+                Yaxis->Step(+1);
+                CNC_YPlus();
+              }
+              else
+              {
+                Yaxis->SetFeedRate(RAPID_FEED);
+                Yaxis->Step(-1);
+                CNC_YMinus();
+              }
+              y2++;
+              fxy = fxy + dx;
+            }
+          }
+        }
+        if (InTolerance(OffsetCordinates.x, GcodePointer.X, ONE_STEP_DISTANCE) && InTolerance(OffsetCordinates.y, GcodePointer.Y, ONE_STEP_DISTANCE))
+        {
+          printf("Reached endpoint!\n");
+          GcodePointer.MoveDone = true;
         }
         //Drive axis to position and set GcodePointer.MoveDone = true;
       }
@@ -202,13 +265,15 @@ void CNC_Tick()
         }
 
         GcodePointer.MoveDone = false;
+        GcodePointer.FirstInstruction = true;
         nc_line++;
       }
     }
   }
   else
   {
-    printf("File is not open!\n");
+    //printf("File is not open!\n");
+    delay(500);
   }
 }
 void *cnc_thread(void *p)
@@ -222,7 +287,7 @@ void CNC_Init()
 {
   wiringPiSetup();
   Xaxis = new Stepper(200, 29, 28, 27, 26);
-  Yaxis = new Stepper(200, 29, 28, 27, 26);
+  Yaxis = new Stepper(200, 25, 24, 23, 22);
 
   //Home maching to establish Machine Cordinates
 
