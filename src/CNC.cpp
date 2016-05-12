@@ -125,43 +125,12 @@ bool InTolerance(float a, float b, float t)
 }
 float fxy, dx, dy = 0;
 float x2, y2 = 0;
-float xo, yo = 0;
+int binrep = 0;
 float feed = 0;
-float rad, radrad = 0;
-float a, b, f, d = 0;
 
-void CalculateArcDirection()
-{
-  int binrep = 0;
-  xo = 0;
-  yo = 0;
-  if (d) binrep += 8;
-  if (f) binrep += 4;
-  if (a) binrep += 2;
-  if (b) binrep += 1;
-  printf("Bin rep = %d\n", binrep);
-  switch(binrep)
-  {
-    case 0: yo = -1; break;
-    case 1: xo = -1; break;
-    case 2: xo = 1; break;
-    case 3: yo = 1; break;
-    case 4: xo = 1; break;
-    case 5: yo = -1; break;
-    case 6: yo = 1; break;
-    case 7: xo = -1; break;
-    case 8: xo = -1; break;
-    case 9: yo = 1; break;
-    case 10: yo = -1; break;
-    case 11: xo = 1; break;
-    case 12: yo = 1; break;
-    case 13: xo = 1; break;
-    case 14: xo = -1; break;
-    case 15: yo = -1; break;
-  }
-  //printf("-> BINREP = %d, D = %0.6f, F = %0.6f, A = %0.6f, B = %0.6f, YO = %0.6f, XO = %0.6f\n", binrep, d, f, a, b, yo, xo);
-}
-
+//true = 1
+float rad, radrad, xo, yo = 0;
+bool d, f, a, b = 0;
 void CNC_Tick()
 {
   if (nc_file.is_open())
@@ -264,69 +233,127 @@ void CNC_Tick()
         {
           if (GcodePointer.FirstInstruction == true)
           {
-            fxy = dx = dy = y2 = x2 = 0;
             GcodePointer.arc_meta.start_pos = OffsetCordinates;
             GcodePointer.FirstInstruction = false;
+            //Generate points on arc
+            x2, y2, rad, radrad, xo, yo = 0;
 
-            x2 = GcodePointer.arc_meta.start_pos.x;
-            y2 = GcodePointer.arc_meta.start_pos.y;
+            x2 = OffsetCordinates.x;
+            y2 = OffsetCordinates.y;
+
+            rad = GcodePointer.R;
+
+            radrad = rad * rad;
 
             if (GcodePointer.G == 2)
             {
-              d = 0; //Clockwise
+              d = false; //Clockwise!
+              printf("\tClockwise Arc until we reach X%0.6f, Y%0.6f at R%0.6f at F%0.6f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
             }
-            else
+            if (GcodePointer.G == 3)
             {
-              d = 1; //Counter-Clockwise
+              d = true; //Counter-Clockwise!
+              printf("\tCounter-Clockwise Arc until we reach X%0.6f, Y%0.6f at R%0.6f at F%0.6f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
             }
-            rad = GcodePointer.R;
-            radrad = rad*rad;
-            printf("\t x = %0.6f, y = %0.6f, r = %0.6f\n", x2, y2, rad);
+
+
+
+
           }
           else
           {
-            fxy = (x2 * x2) + (y2 * y2) - (radrad);
-            dx = 2*x2;
-            dy = 2*y2;
-            f = (fxy < 0) ? 0 : 1;
-            a = ( dx < 0) ? 0 : 1;
-            b = ( dy < 0 ) ? 0 : 1;
-            CalculateArcDirection();
+            fxy = (x2 * x2) + (y2 * y2) - radrad;
+            dx = 2 * x2;
+            dy = 2 * y2;
+            printf("fxy = %0.6f, dx = %0.6f, dy = %0.6f\n", fxy, dx, dy);
 
-            if (xo == 1)
+            f = false;
+            a = false;
+            b = false;
+
+            if (fxy < 0)
             {
-              Xaxis->SetFeedRate(GcodePointer.F);
-              Xaxis->Step(+1);
-              CNC_XPlus();
-              x2 += ONE_STEP_DISTANCE;
-              printf("Plus x\n");
+              f = true;
             }
-            if (xo == -1)
+            if ( dx < 0)
             {
-              Xaxis->SetFeedRate(GcodePointer.F);
-              Xaxis->Step(-1);
-              CNC_XMinus();
-              x2 -= ONE_STEP_DISTANCE;
-              printf("Minus x\n");
+              a = true;
             }
-            if (yo == 1)
+            if ( dy < 0)
             {
-              Yaxis->SetFeedRate(GcodePointer.F);
-              Yaxis->Step(+1);
-              CNC_YPlus();
-              y2 += ONE_STEP_DISTANCE;
-              printf("Plus y\n");
+              b = false;
             }
-            if (yo == -1)
+
+            binrep = 0;
+            xo = 0;
+            yo = 0;
+
+            if (d)
             {
-              Yaxis->SetFeedRate(GcodePointer.F);
+              binrep = binrep + 8;
+            }
+            if (f)
+            {
+              binrep = binrep + 4;
+            }
+            if (a)
+            {
+              binrep = binrep + 2;
+            }
+            if (b)
+            {
+              binrep = binrep + 1;
+            }
+            switch(binrep)
+            {
+              case 0:   yo = -ONE_STEP_DISTANCE; break;
+              case 1:   xo = -ONE_STEP_DISTANCE; break;
+              case 2:   xo = ONE_STEP_DISTANCE; break;
+              case 3:   yo = ONE_STEP_DISTANCE; break;
+              case 4:   xo = ONE_STEP_DISTANCE; break;
+              case 5:   yo = ONE_STEP_DISTANCE; break;
+              case 6:   yo = ONE_STEP_DISTANCE; break;
+              case 7:   xo = -ONE_STEP_DISTANCE; break;
+              case 8:   xo = -ONE_STEP_DISTANCE; break;
+              case 9:   yo = ONE_STEP_DISTANCE; break;
+              case 10:   yo = -ONE_STEP_DISTANCE; break;
+              case 11:   xo = ONE_STEP_DISTANCE; break;
+              case 12:   yo = ONE_STEP_DISTANCE; break;
+              case 13:   xo = ONE_STEP_DISTANCE; break;
+              case 14:   xo = -ONE_STEP_DISTANCE; break;
+              case 15:   yo = -ONE_STEP_DISTANCE; break;
+            }
+
+            if (yo < 0)
+            {
+              Yaxis->SetFeedRate(feed);
               Yaxis->Step(-1);
               CNC_YMinus();
-              y2 -= ONE_STEP_DISTANCE;
-              printf("Minus y\n");
             }
-            printf("fxy = %0.6f, dx = %0.6f, dy = %0.6f, x2 = %0.6f, y2 = %0.6f\n", fxy, dx, dy, x2, y2);
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
+            if (yo > 0)
+            {
+              Yaxis->SetFeedRate(feed);
+              Yaxis->Step(+1);
+              CNC_YPlus();
+            }
+            if (xo < 0)
+            {
+              Xaxis->SetFeedRate(feed);
+              Xaxis->Step(-1);
+              CNC_XMinus();
+            }
+            if (xo > 0)
+            {
+              Xaxis->SetFeedRate(feed);
+              Xaxis->Step(+1);
+              CNC_XPlus();
+            }
+
+            x2 = x2 + xo;
+            y2 = y2 + yo;
+            //printf("Arc Tick Tock -> binrep = %d, xo = %0.6f, yo = %0.6f\n", binrep, xo, yo);
+
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0005)))
             {
               printf("\t\tReached arc endpoint!\n");
               GcodePointer.MoveDone = true;

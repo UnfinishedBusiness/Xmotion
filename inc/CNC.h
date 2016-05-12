@@ -17,7 +17,7 @@ struct gcode_t{
   float Z;
   float F;
   float R;
-  
+
   bool MoveDone;
 
   bool FirstInstruction;
