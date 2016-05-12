@@ -43,24 +43,28 @@ void CNC_YMinus()
 
 void CNC_JogXPlus()
 {
+  if (Stop == false) return;
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(+1);
   CNC_XPlus();
 }
 void CNC_JogXMinus()
 {
+  if (Stop == false) return;
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(-1);
   CNC_XMinus();
 }
 void CNC_JogYPlus()
 {
+  if (Stop == false) return;
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(+1);
   CNC_YPlus();
 }
 void CNC_JogYMinus()
 {
+  if (Stop == false) return;
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(-1);
   CNC_YMinus();
@@ -78,14 +82,25 @@ void CNC_Stop()
 }
 void CNC_Start()
 {
+  if (!nc_file.is_open())
+  {
+    Stop = false;
+    nc_file.open("test.nc");
+  }
   Hold = false;
   printf("Start!\n");
 }
 void CNC_SetOrigin()
 {
-  //printf("Setting Origin!\n");
-  OffsetValue.x = MachineCordinates.x;
-  OffsetValue.y = MachineCordinates.y;
+  printf("Setting Origin!\n");
+  if (Stop == true) //We can't set origin while program is running!
+  {
+    OffsetValue.x = MachineCordinates.x;
+    OffsetValue.y = MachineCordinates.y;
+
+    OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+    OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  }
 }
 bool InTolerance(float a, float b, float t)
 {
@@ -111,6 +126,7 @@ bool InTolerance(float a, float b, float t)
 float fxy, dx, dy = 0;
 float x2, y2 = 0;
 float xo, yo = 0;
+float feed = 0;
 void CNC_Tick()
 {
   if (nc_file.is_open())
@@ -120,8 +136,16 @@ void CNC_Tick()
       //printf("Move Done = false\n");
       if (Hold == false)
       {
-        if (GcodePointer.G == 0)
+        if (GcodePointer.G == 0 || GcodePointer.G == 1)
         {
+          if (GcodePointer.G == 0)
+          {
+            feed = RAPID_FEED;
+          }
+          else
+          {
+            feed = GcodePointer.F;
+          }
           if (GcodePointer.FirstInstruction == true)
           {
             //Calculate meta_data
@@ -164,13 +188,13 @@ void CNC_Tick()
             {
               if (xo > 0)
               {
-                Xaxis->SetFeedRate(RAPID_FEED);
+                Xaxis->SetFeedRate(feed);
                 Xaxis->Step(+1);
                 CNC_XPlus();
               }
               else
               {
-                Xaxis->SetFeedRate(RAPID_FEED);
+                Xaxis->SetFeedRate(feed);
                 Xaxis->Step(-1);
                 CNC_XMinus();
               }
@@ -181,13 +205,13 @@ void CNC_Tick()
             {
               if (yo > 0)
               {
-                Yaxis->SetFeedRate(RAPID_FEED);
+                Yaxis->SetFeedRate(feed);
                 Yaxis->Step(+1);
                 CNC_YPlus();
               }
               else
               {
-                Yaxis->SetFeedRate(RAPID_FEED);
+                Yaxis->SetFeedRate(feed);
                 Yaxis->Step(-1);
                 CNC_YMinus();
               }
@@ -196,9 +220,9 @@ void CNC_Tick()
             }
           }
         }
-        if (InTolerance(OffsetCordinates.x, GcodePointer.X, ONE_STEP_DISTANCE) && InTolerance(OffsetCordinates.y, GcodePointer.Y, ONE_STEP_DISTANCE))
+        if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
         {
-          printf("Reached endpoint!\n");
+          printf("\t\tReached endpoint!\n");
           GcodePointer.MoveDone = true;
         }
         //Drive axis to position and set GcodePointer.MoveDone = true;
@@ -210,6 +234,7 @@ void CNC_Tick()
       //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
       if (getline (nc_file, nc_buffer) == 0)
       {
+        Stop = true;
         printf("End of file!\n");
         nc_file.close(); //End of file!
       }
@@ -273,6 +298,7 @@ void CNC_Tick()
   else
   {
     //printf("File is not open!\n");
+    GcodePointer.MoveDone = true;
     delay(500);
   }
 }
@@ -301,8 +327,6 @@ void CNC_Init()
   OffsetValue.y = 0;
 
   GcodePointer.MoveDone = true;
-
-  nc_file.open("test.nc");
 
   pthread_t cnc_thread_handle;
 
