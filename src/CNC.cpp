@@ -7,6 +7,18 @@ point_t OffsetCordinates;
 point_t OffsetValue;
 
 gcode_t GcodePointer;
+
+#define GCODE_TABLE_SIZE 4
+gcode_t gcode_table[GCODE_TABLE_SIZE] = { //Supported G-Codes.
+  //       G  X  Y  Z  F  R  Modal
+  gcode_t{ 0, 0, 0, 0, 0, 0, true }, //Rapid
+  gcode_t{ 1, 0, 0, 0, 0, 0, true }, //Line
+  gcode_t{ 2, 0, 0, 0, 0, 0, true }, //Arc Clockwise
+  gcode_t{ 3, 0, 0, 0, 0, 0, true }, //Arc Counter-Clockwise
+
+  //Modal Gcodes are handled everytime we see a X||Y||Z change!
+};
+
 bool Hold = true;
 bool Stop = true;
 Stepper *Xaxis;
@@ -123,13 +135,17 @@ bool InTolerance(float a, float b, float t)
     return false;
   }
 }
-float fxy, dx, dy = 0;
-float x2, y2 = 0;
-int binrep = 0;
+
 float feed = 0;
 
+float fxy, dx, dy = 0;
+float x2, y2 = 0;
+float xo, yo = 0;
 //true = 1
-float rad, radrad, xo, yo = 0;
+int int_rad, int_radrad, int_xo, int_yo = 0;
+int int_fxy, int_dx, int_dy, int_y2, int_x2 = 0;
+int binrep = 0;
+
 bool d, f, a, b = 0;
 void CNC_Tick()
 {
@@ -182,12 +198,13 @@ void CNC_Tick()
 
             fxy = dx - dy;
 
-            printf("\tDirection -> dx = %0.6f, dy = %0.6f, yo = %0.6f, xo = %0.6f, initial_fxy = %0.6f\n", dx, dy, yo, xo, fxy);
+            //printf("\tDirection -> dx = %0.4f, dy = %0.4f, yo = %0.4f, xo = %0.4f, initial_fxy = %0.4f\n", dx, dy, yo, xo, fxy);
+            printf("\tLine Move to X%0.4f, Y%0.4f\n", GcodePointer.X, GcodePointer.Y);
 
           }
           else
           {
-            //printf("FXY: %0.6f\n", fxy);
+            //printf("FXY: %0.4f\n", fxy);
             if (fxy > 0)
             {
               if (xo > 0)
@@ -236,57 +253,57 @@ void CNC_Tick()
             GcodePointer.arc_meta.start_pos = OffsetCordinates;
             GcodePointer.FirstInstruction = false;
             //Generate points on arc
-            x2, y2, rad, radrad, xo, yo = 0;
+            int_x2, int_y2, int_rad, int_radrad, int_xo, int_yo = 0;
 
-            x2 = OffsetCordinates.x;
-            y2 = OffsetCordinates.y;
+            int_x2 = (int)OffsetCordinates.x/ ONE_STEP_DISTANCE;
+            int_y2 = (int)OffsetCordinates.y / ONE_STEP_DISTANCE;
 
-            rad = GcodePointer.R;
+            int_rad = (int)GcodePointer.R / ONE_STEP_DISTANCE;
 
-            radrad = rad * rad;
+            int_radrad = int_rad * int_rad;
 
             if (GcodePointer.G == 2)
             {
               d = false; //Clockwise!
-              printf("\tClockwise Arc until we reach X%0.6f, Y%0.6f at R%0.6f at F%0.6f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
+              printf("\tClockwise Arc until we reach X%0.4f, Y%0.4f at R%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
             }
             if (GcodePointer.G == 3)
             {
               d = true; //Counter-Clockwise!
-              printf("\tCounter-Clockwise Arc until we reach X%0.6f, Y%0.6f at R%0.6f at F%0.6f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
+              printf("\tCounter-Clockwise Arc until we reach X%0.4f, Y%0.4f at R%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.R, GcodePointer.F);
             }
-
+            feed = GcodePointer.F;
 
 
 
           }
           else
           {
-            fxy = (x2 * x2) + (y2 * y2) - radrad;
-            dx = 2 * x2;
-            dy = 2 * y2;
-            printf("fxy = %0.6f, dx = %0.6f, dy = %0.6f\n", fxy, dx, dy);
+            int_fxy = (int_x2 * int_x2) + (int_y2 * int_y2) - int_radrad;
+            int_dx = 2 * int_x2;
+            int_dy = 2 * int_y2;
+            //printf("fxy = %0.4f, dx = %0.4f, dy = %0.4f\n", fxy, dx, dy);
 
             f = false;
             a = false;
             b = false;
 
-            if (fxy < 0)
+            if (int_fxy < 0) //Positive when outside circle, negative when inside circle
             {
               f = true;
             }
-            if ( dx < 0)
+            if ( int_dx < 0)
             {
               a = true;
             }
-            if ( dy < 0)
+            if ( int_dy < 0)
             {
               b = false;
             }
 
             binrep = 0;
-            xo = 0;
-            yo = 0;
+            int_xo = 0;
+            int_yo = 0;
 
             if (d)
             {
@@ -306,59 +323,59 @@ void CNC_Tick()
             }
             switch(binrep)
             {
-              case 0:   yo = -ONE_STEP_DISTANCE; break;
-              case 1:   xo = -ONE_STEP_DISTANCE; break;
-              case 2:   xo = ONE_STEP_DISTANCE; break;
-              case 3:   yo = ONE_STEP_DISTANCE; break;
-              case 4:   xo = ONE_STEP_DISTANCE; break;
-              case 5:   yo = ONE_STEP_DISTANCE; break;
-              case 6:   yo = ONE_STEP_DISTANCE; break;
-              case 7:   xo = -ONE_STEP_DISTANCE; break;
-              case 8:   xo = -ONE_STEP_DISTANCE; break;
-              case 9:   yo = ONE_STEP_DISTANCE; break;
-              case 10:   yo = -ONE_STEP_DISTANCE; break;
-              case 11:   xo = ONE_STEP_DISTANCE; break;
-              case 12:   yo = ONE_STEP_DISTANCE; break;
-              case 13:   xo = ONE_STEP_DISTANCE; break;
-              case 14:   xo = -ONE_STEP_DISTANCE; break;
-              case 15:   yo = -ONE_STEP_DISTANCE; break;
+              case 0:   int_yo = -1; break;
+              case 1:   int_xo = -1; break;
+              case 2:   int_xo = 1; break;
+              case 3:   int_yo = 1; break;
+              case 4:   int_xo = 1; break;
+              case 5:   int_yo = 1; break;
+              case 6:   int_yo = 1; break;
+              case 7:   int_xo = -1; break;
+              case 8:   int_xo = -1; break;
+              case 9:   int_yo = 1; break;
+              case 10:   int_yo = -1; break;
+              case 11:   int_xo = 1; break;
+              case 12:   int_yo = 1; break;
+              case 13:   int_xo = 1; break;
+              case 14:   int_xo = -1; break;
+              case 15:   int_yo = -1; break;
             }
 
-            if (yo < 0)
+            if (int_yo < 0)
             {
               Yaxis->SetFeedRate(feed);
               Yaxis->Step(-1);
               CNC_YMinus();
             }
-            if (yo > 0)
+            if (int_yo > 0)
             {
               Yaxis->SetFeedRate(feed);
               Yaxis->Step(+1);
               CNC_YPlus();
             }
-            if (xo < 0)
+            if (int_xo < 0)
             {
               Xaxis->SetFeedRate(feed);
               Xaxis->Step(-1);
               CNC_XMinus();
             }
-            if (xo > 0)
+            if (int_xo > 0)
             {
               Xaxis->SetFeedRate(feed);
               Xaxis->Step(+1);
               CNC_XPlus();
             }
 
-            x2 = x2 + xo;
-            y2 = y2 + yo;
-            //printf("Arc Tick Tock -> binrep = %d, xo = %0.6f, yo = %0.6f\n", binrep, xo, yo);
+            int_x2 = int_x2 + int_xo;
+            int_y2 = int_y2 + int_yo;
+            //printf("Arc Tick Tock -> binrep = %d, xo = %0.4f, yo = %0.4f\n", binrep, xo, yo);
 
             if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0005)))
             {
               printf("\t\tReached arc endpoint!\n");
               GcodePointer.MoveDone = true;
             }
-            //printf("X = %0.6f, Y = %0.6f\n", x2, y2);
+            //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
         }
 
@@ -369,6 +386,7 @@ void CNC_Tick()
     {
       //printf("Move Done = true\n");
       //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
+
       if (getline (nc_file, nc_buffer) == 0)
       {
         Stop = true;
@@ -381,6 +399,11 @@ void CNC_Tick()
         transform(nc_buffer.begin(), nc_buffer.end(), nc_buffer.begin(), ::toupper);
         printf("NC Line> %s\n", nc_buffer.c_str());
 
+        if (nc_buffer[0] == '(') return; //Ignore comments
+        if (nc_buffer[0] == '/') return; //Ignore comments
+        if (nc_buffer[0] == '#') return; //Ignore comments
+
+        bool valid = false;
         string number = "";
         float val = 0;
         string letter = "";
@@ -401,21 +424,40 @@ void CNC_Tick()
             }
             val = stof(number, &sz);
 
-            //printf("Letter: %s, Value: %0.6f\n", letter.c_str(), val);
+            //printf("Letter: %s, Value: %0.4f\n", letter.c_str(), val);
             if (letter == "G")
             {
-              GcodePointer.G = val;
+              for (int z = 0; z < GCODE_TABLE_SIZE; z++)
+              {
+                if (val == gcode_table[z].G)
+                {
+                  if (gcode_table[z].Modal == true)
+                  {
+                    valid = true;
+                    GcodePointer.G = val;
+                  }
+                  else
+                  {
+                    //Handle non modal code, make sure they don't go into pointer!
+                  }
+                  break;
+                }
+              }
+
             }
             if (letter == "X")
             {
+              valid = true;
               GcodePointer.X = val;
             }
             if (letter == "Y")
             {
+              valid = true;
               GcodePointer.Y = val;
             }
             if (letter == "Z")
             {
+              valid = true;
               GcodePointer.Z = val;
             }
             if (letter == "F")
@@ -431,9 +473,16 @@ void CNC_Tick()
             letter = "";
           }
         }
+        if (valid == true)
+        {
+          GcodePointer.MoveDone = false;
+          GcodePointer.FirstInstruction = true;
+        }
+        else
+        {
+          return;
+        }
 
-        GcodePointer.MoveDone = false;
-        GcodePointer.FirstInstruction = true;
         nc_line++;
       }
     }

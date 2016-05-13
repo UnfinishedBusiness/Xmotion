@@ -18,13 +18,14 @@ struct gcode_t{
   float F;
   float R;
 
-  bool MoveDone;
+  bool Modal;
 
+
+  bool MoveDone;
   bool FirstInstruction;
   gline_meta_t line_meta;
   garc_meta_t arc_meta;
 };
-
 
 void CNC_JogXPlus();
 void CNC_JogXMinus();
