@@ -36,7 +36,7 @@
 #ifndef APPLICATION_
 #define  APPLICATION_
 
-const char APPLICATION_TITLE[] = "GaugePanel";
+const char APPLICATION_TITLE[] = "PlasmaTable";
 
 #define INCH_MIN_DELAY 23610.2979
 #define ONE_STEP_DISTANCE 0.0003935

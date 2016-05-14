@@ -2,6 +2,12 @@
 
 using namespace std;
 
+#define CURVE_STEP 0.02
+#define INITIAL_CURVE 0.01
+
+float motion_accel = INITIAL_CURVE;
+long motion_accel_timer = 0;
+
 Stepper::Stepper(int tsteps, int a, int b, int c, int d)
 {
   total_steps = tsteps;
@@ -16,7 +22,15 @@ Stepper::Stepper(int tsteps, int a, int b, int c, int d)
 }
 void Stepper::SetFeedRate(float feed)
 {
-  pulse_delay = INCH_MIN_DELAY / feed;
+  if ((motion_accel_timer + 200) < millis()) //reset accel curve if its been more than x millis
+  {
+    motion_accel_timer = millis();
+    motion_accel = INITIAL_CURVE;
+    //printf("Reseting Curve!\n");
+  }
+  if (motion_accel < 1) motion_accel += CURVE_STEP;
+  pulse_delay = INCH_MIN_DELAY / (feed * motion_accel);
+  motion_accel_timer = millis();
 }
 void Stepper::Step(int inc)
 {
@@ -41,8 +55,12 @@ void Stepper::Step(int inc)
       digitalWrite(map[i], BitMap[map_position][i]);
     }
     //delay(1); //Works!
-    delayMicroseconds(pulse_delay);
+    //delayMicroseconds(pulse_delay);
     //delayMicroseconds(500); //Doesnt work!
 
   }
+}
+void Stepper::FeedDelay()
+{
+  delayMicroseconds(pulse_delay);
 }

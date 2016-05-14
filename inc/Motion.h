@@ -9,6 +9,7 @@ class Stepper
     void SetFeedRate(float);
     void Step(int);
     void Tick();
+    void FeedDelay();
   private:
     int map[4];
     int total_steps;

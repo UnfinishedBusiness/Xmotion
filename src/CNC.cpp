@@ -59,6 +59,7 @@ void CNC_JogXPlus()
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(+1);
   CNC_XPlus();
+  Xaxis->FeedDelay();
 }
 void CNC_JogXMinus()
 {
@@ -66,6 +67,7 @@ void CNC_JogXMinus()
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(-1);
   CNC_XMinus();
+  Xaxis->FeedDelay();
 }
 void CNC_JogYPlus()
 {
@@ -73,6 +75,7 @@ void CNC_JogYPlus()
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(+1);
   CNC_YPlus();
+  Yaxis->FeedDelay();
 }
 void CNC_JogYMinus()
 {
@@ -80,6 +83,7 @@ void CNC_JogYMinus()
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(-1);
   CNC_YMinus();
+  Yaxis->FeedDelay();
 }
 void CNC_Hold()
 {
@@ -238,6 +242,7 @@ void CNC_Tick()
               }
               y2++;
               fxy = fxy + dx;
+              Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
             }
           }
           if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
