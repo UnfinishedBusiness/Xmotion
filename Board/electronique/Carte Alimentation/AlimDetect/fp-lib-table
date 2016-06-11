@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name buzz)(type KiCad)(uri /run/media/haz/DATA/Alexis/robotronik/electronique/Librairies/Kicad/buzz.pretty)(options "")(descr ""))
+  (lib (name w_to)(type KiCad)(uri /run/media/haz/DATA/Alexis/robotronik/electronique/Librairies/Kicad/w_to.pretty)(options "")(descr ""))
+  (lib (name coil)(type KiCad)(uri /run/media/haz/DATA/Alexis/robotronik/electronique/Librairies/Kicad/coil.pretty)(options "")(descr ""))
+)

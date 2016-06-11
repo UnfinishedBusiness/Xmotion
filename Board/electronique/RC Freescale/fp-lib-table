@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name Potentiometres)(type Legacy)(uri /run/media/haz/DATA/Alexis/robotronik/electronique/Librairies/Kicad/Potentiometres.mod)(options "")(descr ""))
+)

@@ -1,0 +1,174 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L C C1
+U 1 1 56F037F0
+P 4650 2350
+F 0 "C1" H 4675 2450 50  0000 L CNN
+F 1 "C" H 4675 2250 50  0000 L CNN
+F 2 "Capacitors_ThroughHole:C_Rect_L7_W2.5_P5" H 4688 2200 50  0001 C CNN
+F 3 "" H 4650 2350 50  0000 C CNN
+	1    4650 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X05 P2
+U 1 1 56F03843
+P 5900 2350
+F 0 "P2" H 5900 2650 50  0000 C CNN
+F 1 "CONN_01X05" V 6000 2350 50  0000 C CNN
+F 2 "Socket_Strips:Socket_Strip_Angled_1x05" H 5900 2350 50  0001 C CNN
+F 3 "" H 5900 2350 50  0000 C CNN
+	1    5900 2350
+	1    0    0    1   
+$EndComp
+$Comp
+L CONN_01X05 P1
+U 1 1 56F0389F
+P 3200 2350
+F 0 "P1" H 3200 2650 50  0000 C CNN
+F 1 "CONN_01X05" V 3300 2350 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x05" H 3200 2350 50  0001 C CNN
+F 3 "" H 3200 2350 50  0000 C CNN
+	1    3200 2350
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4300 2150 5700 2150
+Wire Wire Line
+	4650 2150 4650 2200
+Connection ~ 4650 2150
+$Comp
+L GND #PWR01
+U 1 1 56F03956
+P 4650 2500
+F 0 "#PWR01" H 4650 2250 50  0001 C CNN
+F 1 "GND" H 4650 2350 50  0000 C CNN
+F 2 "" H 4650 2500 50  0000 C CNN
+F 3 "" H 4650 2500 50  0000 C CNN
+	1    4650 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR02
+U 1 1 56F03974
+P 5700 2600
+F 0 "#PWR02" H 5700 2350 50  0001 C CNN
+F 1 "GND" H 5700 2450 50  0000 C CNN
+F 2 "" H 5700 2600 50  0000 C CNN
+F 3 "" H 5700 2600 50  0000 C CNN
+	1    5700 2600
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR03
+U 1 1 56F0398B
+P 3400 2600
+F 0 "#PWR03" H 3400 2350 50  0001 C CNN
+F 1 "GND" H 3400 2450 50  0000 C CNN
+F 2 "" H 3400 2600 50  0000 C CNN
+F 3 "" H 3400 2600 50  0000 C CNN
+	1    3400 2600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 2600 3400 2550
+Wire Wire Line
+	5700 2600 5700 2550
+Text Label 3500 2450 0    60   ~ 0
+2
+Text Label 5600 2450 0    60   ~ 0
+2
+Text Label 5600 2350 0    60   ~ 0
+3
+Text Label 5600 2250 0    60   ~ 0
+4
+Text Label 3500 2250 0    60   ~ 0
+4
+Text Label 3500 2350 0    60   ~ 0
+3
+Wire Wire Line
+	5600 2250 5700 2250
+Wire Wire Line
+	5600 2350 5700 2350
+Wire Wire Line
+	5600 2450 5700 2450
+Wire Wire Line
+	3400 2450 3500 2450
+Wire Wire Line
+	3500 2350 3400 2350
+Wire Wire Line
+	3400 2250 3500 2250
+$Comp
+L PWR_FLAG #FLG04
+U 1 1 56F03A86
+P 3900 2550
+F 0 "#FLG04" H 3900 2645 50  0001 C CNN
+F 1 "PWR_FLAG" H 3900 2730 50  0000 C CNN
+F 2 "" H 3900 2550 50  0000 C CNN
+F 3 "" H 3900 2550 50  0000 C CNN
+	1    3900 2550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 2550 3900 2550
+$Comp
+L POT RV1
+U 1 1 56F03ADE
+P 4150 2150
+F 0 "RV1" H 4150 2050 50  0000 C CNN
+F 1 "POT" H 4150 2150 50  0000 C CNN
+F 2 "Potentiometres:POAH" H 4150 2150 50  0001 C CNN
+F 3 "" H 4150 2150 50  0000 C CNN
+	1    4150 2150
+	0    1    -1   0   
+$EndComp
+Wire Wire Line
+	4150 1900 3600 1900
+Wire Wire Line
+	3600 1900 3600 2150
+Wire Wire Line
+	3600 2150 3400 2150
+$EndSCHEMATC

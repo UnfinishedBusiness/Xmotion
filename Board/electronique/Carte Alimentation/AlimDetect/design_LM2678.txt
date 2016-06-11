@@ -1,0 +1,33 @@
+Procédure de design du LM2678 dans AlimDetect_4c
+Se référer à la datasheet
+
+> Vout = 12V
+  Vin_max = 4*4.2 = 16.8V
+  Iload_max ~ 3.5A
+
+> Inductance choisie selon Fig. 23 : L41, 22 µH MCSCH895-220KU
+
+> Capacité de sortie selon Tab. 7 et Tab. 4 (capacités through-hole) :
+  	   _ 1* 100µF/16V Sanyo OS-CON
+	   _ ou 1* 820µF/16V Sanyo MV-GX
+	   _ ou 1* 820µF/16V Nichicon PL
+	   _ ou 1* 560µF/35V Panasonic HFQ
+
+  On prendra 820µF/16V
+
+> Capacité d'entrée polarisée selon Tab. 9 et Tab. 4 : 
+  	   _ 2* 470µF/35V Sanyo MV-GX
+	   _ 1* 2200µF/35V Nichicon PL
+	   _ 1* 2200µF/35V Panasonic HFQ
+
+  On prendra 2*680 + 1*820 (35 V)
+
+> Diode Schottky selon Tab. 10 (through-hole, 5A ou plus) :
+  	   _ 1N5825 40V
+	   _ MBR745 40V
+	   _ 80SQ045 40V
+	   _ 6TQ045 40V
+
+  On prendra la MBR745 (80SQ045 est sensible aux ESD)
+
+> Capacité Cboost : 0.01µF
