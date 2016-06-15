@@ -8,6 +8,7 @@ struct gline_meta_t{
 
 struct garc_meta_t{
   point_t start_pos;
+  point_t center_pos;
 };
 
 struct gcode_t{
@@ -17,6 +18,10 @@ struct gcode_t{
   float Z;
   float F;
   float R;
+
+  float I;
+  float J;
+  float K;
 
   bool Modal;
 

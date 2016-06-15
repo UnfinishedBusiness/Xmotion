@@ -31,7 +31,13 @@
 #include <CNC.h>
 #include <Motion.h>
 
-#include <wiringPi.h>
+#ifdef DEBUG
+  #define HIGH true
+  #define LOW false
+  #define INPUT 1
+#else
+  #include <wiringPi.h>
+#endif
 
 #ifndef APPLICATION_
 #define  APPLICATION_

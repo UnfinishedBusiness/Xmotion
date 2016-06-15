@@ -17,9 +17,8 @@ std::vector<std::string> split(const std::string &s, char delim) {
     split(s, delim, elems);
     return elems;
 }
-bool sim = false;
 bool quit = false;
-
+bool sim = false;
 void ctrl_c_handler(int s)
 {
     printf("Bye!\n");
@@ -27,16 +26,10 @@ void ctrl_c_handler(int s)
 }
 int main( int argc, char* argv[] )
 {
+  #ifdef DEBUG
+    sim = true;
+  #endif
   signal (SIGINT,ctrl_c_handler);
-  //
-  if (argc > 1)
-  {
-    if (strcmp(argv[1], "-sim") == 0)
-    {
-      printf("Starting in simulator mode!\n");
-      sim = true;
-    }
-  }
 	//Start up SDL and create window
 	if( !Render_Init() )
 	{
@@ -44,7 +37,9 @@ int main( int argc, char* argv[] )
 	}
 	else
 	{
-    if (!sim) SDL_ShowCursor(0);
+    #ifdef NDEBUG
+      SDL_ShowCursor(0);
+    #endif
 		Config_Init();
     CNC_Init();
     if (sim == false)

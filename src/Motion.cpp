@@ -17,20 +17,24 @@ Stepper::Stepper(int tsteps, int a, int b, int c, int d)
   map[3] = d;
   for (int x = 0; x < 4; x++)
   {
-    pinMode(map[x], OUTPUT);
+    #ifdef NDEBUG
+      pinMode(map[x], OUTPUT);
+    #endif
   }
 }
 void Stepper::SetFeedRate(float feed)
 {
-  if ((motion_accel_timer + 200) < millis()) //reset accel curve if its been more than x millis
-  {
+  #ifdef NDEBUG
+    if ((motion_accel_timer + 200) < millis()) //reset accel curve if its been more than x millis
+    {
+      motion_accel_timer = millis();
+      motion_accel = INITIAL_CURVE;
+      //printf("Reseting Curve!\n");
+    }
+    if (motion_accel < 1) motion_accel += CURVE_STEP;
+    pulse_delay = INCH_MIN_DELAY / (feed * motion_accel);
     motion_accel_timer = millis();
-    motion_accel = INITIAL_CURVE;
-    //printf("Reseting Curve!\n");
-  }
-  if (motion_accel < 1) motion_accel += CURVE_STEP;
-  pulse_delay = INCH_MIN_DELAY / (feed * motion_accel);
-  motion_accel_timer = millis();
+  #endif
 }
 void Stepper::Step(int inc)
 {
@@ -52,7 +56,9 @@ void Stepper::Step(int inc)
     //printf("Map Position: %d\n", map_position);
     for (int i = 0; i < 4; i++)
     {
-      digitalWrite(map[i], BitMap[map_position][i]);
+        #ifdef NDEBUG
+          digitalWrite(map[i], BitMap[map_position][i]);
+        #endif
     }
     //delay(1); //Works!
     //delayMicroseconds(pulse_delay);
@@ -62,5 +68,7 @@ void Stepper::Step(int inc)
 }
 void Stepper::FeedDelay()
 {
-  delayMicroseconds(pulse_delay);
+  #ifdef NDEBUG
+    delayMicroseconds(pulse_delay);
+  #endif
 }

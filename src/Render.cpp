@@ -17,7 +17,9 @@ int SCREEN_HEIGHT = 480;
 long TimeRendered = 0;
 bool Render_Init()
 {
-	long BeginTime = micros();
+	#ifdef NDEBUG
+		long BeginTime = micros();
+	#endif
   //Initialization flag
 	bool success = true;
 
@@ -71,7 +73,9 @@ bool Render_Init()
 			}
 		}
 	}
-	TimeRendered = micros() - BeginTime;
+	#ifdef NDEBUG
+		TimeRendered = micros() - BeginTime;
+	#endif
 	return success;
 }
 SDL_Texture* Render_loadImage( string path )
