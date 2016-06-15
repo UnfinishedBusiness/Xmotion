@@ -9,6 +9,7 @@ struct gline_meta_t{
 struct garc_meta_t{
   point_t start_pos;
   point_t center_pos;
+  point_t last_pos;
 };
 
 struct gcode_t{

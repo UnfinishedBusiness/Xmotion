@@ -101,7 +101,7 @@ void CNC_Start()
   if (!nc_file.is_open())
   {
     Stop = false;
-    nc_file.open("test.nc");
+    nc_file.open("test.pgm");
   }
   Hold = false;
   printf("Start!\n");
@@ -150,6 +150,76 @@ float angle;
 point_t next_point;
 
 bool d, f, a, b = 0;
+void CNC_BlockingLine(point_t from, point_t to)
+{
+  fxy = dx = dy = y2 = x2 = xo = yo = 0;
+  dy = to.y - from.y;
+  if (dy < 0)
+  {
+    yo = -1;
+  }
+  else
+  {
+    yo = 1;
+  }
+  dy = fabs(dy);
+
+  dx = to.x - from.x;
+  if (dx < 0)
+  {
+    xo = -1;
+  }
+  else
+  {
+    xo = 1;
+  }
+  dx = fabs(dx);
+  fxy = dx - dy;
+  while(true) //Tick until we reach end point!
+  {
+    //printf("FXY: %0.4f\n", fxy);
+    if (fxy > 0)
+    {
+      if (xo > 0)
+      {
+        Xaxis->SetFeedRate(feed);
+        Xaxis->Step(+1);
+        CNC_XPlus();
+      }
+      else
+      {
+        Xaxis->SetFeedRate(feed);
+        Xaxis->Step(-1);
+        CNC_XMinus();
+      }
+      x2++;
+      fxy = fxy - dy;
+    }
+    else
+    {
+      if (yo > 0)
+      {
+        Yaxis->SetFeedRate(feed);
+        Yaxis->Step(+1);
+        CNC_YPlus();
+      }
+      else
+      {
+        Yaxis->SetFeedRate(feed);
+        Yaxis->Step(-1);
+        CNC_YMinus();
+      }
+      y2++;
+      fxy = fxy + dx;
+      Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
+    }
+    if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
+    {
+      printf("\t\t(Blocking Line) Reached line endpoint!\n");
+      return;
+    }
+  }
+}
 void CNC_Tick()
 {
   if (nc_file.is_open())
@@ -157,8 +227,11 @@ void CNC_Tick()
     if (GcodePointer.MoveDone == false)
     {
       #ifdef DEBUG
-        fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
-        usleep(50);
+        if (GcodePointer.G != 0)
+        {
+          fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
+        }
+        usleep(200);
       #endif
       //printf("Move Done = false\n");
       if (Hold == false)
@@ -176,9 +249,10 @@ void CNC_Tick()
           if (GcodePointer.FirstInstruction == true)
           {
             //Calculate meta_data
-            fxy = dx = dy = y2 = x2 = 0;
+            fxy = dx = dy = y2 = x2 = xo = yo = 0;
 
-            GcodePointer.line_meta.start_pos = OffsetCordinates;
+            GcodePointer.line_meta.start_pos.x = OffsetCordinates.x;
+            GcodePointer.line_meta.start_pos.y = OffsetCordinates.y;
             GcodePointer.FirstInstruction = false;
 
             dy = GcodePointer.Y - GcodePointer.line_meta.start_pos.y;
@@ -248,12 +322,13 @@ void CNC_Tick()
               Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
             }
           }
-          if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.002)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.002)))
+          if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
           {
             printf("\t\tReached line endpoint!\n");
-            GcodePointer.MoveDone = true;
             OffsetCordinates.x = GcodePointer.X;
             OffsetCordinates.y = GcodePointer.Y;
+            GcodePointer.MoveDone = true;
+            Hold = true;
           }
         }
         if (GcodePointer.G == 2 || GcodePointer.G == 3)
@@ -261,8 +336,9 @@ void CNC_Tick()
           if (GcodePointer.FirstInstruction == true)
           {
             GcodePointer.arc_meta.start_pos = OffsetCordinates;
-            GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
-            GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
+            GcodePointer.arc_meta.last_pos = OffsetCordinates;
+            //GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
+            //GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
             GcodePointer.FirstInstruction = false;
             //Generate points on arc
             //angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.arc_meta.start_pos.y, GcodePointer.arc_meta.center_pos.x - GcodePointer.arc_meta.start_pos.x);
@@ -282,21 +358,25 @@ void CNC_Tick()
           else
           {
             point_t o = GcodePointer.arc_meta.center_pos;
-            point_t p = OffsetCordinates;
+            point_t p = GcodePointer.arc_meta.last_pos;
             next_point.x = cosf(angle) * (p.x - o.x) - sinf(angle) * (p.y - o.y) + o.x;
             next_point.y = sinf(angle) * (p.x - o.x) + cosf(angle) * (p.y - o.y) + o.y;
             //printf("Arc Tick Tock -> binrep = %d, xo = %0.4f, yo = %0.4f\n", binrep, xo, yo);
 
-            OffsetCordinates = next_point;
+            CNC_BlockingLine(OffsetCordinates, next_point);
+
+            GcodePointer.arc_meta.last_pos = next_point;
 
 
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0005)))
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
             {
               printf("\t\tReached arc endpoint!\n");
-              GcodePointer.MoveDone = true;
 
               OffsetCordinates.x = GcodePointer.X;
               OffsetCordinates.y = GcodePointer.Y;
+
+              GcodePointer.MoveDone = true;
+              Hold = true;
             }
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
@@ -309,108 +389,117 @@ void CNC_Tick()
     {
       //printf("Move Done = true\n");
       //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
-
+      float X = 0;
+      float Y = 0;
+      float Xc = 0;
+      float Yc = 0;
+      float F = 0;
       if (getline (nc_file, nc_buffer))
       {
         transform(nc_buffer.begin(), nc_buffer.end(), nc_buffer.begin(), ::toupper);
         printf("NC Line> %s\n", nc_buffer.c_str());
 
-        if (nc_buffer[0] == '(') return; //Ignore comments
-        if (nc_buffer[0] == '/') return; //Ignore comments
-        if (nc_buffer[0] == '#') return; //Ignore comments
-        if (nc_buffer[0] == '%') return; //Ignore comments
-
-        bool valid = false;
-        string number = "";
-        float val = 0;
-        string letter = "";
-        string::size_type sz;
-        for (int i = 0; i < nc_buffer.size(); i++)
+        vector<string> fields = split(nc_buffer, ' ');
+        if (fields.size() > 4)
         {
-          if (nc_buffer[i] == 'G' || nc_buffer[i] == 'X' || nc_buffer[i] == 'Y' || nc_buffer[i] == 'Z' || nc_buffer[i] == 'F' || nc_buffer[i] == 'R' || nc_buffer[i] == 'I' || nc_buffer[i] == 'J' || nc_buffer[i] == 'K')
+          if (fields[1] == "RAPID")
           {
-            letter.push_back(nc_buffer[i]);
-            while(i < nc_buffer.size())
-            {
-              if (nc_buffer[i+1] != '.' && isalpha(nc_buffer[i+1]))
-              {
-                break;
-              }
-              number.push_back(nc_buffer[i+1]);
-              i++;
-            }
-            val = stof(number, &sz);
+            fields[3].erase(0, 1); //Remove X charactor
+            X = atof(fields[3].c_str());
 
-            //printf("Letter: %s, Value: %0.4f\n", letter.c_str(), val);
-            if (letter == "G")
-            {
-              for (int z = 0; z < GCODE_TABLE_SIZE; z++)
-              {
-                if (val == gcode_table[z].G)
-                {
-                  if (gcode_table[z].Modal == true)
-                  {
-                    valid = true;
-                    GcodePointer.G = val;
-                  }
-                  else
-                  {
-                    //Handle non modal code, make sure they don't go into pointer!
-                  }
-                  break;
-                }
-              }
+            fields[4].erase(0, 1); //Remove Y charactor
+            Y = atof(fields[4].c_str());
 
-            }
-            if (letter == "X")
-            {
-              valid = true;
-              GcodePointer.X = val;
-            }
-            if (letter == "Y")
-            {
-              valid = true;
-              GcodePointer.Y = val;
-            }
-            if (letter == "Z")
-            {
-              valid = true;
-              GcodePointer.Z = val;
-            }
-            if (letter == "F")
-            {
-              GcodePointer.F = val;
-            }
-            if (letter == "R")
-            {
-              GcodePointer.R = val;
-            }
+            printf("\t\tRAPID to X: %0.4f, Y: %0.4f\n", X, Y);
 
-            if (letter == "I")
-            {
-              GcodePointer.I = val;
-            }
-            if (letter == "J")
-            {
-              GcodePointer.J = val;
-            }
-            if (letter == "K")
-            {
-              GcodePointer.K = val; //Irrelecent, no z axis, but here for future use
-            }
+            GcodePointer.G = 0;
+            GcodePointer.X = X;
+            GcodePointer.Y = Y;
+            GcodePointer.MoveDone = false;
+            GcodePointer.FirstInstruction = true;
 
-            number = "";
-            letter = "";
           }
-        }
-        if (valid == true)
-        {
-          GcodePointer.MoveDone = false;
-          GcodePointer.FirstInstruction = true;
-        }
-        else
-        {
-          return;
+          if (fields[1] == "LINE")
+          {
+            fields[3].erase(0, 1); //Remove X charactor
+            X = atof(fields[3].c_str());
+
+            fields[4].erase(0, 1); //Remove Y charactor
+            Y = atof(fields[4].c_str());
+
+            fields[6].erase(0, 1); //Remove F charactor
+            F = atof(fields[6].c_str());
+            printf("\t\tLINE to X: %0.4f, Y: %0.4f at F: %0.4f\n", X, Y, F);
+
+            GcodePointer.G = 1;
+            GcodePointer.X = X;
+            GcodePointer.Y = Y;
+            GcodePointer.F = F;
+            GcodePointer.MoveDone = false;
+            GcodePointer.FirstInstruction = true;
+          }
+          if (fields[1] == "ARC|CNTRPT")
+          {
+            if (fields[3] == "CW")
+            {
+              fields[4].erase(0, 1); //Remove X charactor
+              X = atof(fields[4].c_str());
+
+              fields[5].erase(0, 1); //Remove Y charactor
+              Y = atof(fields[5].c_str());
+
+              fields[7].erase(0, 2); //Remove XC charactors
+              Xc = atof(fields[7].c_str());
+
+              fields[8].erase(0, 2); //Remove YC charactors
+              Yc = atof(fields[8].c_str());
+
+              fields[9].erase(0, 1); //Remove F charactors
+              F = atof(fields[9].c_str());
+
+              printf("\t\tClocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
+
+              GcodePointer.G = 2;
+              GcodePointer.X = X;
+              GcodePointer.Y = Y;
+              GcodePointer.F = F;
+              GcodePointer.arc_meta.center_pos.x = Xc;
+              GcodePointer.arc_meta.center_pos.y = Yc;
+              GcodePointer.MoveDone = false;
+              GcodePointer.FirstInstruction = true;
+            }
+            if (fields[3] == "CCW")
+            {
+              fields[4].erase(0, 1); //Remove X charactor
+              X = atof(fields[4].c_str());
+
+              fields[5].erase(0, 1); //Remove Y charactor
+              Y = atof(fields[5].c_str());
+
+              fields[7].erase(0, 2); //Remove XC charactors
+              Xc = atof(fields[7].c_str());
+
+              fields[8].erase(0, 2); //Remove YC charactors
+              Yc = atof(fields[8].c_str());
+
+              fields[9].erase(0, 1); //Remove F charactor
+              F = atof(fields[9].c_str());
+
+              printf("\t\tCounter-Clocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
+
+              GcodePointer.G = 3;
+              GcodePointer.X = X;
+              GcodePointer.Y = Y;
+              GcodePointer.F = F;
+              GcodePointer.arc_meta.center_pos.x = Xc;
+              GcodePointer.arc_meta.center_pos.y = Yc;
+              GcodePointer.MoveDone = false;
+              GcodePointer.FirstInstruction = true;
+            }
+
+
+          }
+
         }
 
         nc_line++;
