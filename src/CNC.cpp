@@ -215,7 +215,7 @@ void CNC_BlockingLine(point_t from, point_t to)
     }
     if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
     {
-      printf("\t\t(Blocking Line) Reached line endpoint!\n");
+      //printf("\t\t(Blocking Line) Reached line endpoint!\n");
       return;
     }
   }
@@ -328,7 +328,6 @@ void CNC_Tick()
             OffsetCordinates.x = GcodePointer.X;
             OffsetCordinates.y = GcodePointer.Y;
             GcodePointer.MoveDone = true;
-            Hold = true;
           }
         }
         if (GcodePointer.G == 2 || GcodePointer.G == 3)
@@ -376,7 +375,6 @@ void CNC_Tick()
               OffsetCordinates.y = GcodePointer.Y;
 
               GcodePointer.MoveDone = true;
-              Hold = true;
             }
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
