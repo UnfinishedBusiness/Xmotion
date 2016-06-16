@@ -139,6 +139,13 @@ bool InTolerance(float a, float b, float t)
     return false;
   }
 }
+float GetLineLength(point_t p1, point_t p2)
+{
+  float x,y;
+  x = p2.x - p1.x;
+  y = p2.y - p1.y;
+  return sqrtf(x*x + y*y);
+}
 
 float feed = 0;
 
@@ -213,12 +220,23 @@ void CNC_BlockingLine(point_t from, point_t to)
       fxy = fxy + dx;
       Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
     }
-    if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
+    /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0005)))
     {
       //printf("\t\t(Blocking Line) Reached line endpoint!\n");
       return;
+    }*/
+    if (GetLineLength(OffsetCordinates, to) < ONE_STEP_DISTANCE)
+    {
+      return;
     }
   }
+}
+void MoveDone()
+{
+  OffsetCordinates.x = GcodePointer.X;
+  OffsetCordinates.y = GcodePointer.Y;
+  GcodePointer.MoveDone = true;
+  Hold = true;
 }
 void CNC_Tick()
 {
@@ -322,12 +340,18 @@ void CNC_Tick()
               Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
             }
           }
-          if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
+          /*if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
           {
             printf("\t\tReached line endpoint!\n");
-            OffsetCordinates.x = GcodePointer.X;
-            OffsetCordinates.y = GcodePointer.Y;
-            GcodePointer.MoveDone = true;
+            MoveDone();
+          }*/
+          point_t end;
+          end.x = GcodePointer.X;
+          end.y = GcodePointer.Y;
+          if (GetLineLength(OffsetCordinates, end) < ONE_STEP_DISTANCE)
+          {
+            printf("\t\tReached line endpoint!\n");
+            MoveDone();
           }
         }
         if (GcodePointer.G == 2 || GcodePointer.G == 3)
@@ -343,15 +367,15 @@ void CNC_Tick()
             //angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.arc_meta.start_pos.y, GcodePointer.arc_meta.center_pos.x - GcodePointer.arc_meta.start_pos.x);
             if (GcodePointer.G == 2)
             {
-              angle = -0.0001;
-              printf("\tClockwise Arc until we reach X%0.4f, Y%0.4f I%0.4f, J%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.I, GcodePointer.J, GcodePointer.F);
+              angle = -0.01;
+              printf("\tClockwise Arc until we reach X%0.4f, Y%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.F);
             }
             if (GcodePointer.G == 3)
             {
-              angle = 0.0001;
-              printf("\tCounter-Clockwise Arc until we reach X%0.4f, Y%0.4f, I%0.4f J%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.I, GcodePointer.J, GcodePointer.F);
+              angle = 0.01;
+              printf("\tCounter-Clockwise Arc until we reach X%0.4f, Y%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.F);
             }
-            printf("\t\tWith Center - X: %06.f, Y: %0.6f and Initial Angle: %0.6f\n", GcodePointer.arc_meta.center_pos.x, GcodePointer.arc_meta.center_pos.y, angle);
+            printf("\t\tWith Center X: %0.4f, Y: %0.4f\n", GcodePointer.arc_meta.center_pos.x, GcodePointer.arc_meta.center_pos.y);
             feed = GcodePointer.F;
           }
           else
@@ -367,14 +391,10 @@ void CNC_Tick()
             GcodePointer.arc_meta.last_pos = next_point;
 
 
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0001)))
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
             {
               printf("\t\tReached arc endpoint!\n");
-
-              OffsetCordinates.x = GcodePointer.X;
-              OffsetCordinates.y = GcodePointer.Y;
-
-              GcodePointer.MoveDone = true;
+              MoveDone();
             }
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
