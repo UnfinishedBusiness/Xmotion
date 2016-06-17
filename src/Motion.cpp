@@ -8,19 +8,35 @@ using namespace std;
 float motion_accel = INITIAL_CURVE;
 long motion_accel_timer = 0;
 
-Stepper::Stepper(int tsteps, int a, int b, int c, int d)
+ControlPins AxisPins[2] = {
+  /*x*/ { 12, 13, 14, 6, 22, 26, 1 },
+  /*Y*/ { 0, 2, 3, 5, 21, 11, 16 }
+};
+
+Stepper::Stepper(int tsteps, int axis)
 {
   total_steps = tsteps;
-  map[0] = a;
-  map[1] = b;
-  map[2] = c;
-  map[3] = d;
-  for (int x = 0; x < 4; x++)
-  {
-    #ifdef NDEBUG
-      pinMode(map[x], OUTPUT);
-    #endif
-  }
+  Pins = AxisPins[axis];
+  #ifdef NDEBUG
+    pinMode(Pins.M1, OUTPUT);
+    pinMode(Pins.M2, OUTPUT);
+    pinMode(Pins.M3, OUTPUT);
+    pinMode(Pins.DIR, OUTPUT);
+    pinMode(Pins.RESET, OUTPUT);
+    pinMode(Pins.ENABLE, OUTPUT);
+    pinMode(Pins.STEP, OUTPUT);
+
+    /* Turn on driver */
+    digitalWrite(Pins.ENABLE, HIGH);
+  	digitalWrite(Pins.RESET, HIGH);
+
+    /*  Single Step */
+  	digitalWrite(Pins.M1, LOW);
+  	digitalWrite(Pins.M2, LOW);
+  	digitalWrite(Pins.M3, HIGH);
+
+  #endif
+
 }
 void Stepper::SetFeedRate(float feed)
 {
@@ -38,32 +54,26 @@ void Stepper::SetFeedRate(float feed)
 }
 void Stepper::Step(int inc)
 {
-  int last_map_position = map_position;
   for (int x = 0; x < abs(inc); x++)
   {
     if (inc > 0)
     {
-        map_position++;
-
+        #ifdef NDEBUG
+          digitalWrite(Pins.DIR, LOW);
+          digitalWrite(Pins.STEP, HIGH);
+          delayMicroseconds(2);
+          digitalWrite(Pins.STEP, LOW);
+        #endif
     }
     else
     {
-        map_position--;
+      #ifdef NDEBUG
+        digitalWrite(Pins.DIR, HIGH);
+        digitalWrite(Pins.STEP, HIGH);
+        delayMicroseconds(2);
+        digitalWrite(Pins.STEP, LOW);
+      #endif
     }
-    if (map_position == 4) map_position = 0;
-    if (map_position == -1) map_position = 3;
-
-    //printf("Map Position: %d\n", map_position);
-    for (int i = 0; i < 4; i++)
-    {
-        #ifdef NDEBUG
-          digitalWrite(map[i], BitMap[map_position][i]);
-        #endif
-    }
-    //delay(1); //Works!
-    //delayMicroseconds(pulse_delay);
-    //delayMicroseconds(500); //Doesnt work!
-
   }
 }
 void Stepper::FeedDelay()

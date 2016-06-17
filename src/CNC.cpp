@@ -577,8 +577,8 @@ void CNC_Init()
   #ifdef NDEBUG
     wiringPiSetup();
   #endif
-  Xaxis = new Stepper(200, 29, 28, 27, 26);
-  Yaxis = new Stepper(200, 25, 24, 23, 22);
+  Xaxis = new Stepper(200, X_AXIS);
+  Yaxis = new Stepper(200, Y_AXIS);
 
   //Home maching to establish Machine Cordinates
 
