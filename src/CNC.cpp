@@ -8,16 +8,6 @@ point_t OffsetValue;
 
 gcode_t GcodePointer;
 
-#define GCODE_TABLE_SIZE 4
-gcode_t gcode_table[GCODE_TABLE_SIZE] = { //Supported G-Codes.
-  //       G  X  Y  Z  F  R  I  J  K  Modal
-  gcode_t{ 0, 0, 0, 0, 0, 0, 0, 0, 0, true }, //Rapid
-  gcode_t{ 1, 0, 0, 0, 0, 0, 0, 0, 0, true }, //Line
-  gcode_t{ 2, 0, 0, 0, 0, 0, 0, 0, 0, true }, //Arc Clockwise
-  gcode_t{ 3, 0, 0, 0, 0, 0, 0, 0, 0, true }, //Arc Counter-Clockwise
-
-  //Modal Gcodes are handled everytime we see a X||Y||Z change!
-};
 
 bool Hold = true;
 bool Stop = true;
@@ -261,7 +251,7 @@ void CNC_Tick()
         {
           fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
         }
-        usleep(200);
+        //usleep(200);
       #endif
       //printf("Move Done = false\n");
       if (Hold == false)
@@ -362,10 +352,10 @@ void CNC_Tick()
           }
           else
           {
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
+            /*if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
             {
               printf("\t\tReached line endpoint incorectly!\n");
-            }
+            }*/
           }
         }
         if (GcodePointer.G == 2 || GcodePointer.G == 3)
@@ -379,14 +369,18 @@ void CNC_Tick()
             GcodePointer.FirstInstruction = false;
             //Generate points on arc
             //angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.arc_meta.start_pos.y, GcodePointer.arc_meta.center_pos.x - GcodePointer.arc_meta.start_pos.x);
+
+            GcodePointer.arc_meta.number_of_steps = 6.28319 / ARC_RESOLUTION;
+            GcodePointer.arc_meta.step_position = 0;
+
             if (GcodePointer.G == 2)
             {
-              angle = -0.0005;
+              angle = -ARC_RESOLUTION;
               printf("\tClockwise Arc until we reach X%0.4f, Y%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.F);
             }
             if (GcodePointer.G == 3)
             {
-              angle = 0.0005;
+              angle = ARC_RESOLUTION;
               printf("\tCounter-Clockwise Arc until we reach X%0.4f, Y%0.4f at F%0.4f\n", GcodePointer.X, GcodePointer.Y, GcodePointer.F);
             }
             printf("\t\tWith Center X: %0.4f, Y: %0.4f\n", GcodePointer.arc_meta.center_pos.x, GcodePointer.arc_meta.center_pos.y);
@@ -403,13 +397,18 @@ void CNC_Tick()
             CNC_BlockingLine(OffsetCordinates, next_point);
 
             GcodePointer.arc_meta.last_pos = next_point;
+            GcodePointer.arc_meta.step_position++;
 
-
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
+            if (GcodePointer.arc_meta.step_position >= GcodePointer.arc_meta.number_of_steps)
             {
               printf("\t\tReached arc endpoint!\n");
               MoveDone();
             }
+            /*if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
+            {
+              printf("\t\tReached arc endpoint!\n");
+              MoveDone();
+            }*/
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
         }
@@ -423,6 +422,7 @@ void CNC_Tick()
       //Move is done, read nc file for next instruction, then set GcodePointer.MoveDone = false;
       float X = 0;
       float Y = 0;
+      float Z = 0;
       float Xc = 0;
       float Yc = 0;
       float F = 0;
@@ -442,11 +442,15 @@ void CNC_Tick()
             fields[4].erase(0, 1); //Remove Y charactor
             Y = atof(fields[4].c_str());
 
-            printf("\t\tRAPID to X: %0.4f, Y: %0.4f\n", X, Y);
+            fields[5].erase(0, 1); //Remove Z charactor
+            Z = atof(fields[5].c_str());
+
+            printf("\t\tRAPID to X: %0.4f, Y: %0.4f, Z: %0.4f\n", X, Y, Z);
 
             GcodePointer.G = 0;
             GcodePointer.X = X;
             GcodePointer.Y = Y;
+            GcodePointer.Z = Z;
             GcodePointer.MoveDone = false;
             GcodePointer.FirstInstruction = true;
 
@@ -459,13 +463,17 @@ void CNC_Tick()
             fields[4].erase(0, 1); //Remove Y charactor
             Y = atof(fields[4].c_str());
 
+            fields[5].erase(0, 1); //Remove Z charactor
+            Z = atof(fields[5].c_str());
+
             fields[6].erase(0, 1); //Remove F charactor
             F = atof(fields[6].c_str());
-            printf("\t\tLINE to X: %0.4f, Y: %0.4f at F: %0.4f\n", X, Y, F);
+            printf("\t\tLINE to X: %0.4f, Y: %0.4f, Z: %0.4f at F: %0.4f\n", X, Y, Z, F);
 
             GcodePointer.G = 1;
             GcodePointer.X = X;
             GcodePointer.Y = Y;
+            GcodePointer.Z = Z;
             GcodePointer.F = F;
             GcodePointer.MoveDone = false;
             GcodePointer.FirstInstruction = true;

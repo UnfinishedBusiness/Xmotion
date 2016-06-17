@@ -2,6 +2,7 @@
 #define CNC_
 #include <application.h>
 
+#define ARC_RESOLUTION 0.0005
 struct gline_meta_t{
   point_t start_pos;
 };
@@ -10,6 +11,8 @@ struct garc_meta_t{
   point_t start_pos;
   point_t center_pos;
   point_t last_pos;
+  int number_of_steps;
+  int step_position;
 };
 
 struct gcode_t{
