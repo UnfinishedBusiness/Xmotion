@@ -11,6 +11,7 @@ gcode_t GcodePointer;
 
 bool Hold = true;
 bool Stop = true;
+bool Cutting = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
 
@@ -247,7 +248,7 @@ void CNC_Tick()
     if (GcodePointer.MoveDone == false)
     {
       #ifdef DEBUG
-        if (GcodePointer.G != 0)
+        if (Cutting == true)
         {
           fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
         }
@@ -300,7 +301,7 @@ void CNC_Tick()
             fxy = dx - dy;
 
             //printf("\tDirection -> dx = %0.4f, dy = %0.4f, yo = %0.4f, xo = %0.4f, initial_fxy = %0.4f\n", dx, dy, yo, xo, fxy);
-            printf("\tLine Move to X%0.4f, Y%0.4f\n", GcodePointer.X, GcodePointer.Y);
+            printf("\tMove to X%0.4f, Y%0.4f\n", GcodePointer.X, GcodePointer.Y);
 
           }
           else
@@ -345,17 +346,18 @@ void CNC_Tick()
           point_t end;
           end.x = GcodePointer.X;
           end.y = GcodePointer.Y;
-          if (GetLineLength(OffsetCordinates, end) < ONE_STEP_DISTANCE)
+          if (GetLineLength(OffsetCordinates, end) <= ONE_STEP_DISTANCE)
           {
             printf("\t\tReached line endpoint!\n");
             MoveDone();
           }
           else
           {
-            /*if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0003)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0003)))
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0002)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0002)))
             {
               printf("\t\tReached line endpoint incorectly!\n");
-            }*/
+              MoveDone();
+            }
           }
         }
         if (GcodePointer.G == 2 || GcodePointer.G == 3)
@@ -367,11 +369,10 @@ void CNC_Tick()
             //GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
             //GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
             GcodePointer.FirstInstruction = false;
-            //Generate points on arc
-            //angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.arc_meta.start_pos.y, GcodePointer.arc_meta.center_pos.x - GcodePointer.arc_meta.start_pos.x);
+            GcodePointer.arc_meta.end_angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.Y, GcodePointer.arc_meta.center_pos.x - GcodePointer.X);
 
-            GcodePointer.arc_meta.number_of_steps = 6.28319 / ARC_RESOLUTION;
-            GcodePointer.arc_meta.step_position = 0;
+            //GcodePointer.arc_meta.number_of_steps = 6.28319 / ARC_RESOLUTION;
+            //GcodePointer.arc_meta.step_position = 0;
 
             if (GcodePointer.G == 2)
             {
@@ -397,9 +398,11 @@ void CNC_Tick()
             CNC_BlockingLine(OffsetCordinates, next_point);
 
             GcodePointer.arc_meta.last_pos = next_point;
-            GcodePointer.arc_meta.step_position++;
+            //GcodePointer.arc_meta.step_position++;
 
-            if (GcodePointer.arc_meta.step_position >= GcodePointer.arc_meta.number_of_steps)
+            GcodePointer.arc_meta.current_angle = atan2(GcodePointer.arc_meta.center_pos.y - OffsetCordinates.y, GcodePointer.arc_meta.center_pos.x - OffsetCordinates.x);
+            //printf("Current Angle: %0.4f, End Angle: %0.4f\n", GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle);
+            if (InTolerance(GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle, ARC_RESOLUTION))
             {
               printf("\t\tReached arc endpoint!\n");
               MoveDone();
@@ -541,7 +544,14 @@ void CNC_Tick()
           }
 
         }
-
+        if (GcodePointer.Z < 0) //We need to turn cutting head on!
+        {
+          Cutting = true;
+        }
+        else
+        {
+          Cutting = false;
+        }
         nc_line++;
       }
     }

@@ -11,8 +11,13 @@ struct garc_meta_t{
   point_t start_pos;
   point_t center_pos;
   point_t last_pos;
-  int number_of_steps;
-  int step_position;
+
+
+  //int number_of_steps;
+  //int step_position;
+
+  float end_angle;
+  float current_angle;
 };
 
 struct gcode_t{
