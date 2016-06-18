@@ -214,7 +214,7 @@ void Render_RenderStack()
 									tmpObject.visable = true;
 									tmpObject.type = FILE;
 									tmpObject.zindex = 1;
-									tmpObject.tagname = filename;
+									tmpObject.tagname = "/media/usb/" + filename;
 									tmpObject.position.x = top_left.x;
 									tmpObject.position.y = top_left.y;
 									tmpObject.size.w = 60;

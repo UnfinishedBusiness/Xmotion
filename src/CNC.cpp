@@ -14,7 +14,7 @@ bool Stop = true;
 bool Cutting = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
-
+#define AUX_3 29 //Cutting head!
 string current_file;
 
 ifstream nc_file;
@@ -52,7 +52,7 @@ void CNC_JogXPlus()
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(+1);
   CNC_XPlus();
-  Xaxis->FeedDelay();
+  //Xaxis->FeedDelay();
 }
 void CNC_JogXMinus()
 {
@@ -60,7 +60,7 @@ void CNC_JogXMinus()
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(-1);
   CNC_XMinus();
-  Xaxis->FeedDelay();
+  //Xaxis->FeedDelay();
 }
 void CNC_JogYPlus()
 {
@@ -68,7 +68,7 @@ void CNC_JogYPlus()
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(+1);
   CNC_YPlus();
-  Yaxis->FeedDelay();
+  //Yaxis->FeedDelay();
 }
 void CNC_JogYMinus()
 {
@@ -76,7 +76,7 @@ void CNC_JogYMinus()
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(-1);
   CNC_YMinus();
-  Yaxis->FeedDelay();
+  //Yaxis->FeedDelay();
 }
 void CNC_Hold()
 {
@@ -96,6 +96,7 @@ void CNC_Start()
     Stop = false;
     if (current_file != "")
     {
+      //current_file = current_file + "/media/usb/";
       nc_file.open(current_file);
     }
   }
@@ -214,7 +215,7 @@ void CNC_BlockingLine(point_t from, point_t to)
       }
       y2++;
       fxy = fxy + dx;
-      Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
+      //Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
     }
     /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0005)))
     {
@@ -248,6 +249,8 @@ void MoveDone()
 }
 void CNC_Tick()
 {
+  digitalWrite(AUX_3, Cutting); //AUX_3 follows cutting logic!
+
   if (nc_file.is_open())
   {
     if (GcodePointer.MoveDone == false)
@@ -345,7 +348,7 @@ void CNC_Tick()
               }
               y2++;
               fxy = fxy + dx;
-              Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
+              //Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
             }
           }
           point_t end;
@@ -581,6 +584,9 @@ void CNC_Init()
 {
   #ifdef NDEBUG
     wiringPiSetup();
+
+    pinMode(AUX_3, OUTPUT);
+    digitalWrite(AUX_3, LOW);
   #endif
   Xaxis = new Stepper(200, X_AXIS);
   Yaxis = new Stepper(200, Y_AXIS);

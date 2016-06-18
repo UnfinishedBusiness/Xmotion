@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 	char buff[1];
 	while(read(0, buff, sizeof(buff))>0)
 	{
+		//digitalWrite(Z_STEP, !digitalRead(Z_STEP));
 		digitalWrite(Z_STEP, HIGH);
 		delayMicroseconds(3);
 		digitalWrite(Z_STEP, LOW);

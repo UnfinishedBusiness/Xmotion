@@ -30,10 +30,10 @@ Stepper::Stepper(int tsteps, int axis)
     digitalWrite(Pins.ENABLE, HIGH);
   	digitalWrite(Pins.RESET, HIGH);
 
-    /*  Single Step */
-  	digitalWrite(Pins.M1, LOW);
+    /*  Quarter Step */
+  	digitalWrite(Pins.M1, HIGH);
   	digitalWrite(Pins.M2, LOW);
-  	digitalWrite(Pins.M3, HIGH);
+  	digitalWrite(Pins.M3, LOW);
 
   #endif
 
@@ -61,7 +61,7 @@ void Stepper::Step(int inc)
         #ifdef NDEBUG
           digitalWrite(Pins.DIR, LOW);
           digitalWrite(Pins.STEP, HIGH);
-          delayMicroseconds(2);
+          delayMicroseconds(3);
           digitalWrite(Pins.STEP, LOW);
         #endif
     }
@@ -70,15 +70,23 @@ void Stepper::Step(int inc)
       #ifdef NDEBUG
         digitalWrite(Pins.DIR, HIGH);
         digitalWrite(Pins.STEP, HIGH);
-        delayMicroseconds(2);
+        delayMicroseconds(3);
         digitalWrite(Pins.STEP, LOW);
       #endif
     }
+    FeedDelay();
   }
 }
 void Stepper::FeedDelay()
 {
   #ifdef NDEBUG
-    delayMicroseconds(pulse_delay);
+	if (pulse_delay < (INCH_MIN_DELAY / RAPID_FEED))
+	{
+		delayMicroseconds(INCH_MIN_DELAY / RAPID_FEED);
+	}
+	else
+	{
+    		delayMicroseconds(pulse_delay);
+	}
   #endif
 }
