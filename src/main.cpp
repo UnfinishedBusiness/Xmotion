@@ -26,6 +26,7 @@ void ctrl_c_handler(int s)
 }
 int main( int argc, char* argv[] )
 {
+  current_activity = "Main";
   #ifdef DEBUG
     sim = true;
   #endif
@@ -33,7 +34,7 @@ int main( int argc, char* argv[] )
 	//Start up SDL and create window
 	if( !Render_Init() )
 	{
-		printf( "Failed to initialize!\n" );
+		printf("Failed to initialize!\n");
 	}
 	else
 	{
@@ -110,7 +111,7 @@ int main( int argc, char* argv[] )
                 string clicked = "";
                 for(int x = 0; x < ObjectStack.size(); x++)
                 {
-                  if (ObjectStack[x].type == INPUT && ObjectStack[x].visable == true)
+                  if (ObjectStack[x].type == INPUT && ObjectStack[x].visable == true && ObjectStack[x].activity == current_activity )
                   //if (ObjectStack[x].visable == true)
                   {
                     if( ( mx > ObjectStack[x].position.x ) && ( mx < ObjectStack[x].position.x + ObjectStack[x].size.w  ) &&
@@ -125,11 +126,35 @@ int main( int argc, char* argv[] )
                     //printf("\tsize.w = %d\n", ObjectStack[x].size.w);
                     //printf("\tsize.h = %d\n", ObjectStack[x].size.h);
                   }
+                  if (ObjectStack[x].type == FILE && ObjectStack[x].visable == true && ObjectStack[x].activity == current_activity )
+                  //if (ObjectStack[x].visable == true)
+                  {
+                    if( ( mx > ObjectStack[x].position.x ) && ( mx < ObjectStack[x].position.x + ObjectStack[x].size.w  ) &&
+                        ( my > ObjectStack[x].position.y ) && ( my < ObjectStack[x].position.y + ObjectStack[x].size.h ) )
+                    {
+                      printf("Clicked File -> %s\n", ObjectStack[x].tagname.c_str());
+                      current_file = ObjectStack[x].tagname;
+                      current_activity = "Main";
+                    }
+                    //printf("Tagname - > %s\n", ObjectStack[x].tagname.c_str());
+                    //printf("\tposition.x = %d\n", ObjectStack[x].position.x);
+                    //printf("\tposition.y = %d\n", ObjectStack[x].position.y);
+                    //printf("\tsize.w = %d\n", ObjectStack[x].size.w);
+                    //printf("\tsize.h = %d\n", ObjectStack[x].size.h);
+                  }
                 }
                 for(int x = 0; x < ObjectStack.size(); x++)
                 {
                   if (ObjectStack[x].tagname == clicked)
                   {
+                    if (ObjectStack[x].tagname == "FileOpen")
+                    {
+                      current_activity = "FileOpen";
+                    }
+                    if (ObjectStack[x].tagname == "BackButton")
+                    {
+                      current_activity = "Main";
+                    }
                     if (ObjectStack[x].tagname == "SetOrigin")
                     {
                       CNC_SetOrigin();

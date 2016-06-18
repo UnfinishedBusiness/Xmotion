@@ -15,6 +15,8 @@ bool Cutting = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
 
+string current_file;
+
 ifstream nc_file;
 long nc_line = 0;
 string nc_buffer;
@@ -92,7 +94,10 @@ void CNC_Start()
   if (!nc_file.is_open())
   {
     Stop = false;
-    nc_file.open("test.pgm");
+    if (current_file != "")
+    {
+      nc_file.open(current_file);
+    }
   }
   Hold = false;
   printf("Start!\n");

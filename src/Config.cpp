@@ -75,9 +75,9 @@ void Config_Init()
             }
             if (array[0] == "NeedleImage")
             {
-              if (array.size() == 11)
+              if (array.size() == 12)
               {
-                //#NeedleImage TagName Xoffset Yoffset Xscale Yscale MinAngle MaxAngle MinValue MaxValue /path/to/image
+                //#NeedleImage TagName Xoffset Yoffset Xscale Yscale MinAngle MaxAngle MinValue MaxValue /path/to/image activity
                 //printf("%sSetting Needle Image!\n%s", KGREEN, KNORMAL);
                 tmpObject.type = NEEDLE;
                 tmpObject.zindex = 2;
@@ -95,6 +95,8 @@ void Config_Init()
                 tmpObject.visable = true;
 
                 tmpObject.texture = Render_loadImage( array[10] );
+
+                tmpObject.activity = array[11];
                 if( tmpObject.texture == NULL )
                 {
                   //printf("%s\tCan't open %s%s%s\n", KRED, KBLUE, array[10].c_str() ,KNORMAL);
@@ -115,8 +117,8 @@ void Config_Init()
             }
             if (array[0] == "IndicatorImage")
             {
-              //IndicatorImage TagName Xoffset Yoffset Xscale Yscale Angle Visability /path/to/image
-              if (array.size() == 9)
+              //IndicatorImage TagName Xoffset Yoffset Xscale Yscale Angle Visability /path/to/image activity
+              if (array.size() == 10)
               {
                 //printf("%sAdding Indicator!\n%s", KGREEN, KNORMAL);
                 tmpObject.type = INDICATOR;
@@ -148,8 +150,8 @@ void Config_Init()
             }
             if (array[0] == "GaugeImage")
             {
-              //GaugeImage TagName Xoffset Yoffset Xscale Yscale Angle /path/to/image
-              if (array.size() == 8)
+              //GaugeImage TagName Xoffset Yoffset Xscale Yscale Angle /path/to/image activity
+              if (array.size() == 9)
               {
                 //printf("%sAdding Gauge!\n%s", KGREEN, KNORMAL);
                 tmpObject.visable = true;
@@ -162,6 +164,7 @@ void Config_Init()
                 tmpObject.size.h = atoi(array[5].c_str());
                 tmpObject.angle = atoi(array[6].c_str());
                 tmpObject.texture = Render_loadImage( array[7] );
+                tmpObject.activity = array[8];
                 if( tmpObject.texture == NULL )
                 {
                   //printf("%s\tCan't open %s%s%s\n", KRED, KBLUE, array[7].c_str() ,KNORMAL);
@@ -174,8 +177,8 @@ void Config_Init()
             }
             if (array[0] == "ButtonImage")
             {
-              //ButtonImage TagName Xoffset Yoffset Xscale Yscale Angle Visability /path/to/image
-              if (array.size() == 9)
+              //ButtonImage TagName Xoffset Yoffset Xscale Yscale Angle Visability /path/to/image activity
+              if (array.size() == 10)
               {
                 //printf("%sAdding Gauge!\n%s", KGREEN, KNORMAL);
                 tmpObject.visable = true;
@@ -196,6 +199,8 @@ void Config_Init()
                   tmpObject.visable = false;
                 }
                 tmpObject.texture = Render_loadImage( array[8] );
+                tmpObject.activity = array[9];
+                //printf("activity = %s\n", tmpObject.activity.c_str());
                 if( tmpObject.texture == NULL )
                 {
                   //printf("%s\tCan't open %s%s%s\n", KRED, KBLUE, array[7].c_str() ,KNORMAL);

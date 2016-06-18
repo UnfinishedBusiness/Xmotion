@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #define _USE_MATH_DEFINES
+#include <dirent.h>
 #include <sys/time.h>
 #include <sys/signal.h>
 #include <stdio.h>
@@ -90,6 +91,7 @@ struct point_t{
 #define NEEDLE 1
 //#define INPUT 2
 #define GAUGE 3
+#define FILE 4
 
 struct object_t{
   int zindex = 0;
@@ -101,6 +103,7 @@ struct object_t{
   bool visable = true;
   SDL_Texture* texture;
   int alpha = 255;
+  std::string activity;
 
   //Parameters
   std::string tagname;
@@ -133,6 +136,8 @@ extern int serialfd;
 extern bool sim;
 extern long TimeRendered;
 extern bool quit;
+extern std::string current_activity;
+extern std::string current_file;
 
 extern point_t MachineCordinates;
 extern point_t OffsetCordinates;
