@@ -147,6 +147,16 @@ int main( int argc, char* argv[] )
                 {
                   if (ObjectStack[x].tagname == clicked)
                   {
+                    if (ObjectStack[x].tagname == "PowerOff")
+                    {
+                      #ifdef NDEBUG
+                        system("poweroff");
+                      #else
+                        printf("Powering off!\n");
+                        quit = true;
+                      #endif
+
+                    }
                     if (ObjectStack[x].tagname == "FileOpen")
                     {
                       current_activity = "FileOpen";
