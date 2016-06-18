@@ -14,7 +14,7 @@ bool Stop = true;
 bool Cutting = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
-#define AUX_3 29 //Cutting head!
+#define CUTTING_HEAD 23
 string current_file;
 
 ifstream nc_file;
@@ -249,7 +249,7 @@ void MoveDone()
 }
 void CNC_Tick()
 {
-  digitalWrite(AUX_3, Cutting); //AUX_3 follows cutting logic!
+  digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
 
   if (nc_file.is_open())
   {
@@ -585,8 +585,8 @@ void CNC_Init()
   #ifdef NDEBUG
     wiringPiSetup();
 
-    pinMode(AUX_3, OUTPUT);
-    digitalWrite(AUX_3, LOW);
+    pinMode(CUTTING_HEAD, OUTPUT);
+    digitalWrite(CUTTING_HEAD, LOW);
   #endif
   Xaxis = new Stepper(200, X_AXIS);
   Yaxis = new Stepper(200, Y_AXIS);
