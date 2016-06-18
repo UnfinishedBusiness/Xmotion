@@ -165,6 +165,7 @@ void Render_RenderStack()
 			{
 				if (ObjectStack[x].type == FILE)
 				{
+					if ( ObjectStack[x].texture != NULL ) { SDL_DestroyTexture( ObjectStack[x].texture ); }
 					ObjectStack.erase(ObjectStack.begin() + x);
 				}
 			}

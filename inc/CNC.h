@@ -2,7 +2,7 @@
 #define CNC_
 #include <application.h>
 
-#define ARC_RESOLUTION 0.1
+#define ARC_RESOLUTION 0.001
 struct gline_meta_t{
   point_t start_pos;
 };

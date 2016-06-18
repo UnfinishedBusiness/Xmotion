@@ -249,8 +249,9 @@ void MoveDone()
 }
 void CNC_Tick()
 {
-  digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
-
+  #ifdef NDEBUG
+    digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
+  #endif
   if (nc_file.is_open())
   {
     if (GcodePointer.MoveDone == false)
@@ -402,12 +403,11 @@ void CNC_Tick()
             next_point.x = cosf(angle) * (p.x - o.x) - sinf(angle) * (p.y - o.y) + o.x;
             next_point.y = sinf(angle) * (p.x - o.x) + cosf(angle) * (p.y - o.y) + o.y;
             //printf("Arc Tick Tock -> binrep = %d, xo = %0.4f, yo = %0.4f\n", binrep, xo, yo);
-
-            CNC_BlockingLine(OffsetCordinates, next_point);
-
+            if (GetLineLength(OffsetCordinates, next_point) > (ONE_STEP_DISTANCE * 3)) //Fixes arc follower error without losing arc accuracy
+            {
+              CNC_BlockingLine(OffsetCordinates, next_point);
+            }
             GcodePointer.arc_meta.last_pos = next_point;
-            //GcodePointer.arc_meta.step_position++;
-
             GcodePointer.arc_meta.current_angle = atan2(GcodePointer.arc_meta.center_pos.y - OffsetCordinates.y, GcodePointer.arc_meta.center_pos.x - OffsetCordinates.x);
             //printf("Current Angle: %0.4f, End Angle: %0.4f\n", GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle);
             if (InTolerance(GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle, ARC_RESOLUTION))
