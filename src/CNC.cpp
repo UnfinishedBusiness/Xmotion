@@ -249,9 +249,6 @@ void MoveDone()
 }
 void CNC_Tick()
 {
-  #ifdef NDEBUG
-    digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
-  #endif
   if (nc_file.is_open())
   {
     if (GcodePointer.MoveDone == false)
@@ -555,10 +552,18 @@ void CNC_Tick()
         if (GcodePointer.Z < 0) //We need to turn cutting head on!
         {
           Cutting = true;
+          #ifdef NDEBUG
+            digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
+            delay(CUTTING_HEAD_ON_DWELL * 1000);
+          #endif
         }
         else
         {
           Cutting = false;
+          #ifdef NDEBUG
+            digitalWrite(CUTTING_HEAD, Cutting); //CUTTING_HEAD follows cutting logic!
+            delay(CUTTING_HEAD_OFF_DWELL * 1000);
+          #endif
         }
         nc_line++;
       }
