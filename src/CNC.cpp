@@ -21,29 +21,44 @@ ifstream nc_file;
 long nc_line = 0;
 string nc_buffer;
 
+void CNC_AnyStep()
+{
+  #ifdef DEBUG
+    if (Cutting == true)
+    {
+      fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
+      //Debug_PlotPoint(OffsetCordinates);
+    }
+    //usleep(200);
+  #endif
+}
 void CNC_XPlus()
 {
   MachineCordinates.x += ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  CNC_AnyStep();
 }
 void CNC_XMinus()
 {
   MachineCordinates.x -= ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  CNC_AnyStep();
 }
 void CNC_YPlus()
 {
   MachineCordinates.y += ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  CNC_AnyStep();
 }
 void CNC_YMinus()
 {
   MachineCordinates.y -= ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  CNC_AnyStep();
 }
 
 void CNC_JogXPlus()
@@ -217,9 +232,12 @@ void CNC_BlockingLine(point_t from, point_t to)
       fxy = fxy + dx;
       //Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
     }
-    /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0005)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0005)))
+    /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
     {
-      //printf("\t\t(Blocking Line) Reached line endpoint!\n");
+      MachineCordinates.x += (to.x - OffsetCordinates.x);
+      MachineCordinates.y += (to.y - OffsetCordinates.y);
+      OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+      OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
       return;
     }*/
     if (GetLineLength(OffsetCordinates, to) <= ONE_STEP_DISTANCE)
@@ -253,13 +271,6 @@ void CNC_Tick()
   {
     if (GcodePointer.MoveDone == false)
     {
-      #ifdef DEBUG
-        if (Cutting == true)
-        {
-          fprintf(stderr, "%.6f %.6f\n", OffsetCordinates.x, OffsetCordinates.y);
-        }
-        //usleep(200);
-      #endif
       //printf("Move Done = false\n");
       if (Hold == false)
       {
@@ -409,14 +420,14 @@ void CNC_Tick()
             //printf("Current Angle: %0.4f, End Angle: %0.4f\n", GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle);
             if (InTolerance(GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle, ARC_RESOLUTION))
             {
-              printf("\t\tReached arc endpoint!\n");
+              printf("\t\tReached arc endpoint via end angle!\n");
               MoveDone();
             }
-            /*if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
             {
-              printf("\t\tReached arc endpoint!\n");
+              printf("\t\tReached arc endpoint via endpoint!\n");
               MoveDone();
-            }*/
+            }
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
         }

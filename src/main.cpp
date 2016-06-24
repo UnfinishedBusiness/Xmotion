@@ -41,6 +41,9 @@ int main( int argc, char* argv[] )
     #ifdef NDEBUG
       SDL_ShowCursor(0);
     #endif
+    #ifdef DEBUG
+      Debug_Init();
+    #endif
 		Config_Init();
     CNC_Init();
     if (sim == false)
@@ -235,5 +238,8 @@ int main( int argc, char* argv[] )
 	//Free resources and close SDL
 	Render_Close();
 	if (sim == false) Serial_Close();
+  #ifdef DEBUG
+    Debug_Close();
+  #endif
 	return 0;
 }

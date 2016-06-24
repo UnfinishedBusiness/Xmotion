@@ -22,7 +22,7 @@ LINK_FLAGS = -lSDL2_image -lSDL2_ttf -lpthread
 # Additional release-specific linker settings
 RLINK_FLAGS = -lwiringPi
 # Additional debug-specific linker settings
-DLINK_FLAGS =
+DLINK_FLAGS = 
 # Destination directory, like a jail or mounted system
 DESTDIR = /
 # Install path (bin/ is appended automatically)

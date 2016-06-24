@@ -22,7 +22,7 @@ build/debug/Motion.o: src//Motion.cpp inc/Motion.h inc/application.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h inc/Config.h \
- inc/Render.h inc/Serial.h inc/CNC.h
+ inc/Render.h inc/Serial.h inc/CNC.h inc/Debug.h
 
 inc/Motion.h:
 
@@ -127,3 +127,5 @@ inc/Render.h:
 inc/Serial.h:
 
 inc/CNC.h:
+
+inc/Debug.h:

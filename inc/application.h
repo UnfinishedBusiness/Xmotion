@@ -36,6 +36,7 @@
   #define HIGH true
   #define LOW false
   #define INPUT 1
+  #include <Debug.h>
 #else
   #include <wiringPi.h>
 #endif
