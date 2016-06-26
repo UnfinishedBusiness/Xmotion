@@ -560,7 +560,7 @@ void CNC_Tick()
           }
 
         }
-        if (GcodePointer.Z < 0) //We need to turn cutting head on!
+        if (GcodePointer.Z < 0 && Cutting == false) //We need to turn cutting head on!
         {
           Cutting = true;
           #ifdef NDEBUG
@@ -568,7 +568,7 @@ void CNC_Tick()
             delay(CUTTING_HEAD_ON_DWELL * 1000);
           #endif
         }
-        else
+        else if (GcodePointer.Z > 0 && Cutting == true)
         {
           Cutting = false;
           #ifdef NDEBUG
