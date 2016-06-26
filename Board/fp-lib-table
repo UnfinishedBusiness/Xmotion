@@ -1,3 +1,4 @@
 (fp_lib_table
   (lib (name w_to)(type KiCad)(uri "$(KIPRJMOD)/electronique/Librairies/Kicad/w_to.pretty")(options "")(descr ""))
+  (lib (name PlasmaTable)(type KiCad)(uri "$(KIPRJMOD)/PlasmaTable.pretty")(options "")(descr ""))
 )
