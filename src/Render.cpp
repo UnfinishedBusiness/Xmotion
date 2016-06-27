@@ -124,6 +124,8 @@ SDL_Texture* Render_loadFont(string font, SDL_Color color, int size, string text
 	TTF_CloseFont(Font);
 	return newTexture;
 }
+float file_open_scroll_offset = 0;
+vector<object_t> file_tiles;
 void Render_RenderStack()
 {
     //Initialize renderer color
@@ -161,14 +163,6 @@ void Render_RenderStack()
 
 		if (current_activity == "Main")
 		{
-			for (int x = 0; x < ObjectStack.size(); x++)
-			{
-				if (ObjectStack[x].type == FILE)
-				{
-					if ( ObjectStack[x].texture != NULL ) { SDL_DestroyTexture( ObjectStack[x].texture ); }
-					ObjectStack.erase(ObjectStack.begin() + x);
-				}
-			}
 			dst.x = 60;
 			dst.y = 50;
 			char buffer[100];
@@ -192,9 +186,10 @@ void Render_RenderStack()
 		}
 		if (current_activity == "FileOpen")
 		{
+			file_tiles.clear();
 			point_t top_left;
 			top_left.x = 250;
-			top_left.y = 10;
+			top_left.y = 10 + file_open_scroll_offset;
 
 			DIR *dir;
 			struct dirent *ent;
@@ -231,7 +226,7 @@ void Render_RenderStack()
 									}
 									else
 									{
-										ObjectStack.push_back(tmpObject);
+										file_tiles.push_back(tmpObject);
 									}
 									top_left.y += 75;
 									char buffer[100];
@@ -244,6 +239,26 @@ void Render_RenderStack()
 									SDL_SetTextureAlphaMod( FilenameTexture, 255 );
 									SDL_RenderCopyEx( gRenderer, FilenameTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 									if ( FilenameTexture != NULL ) { SDL_DestroyTexture( FilenameTexture ); }
+
+									if (tmpObject.visable == true && tmpObject.activity == current_activity)
+							    {
+							      //Render texture to screen
+							      dst.x = tmpObject.position.x;
+							      dst.y = tmpObject.position.y;
+							      //Query the texture to get its width and height to use
+							      if (tmpObject.size.w > 0 && tmpObject.size.h > 0)
+							      {
+							        dst.w = tmpObject.size.w;
+							        dst.h = tmpObject.size.h;
+							      }
+							      else
+							      {
+							        SDL_QueryTexture(tmpObject.texture, NULL, NULL, &dst.w, &dst.h);
+							      }
+										SDL_SetTextureBlendMode( tmpObject.texture, SDL_BLENDMODE_BLEND );
+										SDL_SetTextureAlphaMod( tmpObject.texture, tmpObject.alpha );
+							      SDL_RenderCopyEx( gRenderer, tmpObject.texture, NULL, &dst, tmpObject.angle, NULL, SDL_FLIP_NONE );
+							    }
 
 								}
 							}

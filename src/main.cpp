@@ -56,6 +56,8 @@ int main( int argc, char* argv[] )
 		}
 		SDL_Event e;
 		//While application is running
+    bool MouseDown = false;
+    point_t LastMouseMovePos;
 		while( !quit )
 		{
   			while( SDL_PollEvent( &e ) != 0 )
@@ -75,15 +77,44 @@ int main( int argc, char* argv[] )
   				}
           if (e.type == SDL_MOUSEMOTION )
           {
-            //int x = 0, y = 0;
-            //SDL_GetMouseState(&x, &y);
-            //printf("Move: %d,%d\n", x, y);
+            if (MouseDown == true)
+            {
+              int x = 0, y = 0;
+              SDL_GetMouseState(&x, &y);
+              if (current_activity == "FileOpen")
+              {
+                //printf("Scroll Inc: %0.6f\n", LastMouseMovePos.y - y);
+                if (file_open_scroll_offset > 0)
+                {
+                  file_open_scroll_offset = 0;
+                }
+                file_open_scroll_offset += (y - LastMouseMovePos.y);
+
+              }
+              LastMouseMovePos.x = (float)x;
+              LastMouseMovePos.y = (float)y;
+              //printf("Move: %d,%d\n", x, y);
+            }
+
+          }
+          if( e.type == SDL_MOUSEBUTTONUP )
+          {
+            //printf("Button Release!\n");
+            if( e.button.button == SDL_BUTTON_LEFT )
+            {
+              MouseDown = false;
+            }
           }
           if( e.type == SDL_MOUSEBUTTONDOWN )
           {
             //If the left mouse button was pressed
             if( e.button.button == SDL_BUTTON_LEFT )
             {
+                int x = 0, y = 0;
+                SDL_GetMouseState(&x, &y);
+                LastMouseMovePos.x = (float)x;
+                LastMouseMovePos.y = (float)y;
+                MouseDown = true;
                 //int mx = e.tfinger.x * SCREEN_WIDTH;
                 //int my = e.tfinger.y * SCREEN_HEIGHT;
 
@@ -112,6 +143,19 @@ int main( int argc, char* argv[] )
 
                 //printf("Clicked at %d,%d\n", mx , my);
                 string clicked = "";
+                if (current_activity == "FileOpen")
+                {
+                  for(int x = 0; x < file_tiles.size(); x++)
+                  {
+                    if( ( mx > file_tiles[x].position.x ) && ( mx < file_tiles[x].position.x + file_tiles[x].size.w  ) &&
+                        ( my > file_tiles[x].position.y ) && ( my < file_tiles[x].position.y + file_tiles[x].size.h ) )
+                    {
+                      printf("Clicked File -> %s\n", file_tiles[x].tagname.c_str());
+                      current_file = file_tiles[x].tagname;
+                      current_activity = "Main";
+                    }
+                  }
+                }
                 for(int x = 0; x < ObjectStack.size(); x++)
                 {
                   if (ObjectStack[x].type == INPUT && ObjectStack[x].visable == true && ObjectStack[x].activity == current_activity )
@@ -122,22 +166,6 @@ int main( int argc, char* argv[] )
                     {
                       //printf("Clicked Tag -> %s\n", ObjectStack[x].tagname.c_str());
                       clicked = ObjectStack[x].tagname;
-                    }
-                    //printf("Tagname - > %s\n", ObjectStack[x].tagname.c_str());
-                    //printf("\tposition.x = %d\n", ObjectStack[x].position.x);
-                    //printf("\tposition.y = %d\n", ObjectStack[x].position.y);
-                    //printf("\tsize.w = %d\n", ObjectStack[x].size.w);
-                    //printf("\tsize.h = %d\n", ObjectStack[x].size.h);
-                  }
-                  if (ObjectStack[x].type == FILE && ObjectStack[x].visable == true && ObjectStack[x].activity == current_activity )
-                  //if (ObjectStack[x].visable == true)
-                  {
-                    if( ( mx > ObjectStack[x].position.x ) && ( mx < ObjectStack[x].position.x + ObjectStack[x].size.w  ) &&
-                        ( my > ObjectStack[x].position.y ) && ( my < ObjectStack[x].position.y + ObjectStack[x].size.h ) )
-                    {
-                      printf("Clicked File -> %s\n", ObjectStack[x].tagname.c_str());
-                      current_file = ObjectStack[x].tagname;
-                      current_activity = "Main";
                     }
                     //printf("Tagname - > %s\n", ObjectStack[x].tagname.c_str());
                     //printf("\tposition.x = %d\n", ObjectStack[x].position.x);
@@ -193,6 +221,7 @@ int main( int argc, char* argv[] )
                         if( e.type == SDL_MOUSEBUTTONUP )
                         {
                           //printf("Button Release!\n");
+                          MouseDown = false;
                           break;
                         }
                         //printf("Waiting for release!\n");

@@ -146,6 +146,8 @@ extern std::string current_file;
 extern point_t MachineCordinates;
 extern point_t OffsetCordinates;
 extern point_t OffsetValue;
+extern float file_open_scroll_offset;
+extern std::vector<object_t> file_tiles;
 
 
 #define KNORMAL  "\x1B[0m"
