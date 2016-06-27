@@ -66,6 +66,7 @@ void CNC_JogXPlus()
   if (Stop == false) return;
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(+1);
+  Xaxis->FeedDelay();
   CNC_XPlus();
   //Xaxis->FeedDelay();
 }
@@ -74,6 +75,7 @@ void CNC_JogXMinus()
   if (Stop == false) return;
   Xaxis->SetFeedRate(RAPID_FEED);
   Xaxis->Step(-1);
+  Xaxis->FeedDelay();
   CNC_XMinus();
   //Xaxis->FeedDelay();
 }
@@ -82,6 +84,7 @@ void CNC_JogYPlus()
   if (Stop == false) return;
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(+1);
+  Yaxis->FeedDelay();
   CNC_YPlus();
   //Yaxis->FeedDelay();
 }
@@ -90,6 +93,7 @@ void CNC_JogYMinus()
   if (Stop == false) return;
   Yaxis->SetFeedRate(RAPID_FEED);
   Yaxis->Step(-1);
+  Yaxis->FeedDelay();
   CNC_YMinus();
   //Yaxis->FeedDelay();
 }
@@ -230,8 +234,8 @@ void CNC_BlockingLine(point_t from, point_t to)
       }
       y2++;
       fxy = fxy + dx;
-      //Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
     }
+    Yaxis->FeedDelay(); //Both axis should be the same feed rate!
     /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
     {
       MachineCordinates.x += (to.x - OffsetCordinates.x);
@@ -357,8 +361,8 @@ void CNC_Tick()
               }
               y2++;
               fxy = fxy + dx;
-              //Xaxis->FeedDelay(); //both axis should be the same feedfrate anyways
             }
+            Yaxis->FeedDelay(); //Both axis should be the same feed rate!
           }
           point_t end;
           end.x = GcodePointer.X;

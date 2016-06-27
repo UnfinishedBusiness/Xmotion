@@ -74,7 +74,7 @@ void Stepper::Step(int inc)
         digitalWrite(Pins.STEP, LOW);
       #endif
     }
-    FeedDelay();
+    //FeedDelay();
   }
 }
 void Stepper::FeedDelay()
