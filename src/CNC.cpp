@@ -244,7 +244,7 @@ void CNC_BlockingLine(point_t from, point_t to)
       OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
       return;
     }*/
-    if (GetLineLength(OffsetCordinates, to) <= ONE_STEP_DISTANCE)
+    if (GetLineLength(OffsetCordinates, to) <= (ONE_STEP_DISTANCE + 0.0002))
     {
       MachineCordinates.x += (to.x - OffsetCordinates.x);
       MachineCordinates.y += (to.y - OffsetCordinates.y);
@@ -269,6 +269,7 @@ void MoveDone()
   GcodePointer.MoveDone = true;
   //Hold = true;
 }
+float LastLength = 0;
 void CNC_Tick()
 {
   if (nc_file.is_open())
@@ -367,7 +368,7 @@ void CNC_Tick()
           point_t end;
           end.x = GcodePointer.X;
           end.y = GcodePointer.Y;
-          if (GetLineLength(OffsetCordinates, end) <= ONE_STEP_DISTANCE)
+          if ( GetLineLength(OffsetCordinates, end) <= (ONE_STEP_DISTANCE + 0.0002))
           {
             printf("\t\tReached line endpoint!\n");
             MoveDone();
