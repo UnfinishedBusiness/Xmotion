@@ -11,9 +11,11 @@ struct garc_meta_t{
   point_t center_pos;
   point_t last_pos;
 
+  bool full_circle;
+
 
   //int number_of_steps;
-  //int step_position;
+  int step_count;
 
   float end_angle;
   float current_angle;

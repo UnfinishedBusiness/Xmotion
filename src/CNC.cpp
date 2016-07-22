@@ -394,6 +394,7 @@ void CNC_Tick()
         {
           if (GcodePointer.FirstInstruction == true)
           {
+            GcodePointer.arc_meta.step_count = 0;
             GcodePointer.arc_meta.start_pos = OffsetCordinates;
             GcodePointer.arc_meta.last_pos = OffsetCordinates;
             //GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
@@ -403,6 +404,16 @@ void CNC_Tick()
 
             //GcodePointer.arc_meta.number_of_steps = 6.28319 / ARC_RESOLUTION;
             //GcodePointer.arc_meta.step_position = 0;
+
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
+            {
+              GcodePointer.arc_meta.full_circle = true;
+              printf("\t\tArc start point and end point are the same, we are a full circle!\n");
+            }
+            else
+            {
+              GcodePointer.arc_meta.full_circle = false;
+            }
 
             if (GcodePointer.G == 2)
             {
@@ -419,6 +430,7 @@ void CNC_Tick()
           }
           else
           {
+            GcodePointer.arc_meta.step_count++;
             point_t o = GcodePointer.arc_meta.center_pos;
             point_t p = GcodePointer.arc_meta.last_pos;
             next_point.x = cosf(angle) * (p.x - o.x) - sinf(angle) * (p.y - o.y) + o.x;
@@ -431,16 +443,18 @@ void CNC_Tick()
             GcodePointer.arc_meta.last_pos = next_point;
             GcodePointer.arc_meta.current_angle = atan2(GcodePointer.arc_meta.center_pos.y - OffsetCordinates.y, GcodePointer.arc_meta.center_pos.x - OffsetCordinates.x);
             //printf("Current Angle: %0.4f, End Angle: %0.4f\n", GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle);
-            if (InTolerance(GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle, ARC_RESOLUTION))
+
+            if (GcodePointer.arc_meta.step_count > 10 && InTolerance(GcodePointer.arc_meta.current_angle, GcodePointer.arc_meta.end_angle, ARC_RESOLUTION))
             {
               printf("\t\tReached arc endpoint via end angle!\n");
               MoveDone();
             }
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
+            if (GcodePointer.arc_meta.step_count > 10 && InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0004)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0004)))
             {
               printf("\t\tReached arc endpoint via endpoint!\n");
               MoveDone();
             }
+
             //printf("X = %0.4f, Y = %0.4f\n", x2, y2);
           }
         }
