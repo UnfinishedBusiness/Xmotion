@@ -201,7 +201,7 @@ void Render_RenderStack()
 						string filename = string(ent->d_name);
 						if (filename != "." && filename != "..")
 						{
-							if (filename.find(".pgm") != std::string::npos)
+							if (filename.find(".pgm") != std::string::npos || filename.find(".nc") != std::string::npos)
 							{
 								//printf ("%s\n", filename.c_str());
 								if (true)

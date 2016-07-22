@@ -254,6 +254,14 @@ void CNC_BlockingLine(point_t from, point_t to)
     }
   }
 }
+bool StartsWith(string text, string token)
+{
+      if(text.length() < token.length())
+      {
+        return false;
+      }
+      return (text.compare(0, token.length(), token) == 0);
+}
 void MoveDone()
 {
   //OffsetCordinates.x = GcodePointer.X;
@@ -450,122 +458,188 @@ void CNC_Tick()
       float Xc = 0;
       float Yc = 0;
       float F = 0;
+      bool g_valid = false;
+
       if (getline (nc_file, nc_buffer))
       {
         transform(nc_buffer.begin(), nc_buffer.end(), nc_buffer.begin(), ::toupper);
         printf("NC Line> %s\n", nc_buffer.c_str());
 
-        vector<string> fields = split(nc_buffer, ' ');
-        if (fields.size() > 4)
+
+        if (current_file.find(".nc") != std::string::npos)
         {
-          if (fields[1] == "RAPID")
-          {
-            fields[3].erase(0, 1); //Remove X charactor
-            X = atof(fields[3].c_str());
-
-            fields[4].erase(0, 1); //Remove Y charactor
-            Y = atof(fields[4].c_str());
-
-            fields[5].erase(0, 1); //Remove Z charactor
-            Z = atof(fields[5].c_str());
-
-            printf("\t\tRAPID to X: %0.4f, Y: %0.4f, Z: %0.4f\n", X, Y, Z);
-
-            GcodePointer.G = 0;
-            GcodePointer.X = X;
-            GcodePointer.Y = Y;
-            GcodePointer.Z = Z;
-            GcodePointer.MoveDone = false;
-            GcodePointer.FirstInstruction = true;
-
-          }
-          if (fields[1] == "LINE")
-          {
-            fields[3].erase(0, 1); //Remove X charactor
-            X = atof(fields[3].c_str());
-
-            fields[4].erase(0, 1); //Remove Y charactor
-            Y = atof(fields[4].c_str());
-
-            fields[5].erase(0, 1); //Remove Z charactor
-            Z = atof(fields[5].c_str());
-
-            fields[6].erase(0, 1); //Remove F charactor
-            F = atof(fields[6].c_str());
-            printf("\t\tLINE to X: %0.4f, Y: %0.4f, Z: %0.4f at F: %0.4f\n", X, Y, Z, F);
-
-            GcodePointer.G = 1;
-            GcodePointer.X = X;
-            GcodePointer.Y = Y;
-            GcodePointer.Z = Z;
-            GcodePointer.F = F;
-            GcodePointer.MoveDone = false;
-            GcodePointer.FirstInstruction = true;
-          }
-          if (fields[1] == "ARC|CNTRPT")
-          {
-            if (fields[3] == "CW")
+            vector<string> fields = split(nc_buffer, ' ');
+            for(int i = 0; i < fields.size(); i++)
             {
-              fields[4].erase(0, 1); //Remove X charactor
-              X = atof(fields[4].c_str());
+              if (StartsWith(fields[i], "G"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                if (atof(fields[i].c_str()) <= 3) //! valid gcode ! in the future use a lookup table!
+                {
+                  g_valid = true;
+                  GcodePointer.G = atof(fields[i].c_str());
+                }
+              }
+              if (StartsWith(fields[i], "X"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.X = atof(fields[i].c_str());
+              }
+              if (StartsWith(fields[i], "Y"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.Y = atof(fields[i].c_str());
+              }
+              if (StartsWith(fields[i], "Z"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.Z = atof(fields[i].c_str());
+              }
+              if (StartsWith(fields[i], "I"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.I = atof(fields[i].c_str());
+              }
+              if (StartsWith(fields[i], "J"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.J = atof(fields[i].c_str());
+              }
+              if (StartsWith(fields[i], "F"))
+              {
+                fields[i].erase(0, 1); //Remove token
+                GcodePointer.F = atof(fields[i].c_str());
+              }
+            }
+            if (g_valid == true)
+            {
+              GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
+              GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
 
-              fields[5].erase(0, 1); //Remove Y charactor
-              Y = atof(fields[5].c_str());
-
-              fields[7].erase(0, 2); //Remove XC charactors
-              Xc = atof(fields[7].c_str());
-
-              fields[8].erase(0, 2); //Remove YC charactors
-              Yc = atof(fields[8].c_str());
-
-              fields[9].erase(0, 1); //Remove F charactors
-              F = atof(fields[9].c_str());
-
-              printf("\t\tClocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
-
-              GcodePointer.G = 2;
-              GcodePointer.X = X;
-              GcodePointer.Y = Y;
-              GcodePointer.F = F;
-              GcodePointer.arc_meta.center_pos.x = Xc;
-              GcodePointer.arc_meta.center_pos.y = Yc;
               GcodePointer.MoveDone = false;
               GcodePointer.FirstInstruction = true;
+              g_valid = false;
             }
-            if (fields[3] == "CCW")
-            {
-              fields[4].erase(0, 1); //Remove X charactor
-              X = atof(fields[4].c_str());
-
-              fields[5].erase(0, 1); //Remove Y charactor
-              Y = atof(fields[5].c_str());
-
-              fields[7].erase(0, 2); //Remove XC charactors
-              Xc = atof(fields[7].c_str());
-
-              fields[8].erase(0, 2); //Remove YC charactors
-              Yc = atof(fields[8].c_str());
-
-              fields[9].erase(0, 1); //Remove F charactor
-              F = atof(fields[9].c_str());
-
-              printf("\t\tCounter-Clocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
-
-              GcodePointer.G = 3;
-              GcodePointer.X = X;
-              GcodePointer.Y = Y;
-              GcodePointer.F = F;
-              GcodePointer.arc_meta.center_pos.x = Xc;
-              GcodePointer.arc_meta.center_pos.y = Yc;
-              GcodePointer.MoveDone = false;
-              GcodePointer.FirstInstruction = true;
-            }
-
-
-          }
 
         }
-        if (GcodePointer.Z < 0 && Cutting == false) //We need to turn cutting head on!
+        else //Handle pgm file
+        {
+          //Make sure I and J are 0, otherwise it will increment arc meta data center (used in gcode parsing)
+          //GcodePointer.I = 0;
+          //GcodePointer.J = 0;
+
+          vector<string> fields = split(nc_buffer, ' ');
+          if (fields.size() > 4)
+          {
+            if (fields[1] == "RAPID")
+            {
+              fields[3].erase(0, 1); //Remove X charactor
+              X = atof(fields[3].c_str());
+
+              fields[4].erase(0, 1); //Remove Y charactor
+              Y = atof(fields[4].c_str());
+
+              fields[5].erase(0, 1); //Remove Z charactor
+              Z = atof(fields[5].c_str());
+
+              printf("\t\tRAPID to X: %0.4f, Y: %0.4f, Z: %0.4f\n", X, Y, Z);
+
+              GcodePointer.G = 0;
+              GcodePointer.X = X;
+              GcodePointer.Y = Y;
+              GcodePointer.Z = Z;
+              GcodePointer.MoveDone = false;
+              GcodePointer.FirstInstruction = true;
+
+            }
+            if (fields[1] == "LINE")
+            {
+              fields[3].erase(0, 1); //Remove X charactor
+              X = atof(fields[3].c_str());
+
+              fields[4].erase(0, 1); //Remove Y charactor
+              Y = atof(fields[4].c_str());
+
+              fields[5].erase(0, 1); //Remove Z charactor
+              Z = atof(fields[5].c_str());
+
+              fields[6].erase(0, 1); //Remove F charactor
+              F = atof(fields[6].c_str());
+              printf("\t\tLINE to X: %0.4f, Y: %0.4f, Z: %0.4f at F: %0.4f\n", X, Y, Z, F);
+
+              GcodePointer.G = 1;
+              GcodePointer.X = X;
+              GcodePointer.Y = Y;
+              GcodePointer.Z = Z;
+              GcodePointer.F = F;
+              GcodePointer.MoveDone = false;
+              GcodePointer.FirstInstruction = true;
+            }
+            if (fields[1] == "ARC|CNTRPT")
+            {
+              if (fields[3] == "CW")
+              {
+                fields[4].erase(0, 1); //Remove X charactor
+                X = atof(fields[4].c_str());
+
+                fields[5].erase(0, 1); //Remove Y charactor
+                Y = atof(fields[5].c_str());
+
+                fields[7].erase(0, 2); //Remove XC charactors
+                Xc = atof(fields[7].c_str());
+
+                fields[8].erase(0, 2); //Remove YC charactors
+                Yc = atof(fields[8].c_str());
+
+                fields[9].erase(0, 1); //Remove F charactors
+                F = atof(fields[9].c_str());
+
+                printf("\t\tClocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
+
+                GcodePointer.G = 2;
+                GcodePointer.X = X;
+                GcodePointer.Y = Y;
+                GcodePointer.F = F;
+                GcodePointer.arc_meta.center_pos.x = Xc;
+                GcodePointer.arc_meta.center_pos.y = Yc;
+                GcodePointer.MoveDone = false;
+                GcodePointer.FirstInstruction = true;
+              }
+              if (fields[3] == "CCW")
+              {
+                fields[4].erase(0, 1); //Remove X charactor
+                X = atof(fields[4].c_str());
+
+                fields[5].erase(0, 1); //Remove Y charactor
+                Y = atof(fields[5].c_str());
+
+                fields[7].erase(0, 2); //Remove XC charactors
+                Xc = atof(fields[7].c_str());
+
+                fields[8].erase(0, 2); //Remove YC charactors
+                Yc = atof(fields[8].c_str());
+
+                fields[9].erase(0, 1); //Remove F charactor
+                F = atof(fields[9].c_str());
+
+                printf("\t\tCounter-Clocwise Arc to X: %0.4f, Y: %0.4f with Xc: %0.4f, Yc: %0.4f at F: %0.4f\n", X, Y, Xc, Yc, F);
+
+                GcodePointer.G = 3;
+                GcodePointer.X = X;
+                GcodePointer.Y = Y;
+                GcodePointer.F = F;
+                GcodePointer.arc_meta.center_pos.x = Xc;
+                GcodePointer.arc_meta.center_pos.y = Yc;
+                GcodePointer.MoveDone = false;
+                GcodePointer.FirstInstruction = true;
+              }
+
+
+            }
+
+          }
+        }
+        if (GcodePointer.Z <= 0 && Cutting == false) //We need to turn cutting head on!
         {
           Cutting = true;
           #ifdef NDEBUG
