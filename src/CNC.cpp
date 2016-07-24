@@ -472,7 +472,6 @@ void CNC_Tick()
       float Xc = 0;
       float Yc = 0;
       float F = 0;
-      bool g_valid = false;
 
       if (getline (nc_file, nc_buffer))
       {
@@ -488,14 +487,11 @@ void CNC_Tick()
               if (StartsWith(fields[i], "G"))
               {
                 fields[i].erase(0, 1); //Remove token
-                if (atof(fields[i].c_str()) <= 3) //! valid gcode ! in the future use a lookup table!
-                {
-                  g_valid = true;
-                  GcodePointer.G = atof(fields[i].c_str());
-                }
+                GcodePointer.G = atof(fields[i].c_str());
               }
               if (StartsWith(fields[i], "X"))
               {
+
                 fields[i].erase(0, 1); //Remove token
                 GcodePointer.X = atof(fields[i].c_str());
               }
@@ -525,14 +521,12 @@ void CNC_Tick()
                 GcodePointer.F = atof(fields[i].c_str());
               }
             }
-            if (g_valid == true)
+            if (GcodePointer.G <= 3) //! valid gcode ! in the future use a lookup table!
             {
               GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
               GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
-
               GcodePointer.MoveDone = false;
               GcodePointer.FirstInstruction = true;
-              g_valid = false;
             }
 
         }
