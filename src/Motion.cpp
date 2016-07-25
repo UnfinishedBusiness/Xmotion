@@ -30,10 +30,10 @@ Stepper::Stepper(int tsteps, int axis)
     digitalWrite(Pins.ENABLE, HIGH);
   	digitalWrite(Pins.RESET, HIGH);
 
-    /*  Quarter Step */
+    /*  1/8 Steps */
   	digitalWrite(Pins.M1, HIGH);
   	digitalWrite(Pins.M2, LOW);
-  	digitalWrite(Pins.M3, LOW);
+  	digitalWrite(Pins.M3, HIGH);
 
   #endif
 
