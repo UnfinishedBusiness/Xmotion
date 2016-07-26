@@ -23,6 +23,11 @@ ifstream nc_file;
 long nc_line = 0;
 string nc_buffer;
 
+//Handle every step_check instructions that pass (runnaway detection and recovery)
+int step_clock = 0;
+float step_last_distance;
+
+
 void CNC_AnyStep()
 {
   #ifdef DEBUG
@@ -297,8 +302,10 @@ void CNC_BlockingLine(point_t from, point_t to)
     {
       MachineCordinates.x += (to.x - OffsetCordinates.x);
       MachineCordinates.y += (to.y - OffsetCordinates.y);
+      MachineCordinates.z += (to.z - OffsetCordinates.z);
       OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
       OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+      OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
       return;
     }
     /*if (GetLineLength(OffsetCordinates, to) <= (ONE_STEP_DISTANCE + 0.0002))
@@ -329,6 +336,7 @@ void MoveDone()
   MachineCordinates.y += (GcodePointer.Y - OffsetCordinates.y);
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
 
 
   GcodePointer.MoveDone = true;
@@ -341,6 +349,30 @@ void CNC_Tick()
   {
     if (GcodePointer.MoveDone == false)
     {
+      if (step_clock == 10)
+      {
+        step_clock = 0;
+
+        point_t end;
+        end.x = GcodePointer.X;
+        end.y = GcodePointer.Y;
+        end.z = GcodePointer.Z;
+
+        float distance_to_go = GetLineLength(OffsetCordinates, end);
+        if (step_last_distance == 0) //Either we havn't done a step_check or where at our end point, don't do anything but set step_last_distance
+        {
+            //Doing nothing!
+        }
+        else
+        {
+          if (step_last_distance < distance_to_go) //if the last step check distance was less than it is now, we have definantly overshot our end point!
+          {
+            //MoveDone();
+            printf("!!!!!!! Runnaway !!!!!!\n");
+          }
+        }
+        step_last_distance = GetLineLength(OffsetCordinates, end);
+      }
       //printf("Move Done = false\n");
       if (Hold == false)
       {
@@ -552,6 +584,7 @@ void CNC_Tick()
 
         //Drive axis to position and set GcodePointer.MoveDone = true;
       }
+      step_clock++;
     }
     else
     {

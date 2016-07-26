@@ -101,7 +101,7 @@ void Stepper::FeedDelay()
     }
     else
     {
-      usleep(pulse_delay);
+      //usleep(pulse_delay);
     }
   #endif
 }
