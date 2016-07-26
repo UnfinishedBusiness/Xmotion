@@ -225,6 +225,16 @@ void Render_RenderStack()
 			SDL_SetTextureAlphaMod( FeedTexture, 255 );
 			SDL_RenderCopyEx( gRenderer, FeedTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 
+			dst.x = 300;
+			dst.y = 139;
+
+			sprintf(buffer, "uCPD: %0.4f", control_signal_pulse);
+			SDL_Texture *PulseTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(PulseTexture, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( PulseTexture, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( PulseTexture, 255 );
+			SDL_RenderCopyEx( gRenderer, PulseTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
 			dst.x = 22;
 			dst.y = 180;
 			if (GcodePointer.G == 0) sprintf(buffer, "G%0.1f X%0.4f Y%0.4f Z%0.4f", GcodePointer.G, GcodePointer.X, GcodePointer.Y, GcodePointer.Z);
@@ -244,6 +254,7 @@ void Render_RenderStack()
 			if ( DX != NULL ) { SDL_DestroyTexture( DX ); }
 			if ( DY != NULL ) { SDL_DestroyTexture( DY ); }
 			if ( FeedTexture != NULL ) { SDL_DestroyTexture( FeedTexture ); }
+			if ( PulseTexture != NULL ) { SDL_DestroyTexture( PulseTexture ); }
 			if ( LineTexture != NULL ) { SDL_DestroyTexture( LineTexture ); }
 
 		}

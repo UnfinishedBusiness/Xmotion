@@ -48,10 +48,14 @@ void CNC_JogXPlus();
 void CNC_JogXMinus();
 void CNC_JogYPlus();
 void CNC_JogYMinus();
+void CNC_JogZPlus();
+void CNC_JogZMinus();
 void CNC_Hold();
 void CNC_Stop();
 void CNC_Start();
+
 void CNC_SetOrigin();
+void CNC_SetZOrigin();
 
 void CNC_Tick();
 void CNC_Init();

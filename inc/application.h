@@ -148,7 +148,7 @@ extern point_t OffsetCordinates;
 extern point_t OffsetValue;
 extern float file_open_scroll_offset;
 extern std::vector<object_t> file_tiles;
-
+extern float control_signal_pulse;
 
 #define KNORMAL  "\x1B[0m"
 #define KRED  "\x1B[31m"

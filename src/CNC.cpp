@@ -8,12 +8,14 @@ point_t OffsetValue;
 
 gcode_t GcodePointer;
 
+float control_signal_pulse;
 
 bool Hold = true;
 bool Stop = true;
 bool Cutting = false;
 Stepper *Xaxis;
 Stepper *Yaxis;
+Stepper *Zaxis;
 #define CUTTING_HEAD 23
 string current_file;
 
@@ -37,6 +39,7 @@ void CNC_XPlus()
   MachineCordinates.x += ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
   CNC_AnyStep();
 }
 void CNC_XMinus()
@@ -44,6 +47,7 @@ void CNC_XMinus()
   MachineCordinates.x -= ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
   CNC_AnyStep();
 }
 void CNC_YPlus()
@@ -51,6 +55,7 @@ void CNC_YPlus()
   MachineCordinates.y += ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
   CNC_AnyStep();
 }
 void CNC_YMinus()
@@ -58,6 +63,23 @@ void CNC_YMinus()
   MachineCordinates.y -= ONE_STEP_DISTANCE;
   OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
   OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
+  CNC_AnyStep();
+}
+void CNC_ZPlus()
+{
+  MachineCordinates.z += ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
+  CNC_AnyStep();
+}
+void CNC_ZMinus()
+{
+  MachineCordinates.z -= ONE_STEP_DISTANCE;
+  OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+  OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+  OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
   CNC_AnyStep();
 }
 
@@ -97,6 +119,24 @@ void CNC_JogYMinus()
   CNC_YMinus();
   //Yaxis->FeedDelay();
 }
+void CNC_JogZPlus()
+{
+  if (Stop == false) return;
+  Zaxis->SetFeedRate(RAPID_FEED);
+  Zaxis->Step(+1);
+  Zaxis->FeedDelay();
+  CNC_ZPlus();
+  //Yaxis->FeedDelay();
+}
+void CNC_JogZMinus()
+{
+  if (Stop == false) return;
+  Zaxis->SetFeedRate(RAPID_FEED);
+  Zaxis->Step(-1);
+  Zaxis->FeedDelay();
+  CNC_ZMinus();
+  //Yaxis->FeedDelay();
+}
 void CNC_Hold()
 {
   Hold = true;
@@ -129,9 +169,25 @@ void CNC_SetOrigin()
   {
     OffsetValue.x = MachineCordinates.x;
     OffsetValue.y = MachineCordinates.y;
+    //OffsetValue.z = MachineCordinates.z;
 
     OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
     OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+    //OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
+  }
+}
+void CNC_SetZOrigin()
+{
+  printf("Setting ZOrigin!\n");
+  if (Stop == true) //We can't set origin while program is running!
+  {
+    //OffsetValue.x = MachineCordinates.x;
+    //OffsetValue.y = MachineCordinates.y;
+    OffsetValue.z = MachineCordinates.z;
+
+    //OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+    //OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+    OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
   }
 }
 bool InTolerance(float a, float b, float t)
@@ -157,15 +213,16 @@ bool InTolerance(float a, float b, float t)
 }
 float GetLineLength(point_t p1, point_t p2)
 {
-  float x,y;
+  float x, y, z = 0;
   x = p2.x - p1.x;
   y = p2.y - p1.y;
-  return sqrtf(x*x + y*y);
+  z = p2.z - p1.z;
+  return sqrtf(x*x + y*y + z*z);
 }
 
 float feed = 0;
 
-float fxy, dx, dy = 0;
+float fxy, dx, dy, dz = 0;
 float x2, y2 = 0;
 float xo, yo = 0;
 //true = 1
@@ -236,15 +293,7 @@ void CNC_BlockingLine(point_t from, point_t to)
       fxy = fxy + dx;
     }
     Yaxis->FeedDelay(); //Both axis should be the same feed rate!
-    /*if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
-    {
-      MachineCordinates.x += (to.x - OffsetCordinates.x);
-      MachineCordinates.y += (to.y - OffsetCordinates.y);
-      OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
-      OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
-      return;
-    }*/
-    if (GetLineLength(OffsetCordinates, to) <= (ONE_STEP_DISTANCE + 0.0002))
+    if (InTolerance(OffsetCordinates.x, to.x, (ONE_STEP_DISTANCE + 0.0001)) && InTolerance(OffsetCordinates.y, to.y, (ONE_STEP_DISTANCE + 0.0001)))
     {
       MachineCordinates.x += (to.x - OffsetCordinates.x);
       MachineCordinates.y += (to.y - OffsetCordinates.y);
@@ -252,6 +301,14 @@ void CNC_BlockingLine(point_t from, point_t to)
       OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
       return;
     }
+    /*if (GetLineLength(OffsetCordinates, to) <= (ONE_STEP_DISTANCE + 0.0002))
+    {
+      MachineCordinates.x += (to.x - OffsetCordinates.x);
+      MachineCordinates.y += (to.y - OffsetCordinates.y);
+      OffsetCordinates.x = MachineCordinates.x - OffsetValue.x;
+      OffsetCordinates.y = MachineCordinates.y - OffsetValue.y;
+      return;
+    }*/
   }
 }
 bool StartsWith(string text, string token)
@@ -337,45 +394,75 @@ void CNC_Tick()
           else
           {
             //printf("FXY: %0.4f\n", fxy);
-            if (fxy > 0)
+            if (GcodePointer.Z - OffsetCordinates.z != 0) //We are a Z move! I'm not gonna bother with linear interpolation
             {
-              if (xo > 0)
+              if (OffsetCordinates.z - GcodePointer.Z > 0)
               {
-                Xaxis->SetFeedRate(feed);
-                Xaxis->Step(+1);
-                CNC_XPlus();
+                Zaxis->SetFeedRate(feed);
+                Zaxis->Step(-1);
+                CNC_ZMinus();
               }
               else
               {
-                Xaxis->SetFeedRate(feed);
-                Xaxis->Step(-1);
-                CNC_XMinus();
+                Zaxis->SetFeedRate(feed);
+                Zaxis->Step(+1);
+                CNC_ZPlus();
               }
-              x2++;
-              fxy = fxy - dy;
+              Zaxis->FeedDelay();
+              point_t end;
+              end.x = GcodePointer.X;
+              end.y = GcodePointer.Y;
+              end.z = GcodePointer.Z;
+              if (InTolerance(OffsetCordinates.z, GcodePointer.Z, (ONE_STEP_DISTANCE + 0.0002)))
+              {
+                MachineCordinates.z += (GcodePointer.Z - OffsetCordinates.z);
+                OffsetCordinates.z = MachineCordinates.z - OffsetValue.z;
+                MoveDone();
+              }
             }
             else
             {
-              if (yo > 0)
+              if (fxy > 0)
               {
-                Yaxis->SetFeedRate(feed);
-                Yaxis->Step(+1);
-                CNC_YPlus();
+                if (xo > 0)
+                {
+                  Xaxis->SetFeedRate(feed);
+                  Xaxis->Step(+1);
+                  CNC_XPlus();
+                }
+                else
+                {
+                  Xaxis->SetFeedRate(feed);
+                  Xaxis->Step(-1);
+                  CNC_XMinus();
+                }
+                x2++;
+                fxy = fxy - dy;
               }
               else
               {
-                Yaxis->SetFeedRate(feed);
-                Yaxis->Step(-1);
-                CNC_YMinus();
+                if (yo > 0)
+                {
+                  Yaxis->SetFeedRate(feed);
+                  Yaxis->Step(+1);
+                  CNC_YPlus();
+                }
+                else
+                {
+                  Yaxis->SetFeedRate(feed);
+                  Yaxis->Step(-1);
+                  CNC_YMinus();
+                }
+                y2++;
+                fxy = fxy + dx;
               }
-              y2++;
-              fxy = fxy + dx;
+              Yaxis->FeedDelay(); //Both axis should be the same feed rate!
             }
-            Yaxis->FeedDelay(); //Both axis should be the same feed rate!
           }
           point_t end;
           end.x = GcodePointer.X;
           end.y = GcodePointer.Y;
+          end.z = GcodePointer.Z;
           if ( GetLineLength(OffsetCordinates, end) <= (ONE_STEP_DISTANCE + 0.0002))
           {
             printf("\t\tReached line endpoint!\n");
@@ -383,7 +470,7 @@ void CNC_Tick()
           }
           else
           {
-            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0002)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0002)))
+            if (InTolerance(OffsetCordinates.x, GcodePointer.X, (ONE_STEP_DISTANCE + 0.0002)) && InTolerance(OffsetCordinates.y, GcodePointer.Y, (ONE_STEP_DISTANCE + 0.0002)) && InTolerance(OffsetCordinates.z, GcodePointer.Z, (ONE_STEP_DISTANCE + 0.0002)))
             {
               printf("\t\tReached line endpoint incorectly!\n");
               MoveDone();
@@ -697,6 +784,7 @@ void CNC_Init()
   #endif
   Xaxis = new Stepper(200, X_AXIS);
   Yaxis = new Stepper(200, Y_AXIS);
+  Zaxis = new Stepper(200, Y_AXIS);
 
   //Home maching to establish Machine Cordinates
 

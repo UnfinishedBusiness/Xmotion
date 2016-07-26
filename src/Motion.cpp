@@ -15,7 +15,7 @@ ControlPins AxisPins[2] = {
 
 Stepper::Stepper(int tsteps, int axis)
 {
-  total_steps = tsteps;
+  total_steps = tsteps; //Not really even used?
   Pins = AxisPins[axis];
   #ifdef NDEBUG
     pinMode(Pins.M1, OUTPUT);
@@ -49,9 +49,11 @@ void Stepper::SetFeedRate(float feed)
     }
     if (motion_accel < 1) motion_accel += CURVE_STEP;
     pulse_delay = INCH_MIN_DELAY / (feed * motion_accel);
+    control_signal_pulse = pulse_delay;
     motion_accel_timer = millis();
   #else
     pulse_delay = INCH_MIN_DELAY / feed;
+    control_signal_pulse = pulse_delay;
   #endif
 }
 void Stepper::Step(int inc)
