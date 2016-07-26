@@ -399,6 +399,10 @@ void CNC_Tick()
             GcodePointer.arc_meta.last_pos = OffsetCordinates;
             //GcodePointer.arc_meta.center_pos.x = OffsetCordinates.x + GcodePointer.I;
             //GcodePointer.arc_meta.center_pos.y = OffsetCordinates.y + GcodePointer.J;
+
+            GcodePointer.I = GcodePointer.arc_meta.center_pos.x - OffsetCordinates.x;
+            GcodePointer.J = GcodePointer.arc_meta.center_pos.y - OffsetCordinates.y;
+
             GcodePointer.FirstInstruction = false;
             GcodePointer.arc_meta.end_angle = atan2(GcodePointer.arc_meta.center_pos.y - GcodePointer.Y, GcodePointer.arc_meta.center_pos.x - GcodePointer.X);
 

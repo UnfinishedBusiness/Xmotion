@@ -164,25 +164,88 @@ void Render_RenderStack()
 		if (current_activity == "Main")
 		{
 			dst.x = 60;
-			dst.y = 50;
+			dst.y = 30;
 			char buffer[100];
 			sprintf(buffer, "X: %0.4f", OffsetCordinates.x);
-			SDL_Texture *XCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 50, string(buffer));
+			SDL_Texture *XCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
 			SDL_QueryTexture(XCordTexture, NULL, NULL, &dst.w, &dst.h);
 			SDL_SetTextureBlendMode( XCordTexture, SDL_BLENDMODE_BLEND );
 			SDL_SetTextureAlphaMod( XCordTexture, 255 );
 			SDL_RenderCopyEx( gRenderer, XCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
 			dst.x = 60;
-			dst.y = 160;
+			dst.y = 80;
 			sprintf(buffer, "Y: %0.4f", OffsetCordinates.y);
-			SDL_Texture *YCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 50, string(buffer));
+			SDL_Texture *YCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
 			SDL_QueryTexture(YCordTexture, NULL, NULL, &dst.w, &dst.h);
 			SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
 			SDL_SetTextureAlphaMod( YCordTexture, 255 );
 			SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 
+			dst.x = 60;
+			dst.y = 130;
+			sprintf(buffer, "Z: %0.4f", OffsetCordinates.z);
+			SDL_Texture *ZCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
+			SDL_QueryTexture(ZCordTexture, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( ZCordTexture, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( ZCordTexture, 255 );
+			SDL_RenderCopyEx( gRenderer, ZCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+			dst.x = 300;
+			dst.y = 40;
+			sprintf(buffer, "DX: %0.4f", OffsetCordinates.x - GcodePointer.X);
+			SDL_Texture *DX = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(DX, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( DX, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( DX, 255 );
+			SDL_RenderCopyEx( gRenderer, DX, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+			dst.x = 300;
+			dst.y = 75;
+			sprintf(buffer, "DY: %0.4f", OffsetCordinates.y - GcodePointer.Y);
+			SDL_Texture *DY = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(DY, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( DY, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( DY, 255 );
+			SDL_RenderCopyEx( gRenderer, DY, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+			dst.x = 300;
+			dst.y = 107;
+			if (GcodePointer.G == 0)
+			{
+				sprintf(buffer, "F: %0.4f", RAPID_FEED);
+			}
+			else
+			{
+				sprintf(buffer, "F: %0.4f", GcodePointer.F);
+			}
+			SDL_Texture *FeedTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(FeedTexture, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( FeedTexture, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( FeedTexture, 255 );
+			SDL_RenderCopyEx( gRenderer, FeedTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+			dst.x = 22;
+			dst.y = 180;
+			if (GcodePointer.G == 0) sprintf(buffer, "G%0.1f X%0.4f Y%0.4f Z%0.4f", GcodePointer.G, GcodePointer.X, GcodePointer.Y, GcodePointer.Z);
+			if (GcodePointer.G == 1) sprintf(buffer, "G%0.1f X%0.4f Y%0.4f Z%0.4f F%0.1f", GcodePointer.G, GcodePointer.X, GcodePointer.Y, GcodePointer.Z, GcodePointer.F);
+			if (GcodePointer.G == 2 || GcodePointer.G == 3) sprintf(buffer, "G%0.1f X%0.4f Y%0.4f Z%0.4f I%0.4f J%0.4f F%0.1f", GcodePointer.G, GcodePointer.X, GcodePointer.Y, GcodePointer.Z, GcodePointer.I, GcodePointer.J, GcodePointer.F);
+			SDL_Texture *LineTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(LineTexture, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( LineTexture, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( LineTexture, 255 );
+			SDL_RenderCopyEx( gRenderer, LineTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
+
 			if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
 			if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+
+			if ( DX != NULL ) { SDL_DestroyTexture( DX ); }
+			if ( DY != NULL ) { SDL_DestroyTexture( DY ); }
+			if ( FeedTexture != NULL ) { SDL_DestroyTexture( FeedTexture ); }
+			if ( LineTexture != NULL ) { SDL_DestroyTexture( LineTexture ); }
+
 		}
 		if (current_activity == "FileOpen")
 		{

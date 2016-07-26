@@ -42,6 +42,8 @@ struct gcode_t{
   garc_meta_t arc_meta;
 };
 
+extern gcode_t GcodePointer;
+
 void CNC_JogXPlus();
 void CNC_JogXMinus();
 void CNC_JogYPlus();

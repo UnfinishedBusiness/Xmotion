@@ -46,12 +46,12 @@
 
 const char APPLICATION_TITLE[] = "PlasmaTable";
 
-#define INCH_MIN_DELAY 11811.024087048
-#define ONE_STEP_DISTANCE 0.0001968504
-#define ARC_RESOLUTION 0.001
+#define INCH_MIN_DELAY 11811.024087048f
+#define ONE_STEP_DISTANCE 0.0001968504f
+#define ARC_RESOLUTION 0.001f
 #define CUTTING_HEAD_ON_DWELL 3 //in seconds!
 #define CUTTING_HEAD_OFF_DWELL 1
-#define RAPID_FEED 70 //could double if i switched to a 24v power supply
+#define RAPID_FEED 100.00f //could double if i switched to a 24v power supply
 
 struct color_t{
   Uint8 r,g,b,a;

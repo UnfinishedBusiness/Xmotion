@@ -50,6 +50,8 @@ void Stepper::SetFeedRate(float feed)
     if (motion_accel < 1) motion_accel += CURVE_STEP;
     pulse_delay = INCH_MIN_DELAY / (feed * motion_accel);
     motion_accel_timer = millis();
+  #else
+    pulse_delay = INCH_MIN_DELAY / feed;
   #endif
 }
 void Stepper::Step(int inc)
@@ -80,13 +82,24 @@ void Stepper::Step(int inc)
 void Stepper::FeedDelay()
 {
   #ifdef NDEBUG
-	if (pulse_delay < (INCH_MIN_DELAY / RAPID_FEED))
-	{
-		delayMicroseconds(INCH_MIN_DELAY / RAPID_FEED);
-	}
-	else
-	{
-    		delayMicroseconds(pulse_delay);
-	}
+  	if (pulse_delay < (INCH_MIN_DELAY / RAPID_FEED))
+  	{
+      printf("!!!! Feedrate is faster than rapid move!\n");
+  		delayMicroseconds(INCH_MIN_DELAY / RAPID_FEED);
+  	}
+  	else
+  	{
+      delayMicroseconds(pulse_delay);
+  	}
+  #else
+    if (pulse_delay < (INCH_MIN_DELAY / RAPID_FEED))
+    {
+      printf("!!!! Feedrate is faster than rapid move!\n");
+      usleep(INCH_MIN_DELAY / RAPID_FEED);
+    }
+    else
+    {
+      usleep(pulse_delay);
+    }
   #endif
 }
