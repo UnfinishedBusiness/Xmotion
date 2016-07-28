@@ -4,7 +4,7 @@ using namespace std;
 
 string SerialDevice;
 int serialfd;
-
+string line = "";
 bool parse_now = false;
 
 int set_interface_attribs (int fd, int speed, int parity)
@@ -95,6 +95,15 @@ void Serial_WriteString(string s)
     Serial_WriteByte(s.c_str()[x]);
   }
   Serial_WriteByte('\r');
+
+  fcntl(serialfd, F_SETFL, 0); // block until data comes in
+
+  char buffer[50];
+
+  read(serialfd, &buffer, sizeof(buffer));
+
+  printf("You entered: %s\n", buffer);
+
 }
 void Serial_Parse()
 {
@@ -109,9 +118,7 @@ void Serial_Parse()
 }
 void Serial_Read()
 {
-  vector<string> array;
   char c;
-  string line = "";
   while(!quit)
   {
     while (read(serialfd, &c, sizeof(char)) > 0)

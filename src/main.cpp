@@ -76,9 +76,9 @@ int main( int argc, char* argv[] )
     signal (SIGINT,ctrl_c_handler);
 
 
-    int i;
-    pthread_t read_thread;
-    pthread_create(&read_thread, NULL, Read_Thread, (void *)i);
+    //int i;
+    //pthread_t read_thread;
+    //pthread_create(&read_thread, NULL, Read_Thread, (void *)i);
 
 
     //pthread_t parse_thread;
