@@ -29,29 +29,13 @@
 #include <Config.h>
 #include <Render.h>
 #include <Serial.h>
-#include <CNC.h>
-#include <Motion.h>
-
-#ifdef DEBUG
-  #define HIGH true
-  #define LOW false
-  #define INPUT 1
-  #include <Debug.h>
-#else
-  #include <wiringPi.h>
-#endif
 
 #ifndef APPLICATION_
 #define  APPLICATION_
 
 const char APPLICATION_TITLE[] = "PlasmaTable";
 
-#define INCH_MIN_DELAY 11811.024087048f
-#define ONE_STEP_DISTANCE 0.0001968504f
-#define ARC_RESOLUTION 0.001f
-#define CUTTING_HEAD_ON_DWELL 3 //in seconds!
-#define CUTTING_HEAD_OFF_DWELL 1
-#define RAPID_FEED 100.00f //could double if i switched to a 24v power supply
+#define INPUT 100
 
 struct color_t{
   Uint8 r,g,b,a;
@@ -60,32 +44,6 @@ struct point_t{
   float x = 0;
   float y = 0;
   float z = 0;
-  bool operator==(const point_t& rhs)
-  {
-    //return x == rhs.x && y == rhs.y && z == rhs.z;
-    auto t = [](float a, float b)
-    {
-      float diff;
-      if (a > b)
-      {
-        diff = a - b;
-      }
-      else
-      {
-        diff = b - a;
-      }
-      //printf("(geoInTolerance) Difference: %.6f, Plus: %.6f, Minus: %.6f\n", diff, fabs(t), -fabs(t));
-      if (diff <= fabs(ONE_STEP_DISTANCE) && diff >= -fabs(ONE_STEP_DISTANCE))
-      {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    };
-    return t(x, rhs.x) && t(y, rhs.y) && t(z, rhs.z);
-  }
   bool operator!=(const point_t& rhs)
   {
     return x != rhs.x && y != rhs.y && z != rhs.z;
@@ -138,14 +96,10 @@ extern std::vector<script_t> ScriptStack;
 extern std::string SerialDevice;
 extern int serialfd;
 extern bool sim;
-extern long TimeRendered;
 extern bool quit;
 extern std::string current_activity;
 extern std::string current_file;
 
-extern point_t MachineCordinates;
-extern point_t OffsetCordinates;
-extern point_t OffsetValue;
 extern float file_open_scroll_offset;
 extern std::vector<object_t> file_tiles;
 extern float control_signal_pulse;

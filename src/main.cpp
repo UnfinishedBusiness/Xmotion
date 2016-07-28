@@ -2,6 +2,7 @@
 
 using namespace std;
 
+std::string current_file;
 std::vector<object_t> ObjectStack;
 
 std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
@@ -41,11 +42,8 @@ int main( int argc, char* argv[] )
     #ifdef NDEBUG
       SDL_ShowCursor(0);
     #endif
-    #ifdef DEBUG
-      Debug_Init();
-    #endif
 		Config_Init();
-    CNC_Init();
+    //CNC_Init();
     if (sim == false)
 		{
 			if (Serial_Init() < 0)
@@ -198,19 +196,19 @@ int main( int argc, char* argv[] )
                     }
                     if (ObjectStack[x].tagname == "SetOrigin")
                     {
-                      CNC_SetOrigin();
+                      ////CNC_SetOrigin();
                     }
                     else if (ObjectStack[x].tagname == "Stop")
                     {
-                      CNC_Stop();
+                      //CNC_Stop();
                     }
                     else if (ObjectStack[x].tagname == "Start")
                     {
-                      CNC_Start();
+                      //CNC_Start();
                     }
                     else if (ObjectStack[x].tagname == "Hold")
                     {
-                      CNC_Hold();
+                      //CNC_Hold();
                     }
                     else
                     {
@@ -227,19 +225,19 @@ int main( int argc, char* argv[] )
                         //printf("Waiting for release!\n");
                         if (ObjectStack[x].tagname == "JogXPlus")
                         {
-                          CNC_JogXPlus();
+                          //CNC_JogXPlus();
                         }
                         if (ObjectStack[x].tagname == "JogXMinus")
                         {
-                          CNC_JogXMinus();
+                          //CNC_JogXMinus();
                         }
                         if (ObjectStack[x].tagname == "JogYPlus")
                         {
-                          CNC_JogYPlus();
+                          //CNC_JogYPlus();
                         }
                         if (ObjectStack[x].tagname == "JogYMinus")
                         {
-                          CNC_JogYMinus();
+                          //CNC_JogYMinus();
                         }
                       }
                     }
@@ -267,8 +265,5 @@ int main( int argc, char* argv[] )
 	//Free resources and close SDL
 	Render_Close();
 	if (sim == false) Serial_Close();
-  #ifdef DEBUG
-    Debug_Close();
-  #endif
 	return 0;
 }
