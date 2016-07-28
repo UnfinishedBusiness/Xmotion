@@ -5,6 +5,7 @@
 int Serial_Init();
 void Serial_Close();
 void Serial_Parse();
+void Serial_Read();
 void Serial_WriteByte(uint8_t);
 void Serial_WriteString(std::string);
 

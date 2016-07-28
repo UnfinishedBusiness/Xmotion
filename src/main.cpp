@@ -36,6 +36,16 @@ void *Parse_Thread(void *threadid)
    pthread_exit(NULL);
 }
 
+void *Read_Thread(void *threadid)
+{
+   printf("Starting Read thread!\n");
+   long tid;
+   tid = (long)threadid;
+   Serial_Read();
+   printf("Read thread exiting!\n");
+   pthread_exit(NULL);
+}
+
 int main( int argc, char* argv[] )
 {
   current_activity = "Main";
@@ -64,9 +74,15 @@ int main( int argc, char* argv[] )
     point_t LastMouseMovePos;
 
     signal (SIGINT,ctrl_c_handler);
-    pthread_t parse_thread;
+
+
     int i;
-    pthread_create(&parse_thread, NULL, Parse_Thread, (void *)i);
+    pthread_t read_thread;
+    pthread_create(&read_thread, NULL, Read_Thread, (void *)i);
+
+
+    //pthread_t parse_thread;
+    //pthread_create(&parse_thread, NULL, Parse_Thread, (void *)i);
 		while( !quit )
 		{
   			while( SDL_PollEvent( &e ) != 0 )

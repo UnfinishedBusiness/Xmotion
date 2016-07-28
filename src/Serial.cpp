@@ -4,6 +4,9 @@ using namespace std;
 
 string SerialDevice;
 int serialfd;
+
+bool parse_now = false;
+
 int set_interface_attribs (int fd, int speed, int parity)
 {
         struct termios tty;
@@ -25,7 +28,7 @@ int set_interface_attribs (int fd, int speed, int parity)
                                         // no canonical processing
         tty.c_oflag = 0;                // no remapping, no delays
         tty.c_cc[VMIN]  = 0;            // read doesn't block
-        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        tty.c_cc[VTIME] = 20;            // 0.5 seconds read timeout
 
         tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
 
@@ -61,7 +64,7 @@ void set_blocking (int fd, int should_block)
 
 int Serial_Init()
 {
-  serialfd = open (SerialDevice.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+  serialfd = open (SerialDevice.c_str(), O_RDWR | O_NDELAY);
   if (serialfd < 0)
   {
       cout << KGREEN << "Serial Device " << KRED << " -> Cant open " << SerialDevice << "!" << KNORMAL << endl;
@@ -95,11 +98,39 @@ void Serial_WriteString(string s)
 }
 void Serial_Parse()
 {
-  char buf[50];
   while(!quit)
   {
-    read( serialfd, &buf, sizeof(buf));
-    printf("%s", buf);
-    memset(buf, '\0', sizeof(buf));
+    if (parse_now)
+    {
+      parse_now = false;
+      //printf("Read: %s\n", buffer);
+    }
+  }
+}
+void Serial_Read()
+{
+  vector<string> array;
+  char c;
+  string line = "";
+  while(!quit)
+  {
+    while (read(serialfd, &c, sizeof(char)) > 0)
+    {
+      if (c == '\r')
+      {
+        printf("Read: %s\n", line.c_str());
+        line.clear();
+        break;
+      }
+      else if (c == '\n')
+      {
+      }
+      else
+      {
+        line.push_back(c);
+      }
+      //printf("%c", c);
+      //fflush(stdout);
+    }
   }
 }
