@@ -61,81 +61,45 @@ void set_blocking (int fd, int should_block)
 
 int Serial_Init()
 {
-  /*serialfd = open (SerialDevice.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
+  serialfd = open (SerialDevice.c_str(), O_RDWR | O_NOCTTY | O_SYNC);
   if (serialfd < 0)
   {
       cout << KGREEN << "Serial Device " << KRED << " -> Cant open " << SerialDevice << "!" << KNORMAL << endl;
       return -1;
   }
   set_interface_attribs (serialfd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
-  set_blocking (serialfd, 0);*/
+  set_blocking (serialfd, 1);
   return 0;
 }
 void Serial_Close()
 {
-   //close(serialfd);
+   close(serialfd);
 }
 
 long map_range(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
-
+void Serial_WriteByte(uint8_t byte)
+{
+  write(serialfd, &byte, 1);
+}
+void Serial_WriteString(string s)
+{
+  for (int x = 0; x < s.size(); x++)
+  {
+    //printf("Writing byte: %c\n\n", s.c_str()[x]);
+    Serial_WriteByte(s.c_str()[x]);
+  }
+  Serial_WriteByte('\r');
+}
 void Serial_Parse()
 {
-  Render_RenderStack();
-
-  /*long input;
-
-  char c;
-  string line = "";
-  vector<string> array;
-  while (read(serialfd, &c, sizeof(char)) > 0)
+  char buf[50];
+  while(!quit)
   {
-    if (c == '\n')
-    {
-      break;
-    }
-    else
-    {
-      line.push_back(c);
-    }
-    //printf("%c", c);
-    //fflush(stdout);
+    read( serialfd, &buf, sizeof(buf));
+    printf("%s", buf);
+    memset(buf, '\0', sizeof(buf));
   }
-  if (line.find(" ") && line.size() > 1)
-  {
-    //printf("Serial = %s\n", line.c_str());
-    array = split(line, ' ');
-    for (int x = 0; x < ObjectStack.size(); x++)
-    {
-      if (array[0] == ObjectStack[x].tagname)
-      {
-        if (ObjectStack[x].type == INDICATOR)
-        {
-          if (array[1].find("ON") || array[1].find("OFF"))
-          {
-            if (array[1].find("ON"))
-            {
-              ObjectStack[x].visable = false; //Maybe someday ill figure out why this logic is backwords
-            }
-            else if (array[1].find("OFF"))
-            {
-              ObjectStack[x].visable = true;
-            }
-          }
-        }
-        else
-        {
-          if (ObjectStack[x].type == NEEDLE)
-          {
-            input = atof(array[1].c_str());
-            ObjectStack[x].angle = map_range(input, ObjectStack[x].minvalue, ObjectStack[x].maxvalue, ObjectStack[x].minangle, ObjectStack[x].maxangle);
-          }
-        }
-      }
-    }
-    line.clear();
-  }*/
-  usleep(100);
 }

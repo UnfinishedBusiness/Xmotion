@@ -9,6 +9,8 @@ SDL_Renderer* gRenderer = NULL;
 //Current displayed texture
 SDL_Texture* gTexture = NULL;
 
+int machine_status_count = 0;
+
 color_t BackgroundColor = color_t{ 0, 0, 0, 0 }; //Default Black
 
 int SCREEN_WIDTH = 800;
@@ -121,6 +123,12 @@ float file_open_scroll_offset = 0;
 vector<object_t> file_tiles;
 void Render_RenderStack()
 {
+	  if (machine_status_count > 10)
+		{
+			machine_status_count = 0;
+			Serial_WriteString("?");
+		}
+		machine_status_count ++;
     //Initialize renderer color
     SDL_SetRenderDrawColor( gRenderer, BackgroundColor.r, BackgroundColor.g, BackgroundColor.b, BackgroundColor.a );
 

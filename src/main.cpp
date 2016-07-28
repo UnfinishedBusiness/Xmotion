@@ -25,13 +25,23 @@ void ctrl_c_handler(int s)
     printf("Bye!\n");
     quit = true; //Shutdown clean!
 }
+
+void *Parse_Thread(void *threadid)
+{
+   printf("Starting Parse thread!\n");
+   long tid;
+   tid = (long)threadid;
+   Serial_Parse();
+   printf("Parse thread exiting!\n");
+   pthread_exit(NULL);
+}
+
 int main( int argc, char* argv[] )
 {
   current_activity = "Main";
   #ifdef DEBUG
     sim = true;
   #endif
-  signal (SIGINT,ctrl_c_handler);
 	//Start up SDL and create window
 	if( !Render_Init() )
 	{
@@ -43,19 +53,20 @@ int main( int argc, char* argv[] )
       SDL_ShowCursor(0);
     #endif
 		Config_Init();
-    //CNC_Init();
-    if (sim == false)
+		if (Serial_Init() < 0)
 		{
-			if (Serial_Init() < 0)
-			{
-				Render_Close();
-				exit(1);
-			}
+			Render_Close();
+			exit(1);
 		}
 		SDL_Event e;
 		//While application is running
     bool MouseDown = false;
     point_t LastMouseMovePos;
+
+    signal (SIGINT,ctrl_c_handler);
+    pthread_t parse_thread;
+    int i;
+    pthread_create(&parse_thread, NULL, Parse_Thread, (void *)i);
 		while( !quit )
 		{
   			while( SDL_PollEvent( &e ) != 0 )
@@ -210,26 +221,28 @@ int main( int argc, char* argv[] )
                     {
                       //CNC_Hold();
                     }
+                    else if (ObjectStack[x].tagname == "JogXPlus")
+                    {
+                      //CNC_JogXPlus();
+                      Serial_WriteString("G91G0X0.01");
+                    }
+                    else if (ObjectStack[x].tagname == "JogXMinus")
+                    {
+                      //CNC_JogXMinus();
+                      Serial_WriteString("G91G0X-0.01");
+                    }
                     else
                     {
                       //printf("Clicked Tag -> %s at index %d\n", ObjectStack[x].tagname.c_str(), x);
                       while(1) //Should add breakout timer so we cant hang!
                       {
+                        //printf("Waiting for release!\n");
                         SDL_PollEvent( &e );
                         if( e.type == SDL_MOUSEBUTTONUP )
                         {
                           //printf("Button Release!\n");
                           MouseDown = false;
                           break;
-                        }
-                        //printf("Waiting for release!\n");
-                        if (ObjectStack[x].tagname == "JogXPlus")
-                        {
-                          //CNC_JogXPlus();
-                        }
-                        if (ObjectStack[x].tagname == "JogXMinus")
-                        {
-                          //CNC_JogXMinus();
                         }
                         if (ObjectStack[x].tagname == "JogYPlus")
                         {
@@ -250,20 +263,13 @@ int main( int argc, char* argv[] )
               }
             }
   			}
-  			if (sim == false)
-        {
-          Serial_Parse();
-        }
-        else
-        {
-          Render_RenderStack();
-        }
-      SDL_Delay(100);
+        Render_RenderStack();
+        SDL_Delay(100);
 		}
 	}
 
 	//Free resources and close SDL
 	Render_Close();
-	if (sim == false) Serial_Close();
+	Serial_Close();
 	return 0;
 }
