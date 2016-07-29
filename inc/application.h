@@ -25,6 +25,7 @@
 #include <locale>
 #include <regex>
 #include <pthread.h>
+#include <sys/ioctl.h>
 
 #include <Config.h>
 #include <Render.h>

@@ -95,49 +95,13 @@ void Serial_WriteString(string s)
     Serial_WriteByte(s.c_str()[x]);
   }
   Serial_WriteByte('\r');
-
-  fcntl(serialfd, F_SETFL, 0); // block until data comes in
-
-  char buffer[50];
-
-  read(serialfd, &buffer, sizeof(buffer));
-
-  printf("You entered: %s\n", buffer);
-
-}
-void Serial_Parse()
-{
-  while(!quit)
-  {
-    if (parse_now)
-    {
-      parse_now = false;
-      //printf("Read: %s\n", buffer);
-    }
-  }
+  Serial_Read();
 }
 void Serial_Read()
 {
-  char c;
-  while(!quit)
-  {
-    while (read(serialfd, &c, sizeof(char)) > 0)
-    {
-      if (c == '\r')
-      {
-        printf("Read: %s\n", line.c_str());
-        line.clear();
-        break;
-      }
-      else if (c == '\n')
-      {
-      }
-      else
-      {
-        line.push_back(c);
-      }
-      //printf("%c", c);
-      //fflush(stdout);
-    }
-  }
+  int data_ready;
+  ioctl(serialfd, FIONREAD, &data_ready);
+  unsigned char buffer[data_ready + 1];
+  read(serialfd, buffer, sizeof(buffer));
+  printf("Read: %s\n", buffer);
 }
