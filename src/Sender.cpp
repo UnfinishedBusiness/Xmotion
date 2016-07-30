@@ -18,13 +18,17 @@ void Sender_Tick()
     if (nc_file.is_open()) //File is already open, send next line until que ammount is reached else open file
     {
       string line;
-      getline (nc_file, line);
+      if (!getline (nc_file, line))
+      {
+        printf("End of file!\n");
+        MachineState = "Idle";
+        Sender_Stop();
+        return;
+      }
       line.erase(std::remove(line.begin(), line.end(), '\n'), line.end()); //Remove all newline characters
       line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //Remove all carage return characters
 
       printf("Sending Gcode: %s\n", line.c_str());
-
-      //Serial_WriteStringAndWaitForOk(line.c_str());
       Serial_WriteString(line.c_str());
     }
     else

@@ -135,7 +135,8 @@ void Render_RenderStack()
 	  if (machine_status_count > 1)
 		{
 			machine_status_count = 0;
-		//Serial_WriteString("?");
+			Serial_WriteString("?");
+			Serial_Read();
 		}
 		machine_status_count ++;
     //Initialize renderer color
