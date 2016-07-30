@@ -109,10 +109,9 @@ void Serial_WriteByte(uint8_t byte)
 }
 void Serial_WriteString(string s)
 {
-  char buffer[s.size()+2];
-  sprintf(buffer, "%s\n", s.c_str());
-  //printf("Buffer: %s\n", buffer);
-  write(serialfd, buffer, sizeof(buffer));
+  s.push_back('\n');
+  write(serialfd, s.c_str(), strlen(s.c_str()));
+  tcflush(serialfd,TCIOFLUSH);
 }
 int Serial_Read()
 {
@@ -136,6 +135,7 @@ int Serial_Read(bool report_ok)
       replaceAll(lines[x], "\r", "");
       if (lines[x].at(0) == '<' && lines[x].at(lines[x].size()-1) == '>')
       {
+        //report_ok = false;
         //printf("Found info string!\n");
         replaceAll(lines[x], "<", "");
         replaceAll(lines[x], ">", "");
@@ -156,10 +156,10 @@ int Serial_Read(bool report_ok)
       }
       if (lines[x] == "ok")
       {
-        //printf("Recieved ok!\n");
         if (report_ok == true)
         {
           //printf("\tReporting ok!\n");
+          //printf("\tRecieved ok!\n");
           ready_to_send_next = true;
         }
         else
@@ -170,6 +170,7 @@ int Serial_Read(bool report_ok)
       }
       if (lines[x].find("error") != std::string::npos)
       {
+        printf("%s\n", lines[x]);
         if (report_ok == true)
         {
           //printf("\tReporting ok! (error)\n");

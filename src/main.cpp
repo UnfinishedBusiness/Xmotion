@@ -214,20 +214,24 @@ int main( int argc, char* argv[] )
                       //CNC_Stop();
                       int ctrl_x = 24;
                       stop = true;
-                      Serial_WriteString(to_string(ctrl_x)); //not tested
+                      Serial_WriteString("^X"); //not tested
+                      Serial_Read(false);
                       Sender_Stop();
                     }
                     else if (ObjectStack[x].tagname == "Start")
                     {
                       //CNC_Start();
+                      ready_to_send_next = true;
                       stop = false;
                       Serial_WriteString("~");
+                      Serial_Read(false);
                       MachineState = "Run";
                     }
                     else if (ObjectStack[x].tagname == "Hold")
                     {
                       //CNC_Hold();
                       Serial_WriteString("!");
+                      Serial_Read(false);
                       MachineState = "Hold";
                     }
                     else
