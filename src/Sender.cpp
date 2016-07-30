@@ -25,7 +25,7 @@ void Sender_Tick()
       line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //Remove all carage return characters
 
       printf("Sending Gcode: %s\n", line.c_str());
-      Serial_WriteString(line.c_str());
+      Serial_WriteString(line);
     }
     else
     {

@@ -157,14 +157,27 @@ int Serial_Read(bool report_ok)
       if (lines[x] == "ok")
       {
         //printf("Recieved ok!\n");
-        ready_to_send_next = true;
+        if (report_ok == true)
+        {
+          //printf("\tReporting ok!\n");
+          ready_to_send_next = true;
+        }
+        else
+        {
+          //printf("\tNot Reporting ok!\n");
+        }
         return 0;
       }
-      if (lines[x].find(lines[x]) != std::string::npos)
+      if (lines[x].find("error") != std::string::npos)
       {
-        if (report_ok)
+        if (report_ok == true)
         {
+          //printf("\tReporting ok! (error)\n");
           ready_to_send_next = true;
+        }
+        else
+        {
+          //printf("\tNot Reporting ok! (error)\n");
         }
         return 1;
       }
