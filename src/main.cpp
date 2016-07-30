@@ -83,7 +83,7 @@ int main( int argc, char* argv[] )
                 {
                   file_open_scroll_offset = 0;
                 }
-                file_open_scroll_offset += (y - LastMouseMovePos.y);
+                //file_open_scroll_offset += (y - LastMouseMovePos.y);
 
               }
               LastMouseMovePos.x = (float)x;
@@ -183,6 +183,14 @@ int main( int argc, char* argv[] )
                       #endif
 
                     }
+                    if (ObjectStack[x].tagname == "ScrollDownButton")
+                    {
+                      file_open_scroll_offset += 30;
+                    }
+                    if (ObjectStack[x].tagname == "ScrollUpButton")
+                    {
+                      file_open_scroll_offset -= 30;
+                    }
                     if (ObjectStack[x].tagname == "FileOpen")
                     {
                       current_activity = "FileOpen";
@@ -191,7 +199,12 @@ int main( int argc, char* argv[] )
                     {
                       current_activity = "Main";
                     }
-                    if (ObjectStack[x].tagname == "SetOrigin")
+                    if (ObjectStack[x].tagname == "SetZOrigin")
+                    {
+                      ////CNC_SetOrigin();
+                      Serial_WriteString("G92 Z0");
+                    }
+                    if (ObjectStack[x].tagname == "SetXYOrigin")
                     {
                       ////CNC_SetOrigin();
                       Serial_WriteString("G92 X0 Y0");
