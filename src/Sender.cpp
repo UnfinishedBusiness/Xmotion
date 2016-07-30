@@ -6,10 +6,6 @@ ifstream nc_file;
 
 bool ready_to_send_next;
 
-void Sender_SendNextLine()
-{
-
-}
 void Sender_Tick()
 {
   if (MachineState == "Run" && ready_to_send_next == true)

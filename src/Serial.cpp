@@ -114,21 +114,11 @@ void Serial_WriteString(string s)
   //printf("Buffer: %s\n", buffer);
   write(serialfd, buffer, sizeof(buffer));
 }
-void Serial_WriteStringAndWaitForOk(string s)
-{
-  char buffer[s.size()+2];
-  sprintf(buffer, "%s\n", s.c_str());
-  printf("Write and Waite Buffer: %s\n", buffer);
-  write(serialfd, buffer, sizeof(buffer));
-  while(true)
-  {
-    int r = Serial_Read();
-    if (r == 0) break; //we recieved ok
-    if (r == 1) break; //we recieved error
-  }
-  Sender_SendNextLine();
-}
 int Serial_Read()
+{
+  Serial_Read(true);
+}
+int Serial_Read(bool report_ok)
 {
   int data_ready;
   ioctl(serialfd, FIONREAD, &data_ready);
@@ -172,7 +162,10 @@ int Serial_Read()
       }
       if (lines[x].find(lines[x]) != std::string::npos)
       {
-        ready_to_send_next = true;
+        if (report_ok)
+        {
+          ready_to_send_next = true;
+        }
         return 1;
       }
     }

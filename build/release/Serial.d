@@ -22,7 +22,7 @@ build/release/Serial.o: src//Serial.cpp inc/Serial.h inc/application.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h inc/Config.h \
- inc/Render.h
+ inc/Render.h inc/Sender.h
 
 inc/Serial.h:
 
@@ -123,3 +123,5 @@ inc/application.h:
 inc/Config.h:
 
 inc/Render.h:
+
+inc/Sender.h:
