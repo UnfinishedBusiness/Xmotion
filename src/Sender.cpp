@@ -6,6 +6,7 @@ ifstream nc_file;
 
 bool ready_to_send_next;
 bool stop = true;
+bool Hold = false;
 
 void Sender_Tick()
 {

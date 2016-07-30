@@ -221,17 +221,27 @@ int main( int argc, char* argv[] )
                     else if (ObjectStack[x].tagname == "Start")
                     {
                       //CNC_Start();
-                      ready_to_send_next = true;
-                      stop = false;
-                      Serial_WriteString("~");
-                      Serial_Read(false);
-                      MachineState = "Run";
+                      if (Hold == true)
+                      {
+                        Hold = false;
+                        Serial_WriteString("~");
+                        Serial_Read(false);
+                      }
+                      else
+                      {
+                        ready_to_send_next = true;
+                        stop = false;
+                        Serial_WriteString("~");
+                        Serial_Read(false);
+                        MachineState = "Run";
+                      }
                     }
                     else if (ObjectStack[x].tagname == "Hold")
                     {
                       //CNC_Hold();
                       Serial_WriteString("!");
                       Serial_Read(false);
+                      Hold = true;
                       MachineState = "Hold";
                     }
                     else
