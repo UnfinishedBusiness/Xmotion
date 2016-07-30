@@ -180,43 +180,52 @@ void Render_RenderStack()
 			char buffer[100];
 			sprintf(buffer, "X: %0.4f", WPos_X);
 			SDL_Texture *XCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
-			SDL_QueryTexture(XCordTexture, NULL, NULL, &dst.w, &dst.h);
-			SDL_SetTextureBlendMode( XCordTexture, SDL_BLENDMODE_BLEND );
-			SDL_SetTextureAlphaMod( XCordTexture, 255 );
-			SDL_RenderCopyEx( gRenderer, XCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
-
+			if (XCordTexture != NULL)
+			{
+				SDL_QueryTexture(XCordTexture, NULL, NULL, &dst.w, &dst.h);
+				SDL_SetTextureBlendMode( XCordTexture, SDL_BLENDMODE_BLEND );
+				SDL_SetTextureAlphaMod( XCordTexture, 255 );
+				SDL_RenderCopyEx( gRenderer, XCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
 			dst.x = 60;
 			dst.y = 80;
 			sprintf(buffer, "Y: %0.4f", WPos_Y);
 			SDL_Texture *YCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
-			SDL_QueryTexture(YCordTexture, NULL, NULL, &dst.w, &dst.h);
-			SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
-			SDL_SetTextureAlphaMod( YCordTexture, 255 );
-			SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
-
+			if (YCordTexture != NULL)
+			{
+				SDL_QueryTexture(YCordTexture, NULL, NULL, &dst.w, &dst.h);
+				SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
+				SDL_SetTextureAlphaMod( YCordTexture, 255 );
+				SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
 			dst.x = 60;
 			dst.y = 130;
 			sprintf(buffer, "Z: %0.4f", WPos_Z);
 			SDL_Texture *ZCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
-			SDL_QueryTexture(ZCordTexture, NULL, NULL, &dst.w, &dst.h);
-			SDL_SetTextureBlendMode( ZCordTexture, SDL_BLENDMODE_BLEND );
-			SDL_SetTextureAlphaMod( ZCordTexture, 255 );
-			SDL_RenderCopyEx( gRenderer, ZCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
-
+			if (ZCordTexture != NULL)
+			{
+				SDL_QueryTexture(ZCordTexture, NULL, NULL, &dst.w, &dst.h);
+				SDL_SetTextureBlendMode( ZCordTexture, SDL_BLENDMODE_BLEND );
+				SDL_SetTextureAlphaMod( ZCordTexture, 255 );
+				SDL_RenderCopyEx( gRenderer, ZCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
 			dst.x = 250;
 			dst.y = 35;
 			sprintf(buffer, "Status: %s", MachineState.c_str());
 			SDL_Texture *StatusTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
-			SDL_QueryTexture(StatusTexture, NULL, NULL, &dst.w, &dst.h);
-			SDL_SetTextureBlendMode( StatusTexture, SDL_BLENDMODE_BLEND );
-			SDL_SetTextureAlphaMod( StatusTexture, 255 );
-			SDL_RenderCopyEx( gRenderer, StatusTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			if (StatusTexture != NULL)
+			{
+				SDL_QueryTexture(StatusTexture, NULL, NULL, &dst.w, &dst.h);
+				SDL_SetTextureBlendMode( StatusTexture, SDL_BLENDMODE_BLEND );
+				SDL_SetTextureAlphaMod( StatusTexture, 255 );
+				SDL_RenderCopyEx( gRenderer, StatusTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
 
 
-			//if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
-			//if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			//if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			//if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
+			if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
+			if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
 
 		}
 		if (current_activity == "FileOpen")
