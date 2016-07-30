@@ -2,8 +2,9 @@
 #define SENDER_
 #include <application.h>
 
-extern bool ok_ready;
+extern bool ready_to_send_next;
+void Sender_Tick();
+void Sender_Stop();
 
 void Sender_SendNextLine();
-void Sender_Stop();
 #endif

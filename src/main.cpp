@@ -208,7 +208,6 @@ int main( int argc, char* argv[] )
                       //CNC_Start();
                       Serial_WriteString("~");
                       MachineState = "Run";
-                      Sender_SendNextLine();
                     }
                     else if (ObjectStack[x].tagname == "Hold")
                     {
@@ -272,6 +271,8 @@ int main( int argc, char* argv[] )
               }
             }
   			}
+        Sender_Tick();
+        Serial_Read();
         Render_RenderStack();
         SDL_Delay(100);
 		}

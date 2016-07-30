@@ -111,9 +111,8 @@ void Serial_WriteString(string s)
 {
   char buffer[s.size()+2];
   sprintf(buffer, "%s\n", s.c_str());
-  printf("Buffer: %s\n", buffer);
+  //printf("Buffer: %s\n", buffer);
   write(serialfd, buffer, sizeof(buffer));
-  Serial_Read();
 }
 void Serial_WriteStringAndWaitForOk(string s)
 {
@@ -168,10 +167,12 @@ int Serial_Read()
       if (lines[x] == "ok")
       {
         //printf("Recieved ok!\n");
+        ready_to_send_next = true;
         return 0;
       }
       if (lines[x].find(lines[x]) != std::string::npos)
       {
+        ready_to_send_next = true;
         return 1;
       }
     }

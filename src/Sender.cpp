@@ -4,10 +4,17 @@ using namespace std;
 
 ifstream nc_file;
 
+bool ready_to_send_next;
+
 void Sender_SendNextLine()
 {
-  if (MachineState == "Run")
+
+}
+void Sender_Tick()
+{
+  if (MachineState == "Run" && ready_to_send_next == true)
   {
+    ready_to_send_next = false;
     if (nc_file.is_open()) //File is already open, send next line until que ammount is reached else open file
     {
       string line;
@@ -16,7 +23,9 @@ void Sender_SendNextLine()
       line.erase(std::remove(line.begin(), line.end(), '\r'), line.end()); //Remove all carage return characters
 
       printf("Sending Gcode: %s\n", line.c_str());
-      Serial_WriteStringAndWaitForOk(line.c_str());
+
+      //Serial_WriteStringAndWaitForOk(line.c_str());
+      Serial_WriteString(line.c_str());
     }
     else
     {
