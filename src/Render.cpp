@@ -213,10 +213,10 @@ void Render_RenderStack()
 			SDL_RenderCopyEx( gRenderer, StatusTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 
 
-			if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
-			if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
+			//if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
+			//if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			//if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			//if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
 
 		}
 		if (current_activity == "FileOpen")
