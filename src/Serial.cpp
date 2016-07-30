@@ -170,7 +170,7 @@ int Serial_Read(bool report_ok)
       }
       if (lines[x].find("error") != std::string::npos)
       {
-        printf("%s\n", lines[x]);
+        printf("%s\n", lines[x].c_str());
         if (report_ok == true)
         {
           //printf("\tReporting ok! (error)\n");
