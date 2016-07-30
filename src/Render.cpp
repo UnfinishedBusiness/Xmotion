@@ -187,6 +187,10 @@ void Render_RenderStack()
 				SDL_SetTextureAlphaMod( XCordTexture, 255 );
 				SDL_RenderCopyEx( gRenderer, XCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 			}
+			else
+			{
+				printf("Error allocating texture!\n");
+			}
 			dst.x = 60;
 			dst.y = 80;
 			sprintf(buffer, "Y: %0.4f", WPos_Y);
@@ -197,6 +201,10 @@ void Render_RenderStack()
 				SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
 				SDL_SetTextureAlphaMod( YCordTexture, 255 );
 				SDL_RenderCopyEx( gRenderer, YCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
+			else
+			{
+				printf("Error allocating texture!\n");
 			}
 			dst.x = 60;
 			dst.y = 130;
@@ -209,6 +217,10 @@ void Render_RenderStack()
 				SDL_SetTextureAlphaMod( ZCordTexture, 255 );
 				SDL_RenderCopyEx( gRenderer, ZCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 			}
+			else
+			{
+				printf("Error allocating texture!\n");
+			}
 			dst.x = 250;
 			dst.y = 35;
 			sprintf(buffer, "Status: %s", MachineState.c_str());
@@ -219,6 +231,10 @@ void Render_RenderStack()
 				SDL_SetTextureBlendMode( StatusTexture, SDL_BLENDMODE_BLEND );
 				SDL_SetTextureAlphaMod( StatusTexture, 255 );
 				SDL_RenderCopyEx( gRenderer, StatusTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+			}
+			else
+			{
+				printf("Error allocating texture!\n");
 			}
 
 
