@@ -3,6 +3,8 @@
 #include <application.h>
 
 extern bool ready_to_send_next;
+extern bool stop;
+
 void Sender_Tick();
 void Sender_Stop();
 

@@ -213,12 +213,14 @@ int main( int argc, char* argv[] )
                     {
                       //CNC_Stop();
                       int ctrl_x = 24;
+                      stop = true;
                       Serial_WriteString(to_string(ctrl_x)); //not tested
                       Sender_Stop();
                     }
                     else if (ObjectStack[x].tagname == "Start")
                     {
                       //CNC_Start();
+                      stop = false;
                       Serial_WriteString("~");
                       MachineState = "Run";
                     }

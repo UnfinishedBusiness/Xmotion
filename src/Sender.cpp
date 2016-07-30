@@ -5,10 +5,11 @@ using namespace std;
 ifstream nc_file;
 
 bool ready_to_send_next;
+bool stop = true;
 
 void Sender_Tick()
 {
-  if (MachineState == "Run" && ready_to_send_next == true)
+  if (MachineState == "Run" && ready_to_send_next == true && stop == false)
   {
     ready_to_send_next = false;
     if (nc_file.is_open()) //File is already open, send next line until que ammount is reached else open file
@@ -18,6 +19,7 @@ void Sender_Tick()
       {
         printf("End of file!\n");
         MachineState = "Idle";
+        stop = true;
         Sender_Stop();
         return;
       }
