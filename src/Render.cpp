@@ -16,12 +16,21 @@ color_t BackgroundColor = color_t{ 0, 0, 0, 0 }; //Default Black
 int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 480;
 
+float WPos_X;
+float WPos_Y;
+float WPos_Z;
+
+string MachineState;
 
 string current_activity;
 
 bool Render_Init()
 {
   //Initialization flag
+	WPos_X = 0;
+	WPos_Y = 0;
+	WPos_Z = 0;
+	MachineState = "Idle";
 	bool success = true;
 
 	//Initialize SDL
@@ -123,10 +132,10 @@ float file_open_scroll_offset = 0;
 vector<object_t> file_tiles;
 void Render_RenderStack()
 {
-	  if (machine_status_count > 10)
+	  if (machine_status_count > 1)
 		{
 			machine_status_count = 0;
-			Serial_WriteString("?");
+		//Serial_WriteString("?");
 		}
 		machine_status_count ++;
     //Initialize renderer color
@@ -167,7 +176,7 @@ void Render_RenderStack()
 			dst.x = 60;
 			dst.y = 30;
 			char buffer[100];
-			sprintf(buffer, "X: %0.4f", (float)0);
+			sprintf(buffer, "X: %0.4f", WPos_X);
 			SDL_Texture *XCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
 			SDL_QueryTexture(XCordTexture, NULL, NULL, &dst.w, &dst.h);
 			SDL_SetTextureBlendMode( XCordTexture, SDL_BLENDMODE_BLEND );
@@ -176,7 +185,7 @@ void Render_RenderStack()
 
 			dst.x = 60;
 			dst.y = 80;
-			sprintf(buffer, "Y: %0.4f", (float)0);
+			sprintf(buffer, "Y: %0.4f", WPos_Y);
 			SDL_Texture *YCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
 			SDL_QueryTexture(YCordTexture, NULL, NULL, &dst.w, &dst.h);
 			SDL_SetTextureBlendMode( YCordTexture, SDL_BLENDMODE_BLEND );
@@ -185,17 +194,27 @@ void Render_RenderStack()
 
 			dst.x = 60;
 			dst.y = 130;
-			sprintf(buffer, "Z: %0.4f", (float)0);
+			sprintf(buffer, "Z: %0.4f", WPos_Z);
 			SDL_Texture *ZCordTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 40, string(buffer));
 			SDL_QueryTexture(ZCordTexture, NULL, NULL, &dst.w, &dst.h);
 			SDL_SetTextureBlendMode( ZCordTexture, SDL_BLENDMODE_BLEND );
 			SDL_SetTextureAlphaMod( ZCordTexture, 255 );
 			SDL_RenderCopyEx( gRenderer, ZCordTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
 
+			dst.x = 250;
+			dst.y = 35;
+			sprintf(buffer, "Status: %s", MachineState.c_str());
+			SDL_Texture *StatusTexture = Render_loadFont("Sans.ttf", SDL_Color{0, 0, 0}, 20, string(buffer));
+			SDL_QueryTexture(StatusTexture, NULL, NULL, &dst.w, &dst.h);
+			SDL_SetTextureBlendMode( StatusTexture, SDL_BLENDMODE_BLEND );
+			SDL_SetTextureAlphaMod( StatusTexture, 255 );
+			SDL_RenderCopyEx( gRenderer, StatusTexture, NULL, &dst, 0, NULL, SDL_FLIP_NONE );
+
 
 			if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
 			if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
 			if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
+			if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
 
 		}
 		if (current_activity == "FileOpen")

@@ -30,6 +30,7 @@
 #include <Config.h>
 #include <Render.h>
 #include <Serial.h>
+#include <Sender.h>
 
 #ifndef APPLICATION_
 #define  APPLICATION_
@@ -100,10 +101,13 @@ extern bool sim;
 extern bool quit;
 extern std::string current_activity;
 extern std::string current_file;
-
+extern std::string MachineState;
 extern float file_open_scroll_offset;
 extern std::vector<object_t> file_tiles;
 extern float control_signal_pulse;
+extern float WPos_X;
+extern float WPos_Y;
+extern float WPos_Z;
 
 #define KNORMAL  "\x1B[0m"
 #define KRED  "\x1B[31m"

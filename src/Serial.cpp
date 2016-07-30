@@ -83,25 +83,102 @@ long map_range(long x, long in_min, long in_max, long out_min, long out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+void replaceAll( string& source, const string& from, const string& to )
+{
+    string newString;
+    newString.reserve( source.length() );  // avoids a few memory allocations
+
+    string::size_type lastPos = 0;
+    string::size_type findPos;
+
+    while( string::npos != ( findPos = source.find( from, lastPos )))
+    {
+        newString.append( source, lastPos, findPos - lastPos );
+        newString += to;
+        lastPos = findPos + from.length();
+    }
+
+    // Care for the rest after last occurrence
+    newString += source.substr( lastPos );
+
+    source.swap( newString );
+}
 void Serial_WriteByte(uint8_t byte)
 {
   write(serialfd, &byte, 1);
 }
 void Serial_WriteString(string s)
 {
-  for (int x = 0; x < s.size(); x++)
-  {
-    //printf("Writing byte: %c\n\n", s.c_str()[x]);
-    Serial_WriteByte(s.c_str()[x]);
-  }
-  Serial_WriteByte('\r');
+  char buffer[s.size()+2];
+  sprintf(buffer, "%s\n", s.c_str());
+  printf("Buffer: %s\n", buffer);
+  write(serialfd, buffer, sizeof(buffer));
   Serial_Read();
 }
-void Serial_Read()
+void Serial_WriteStringAndWaitForOk(string s)
+{
+  char buffer[s.size()+2];
+  sprintf(buffer, "%s\n", s.c_str());
+  printf("Write and Waite Buffer: %s\n", buffer);
+  write(serialfd, buffer, sizeof(buffer));
+  while(true)
+  {
+    int r = Serial_Read();
+    if (r == 0) break; //we recieved ok
+    if (r == 1) break; //we recieved error
+  }
+  Sender_SendNextLine();
+}
+int Serial_Read()
 {
   int data_ready;
   ioctl(serialfd, FIONREAD, &data_ready);
-  unsigned char buffer[data_ready + 1];
+  unsigned char buffer[data_ready];
   read(serialfd, buffer, sizeof(buffer));
-  printf("Read: %s\n", buffer);
+  buffer[strlen((char*)buffer) - 1] = '\0';
+  //printf("Read: %s\n", buffer);
+  string data(reinterpret_cast<char*>(buffer));
+  vector<string> lines = split(data, '\n');
+  for(int x = 0; x < lines.size(); x++)
+  {
+    try
+    {
+      //printf("Line %i - %s\n", x, lines[x].c_str());
+      replaceAll(lines[x], "\r", "");
+      if (lines[x].at(0) == '<' && lines[x].at(lines[x].size()-1) == '>')
+      {
+        //printf("Found info string!\n");
+        replaceAll(lines[x], "<", "");
+        replaceAll(lines[x], ">", "");
+
+        vector<string> fields = split(lines[x], ',');
+        //printf("Size == %i\n", fields.size());
+        if (fields.size() == 7)
+        {
+          MachineState = fields[0];
+
+          //Work positions are 4, 5, 6; 4 contains the poorly formatted "WPos:"
+          replaceAll(fields[4], "WPos:", "");
+          WPos_X = atof(fields[4].c_str());
+          WPos_Y = atof(fields[5].c_str());
+          WPos_Z = atof(fields[6].c_str());
+
+        }
+      }
+      if (lines[x] == "ok")
+      {
+        //printf("Recieved ok!\n");
+        return 0;
+      }
+      if (lines[x].find(lines[x]) != std::string::npos)
+      {
+        return 1;
+      }
+    }
+    catch (const std::out_of_range& oor)
+    {
+      //std::cerr << "Out of Range error: " << oor.what() << '\n';
+    }
+  }
+  return -1;
 }

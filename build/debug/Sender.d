@@ -1,4 +1,4 @@
-build/debug/main.o: src//main.cpp inc/application.h \
+build/debug/Sender.o: src//Sender.cpp inc/Sender.h inc/application.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
@@ -22,7 +22,9 @@ build/debug/main.o: src//main.cpp inc/application.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h inc/Config.h \
- inc/Render.h inc/Serial.h inc/Sender.h
+ inc/Render.h inc/Serial.h
+
+inc/Sender.h:
 
 inc/application.h:
 
@@ -123,5 +125,3 @@ inc/Config.h:
 inc/Render.h:
 
 inc/Serial.h:
-
-inc/Sender.h:

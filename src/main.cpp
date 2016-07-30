@@ -194,28 +194,27 @@ int main( int argc, char* argv[] )
                     if (ObjectStack[x].tagname == "SetOrigin")
                     {
                       ////CNC_SetOrigin();
+                      Serial_WriteString("G92 X0 Y0");
                     }
                     else if (ObjectStack[x].tagname == "Stop")
                     {
                       //CNC_Stop();
+                      int ctrl_x = 24;
+                      Serial_WriteString(to_string(ctrl_x)); //not tested
+                      Sender_Stop();
                     }
                     else if (ObjectStack[x].tagname == "Start")
                     {
                       //CNC_Start();
+                      Serial_WriteString("~");
+                      MachineState = "Run";
+                      Sender_SendNextLine();
                     }
                     else if (ObjectStack[x].tagname == "Hold")
                     {
                       //CNC_Hold();
-                    }
-                    else if (ObjectStack[x].tagname == "JogXPlus")
-                    {
-                      //CNC_JogXPlus();
-                      Serial_WriteString("G91G0X0.01");
-                    }
-                    else if (ObjectStack[x].tagname == "JogXMinus")
-                    {
-                      //CNC_JogXMinus();
-                      Serial_WriteString("G91G0X-0.01");
+                      Serial_WriteString("!");
+                      MachineState = "Hold";
                     }
                     else
                     {
@@ -230,13 +229,37 @@ int main( int argc, char* argv[] )
                           MouseDown = false;
                           break;
                         }
+                        if (ObjectStack[x].tagname == "JogXPlus")
+                        {
+                          //CNC_JogXPlus();
+                          Serial_WriteString("G91G0X0.001");
+                          usleep(6000);
+                        }
+                        if (ObjectStack[x].tagname == "JogXMinus")
+                        {
+                          //CNC_JogXMinus();
+                          Serial_WriteString("G91G0X-0.001");
+                          usleep(6000);
+                        }
                         if (ObjectStack[x].tagname == "JogYPlus")
                         {
-                          //CNC_JogYPlus();
+                          Serial_WriteString("G91G0Y0.001");
+                          usleep(6000);
                         }
                         if (ObjectStack[x].tagname == "JogYMinus")
                         {
-                          //CNC_JogYMinus();
+                          Serial_WriteString("G91G0Y-0.001");
+                          usleep(6000);
+                        }
+                        if (ObjectStack[x].tagname == "JogZPlus")
+                        {
+                          Serial_WriteString("G91G0Z0.001");
+                          usleep(6000);
+                        }
+                        if (ObjectStack[x].tagname == "JogZMinus")
+                        {
+                          Serial_WriteString("G91G0Z-0.001");
+                          usleep(6000);
                         }
                       }
                     }

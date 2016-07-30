@@ -22,7 +22,7 @@ build/debug/Render.o: src//Render.cpp inc/Render.h inc/application.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_image.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_ttf.h inc/Config.h \
- inc/Serial.h
+ inc/Serial.h inc/Sender.h
 
 inc/Render.h:
 
@@ -123,3 +123,5 @@ inc/application.h:
 inc/Config.h:
 
 inc/Serial.h:
+
+inc/Sender.h:
