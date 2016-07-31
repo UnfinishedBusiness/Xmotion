@@ -110,10 +110,6 @@ SDL_Texture* Render_loadImage( string path )
 	}
 	return newTexture;
 }
-SDL_Texture* Render_RotateSurface(SDL_Surface* Surface, double Angle)
-{
-  return NULL;
-}
 SDL_Texture* Render_loadFont(string font, SDL_Color color, int size, string text)
 {
 	TTF_Font* Font = TTF_OpenFont(font.c_str(), size);
@@ -250,12 +246,12 @@ void Render_RenderStack()
 			{
 				if ( file_tiles[y].texture != NULL )
 				{
-					printf("Freeing texture!\n");
+					//printf("Freeing texture!\n");
 					SDL_DestroyTexture( file_tiles[y].texture );
 				}
 				else
 				{
-					printf("Can't free texture!\n");
+					//printf("Can't free texture!\n");
 				}
 			}
 			file_tiles.clear();
