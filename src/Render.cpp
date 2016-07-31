@@ -238,10 +238,10 @@ void Render_RenderStack()
 			}
 
 
-			if ( XCordTexture != NULL ) { SDL_DestroyTexture( XCordTexture ); }
-			if ( YCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			if ( ZCordTexture != NULL ) { SDL_DestroyTexture( YCordTexture ); }
-			if ( StatusTexture != NULL ) { SDL_DestroyTexture( StatusTexture ); }
+			if ( XCordTexture != NULL ) SDL_DestroyTexture( XCordTexture );
+			if ( YCordTexture != NULL ) SDL_DestroyTexture( YCordTexture );
+			if ( ZCordTexture != NULL ) SDL_DestroyTexture( YCordTexture );
+			if ( StatusTexture != NULL ) SDL_DestroyTexture( StatusTexture );
 
 		}
 		if (current_activity == "FileOpen")
