@@ -110,7 +110,7 @@ void Serial_WriteByte(uint8_t byte)
 void Serial_WriteString(string s)
 {
   s.push_back('\n');
-  write(serialfd, s.c_str(), strlen(s.c_str()));
+  write(serialfd, s.c_str(), strlen(s.c_str()) + 1);
   tcflush(serialfd,TCIOFLUSH);
 }
 int Serial_Read()
