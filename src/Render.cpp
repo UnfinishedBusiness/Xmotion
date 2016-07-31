@@ -246,6 +246,18 @@ void Render_RenderStack()
 		}
 		if (current_activity == "FileOpen")
 		{
+			for (int y = 0; y < file_tiles.size(); y++)
+			{
+				if ( file_tiles[y].texture != NULL )
+				{
+					printf("Freeing texture!\n");
+					SDL_DestroyTexture( file_tiles[y].texture );
+				}
+				else
+				{
+					printf("Can't free texture!\n");
+				}
+			}
 			file_tiles.clear();
 			point_t top_left;
 			top_left.x = 250;
