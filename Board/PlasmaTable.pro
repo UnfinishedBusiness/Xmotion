@@ -1,4 +1,4 @@
-update=Sat Jun 11 13:23:07 2016
+update=Fri Sep  2 16:34:45 2016
 version=1
 last_client=kicad
 [pcbnew]
@@ -20,6 +20,11 @@ SolderMaskMinWidth=0.000000000000
 DrawSegmentWidth=0.200000000000
 BoardOutlineThickness=0.100000000000
 ModuleOutlineThickness=0.150000000000
+[general]
+version=1
+[cvpcb]
+version=1
+NetIExt=net
 [eeschema]
 version=1
 LibDir=
@@ -53,8 +58,4 @@ LibName26=opto
 LibName27=atmel
 LibName28=contrib
 LibName29=valves
-[general]
-version=1
-[cvpcb]
-version=1
-NetIExt=net
+LibName30=/root/Projects/Mark1/Board/Mark1
