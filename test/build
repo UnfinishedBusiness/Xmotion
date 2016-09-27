@@ -1,5 +1,0 @@
-#!/bin/bash
-for d in *.c
-do
-	gcc $d -o bin/${d%.*} -lwiringPi
-done

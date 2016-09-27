@@ -1,3 +1,0 @@
-/root/Projects/PlasmaTable/Visualizer/build/CMakeFiles/edit_cache.dir
-/root/Projects/PlasmaTable/Visualizer/build/CMakeFiles/rebuild_cache.dir
-/root/Projects/PlasmaTable/Visualizer/build/CMakeFiles/Visualizer.dir
