@@ -1,6 +1,6 @@
 #!/bin/bash
 PlotFolder="Plot"
-Boardname="PlasmaTable"
+Boardname="Xmotion"
 Folder=$1 #Output Folder
 Pwd=`pwd`
 mkdir $Folder/ 2> /dev/null
