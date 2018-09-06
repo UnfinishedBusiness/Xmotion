@@ -10,8 +10,8 @@
 /*******************
  * GENERAL SETTING
  *******************/
-#define LV_EX_PRINTF    0       /*Enable printf-ing data*/
-#define LV_EX_KEYBOARD	0		/*Add PC keyboard support to some examples (`lv_drvers` repository is required)*/
+#define LV_EX_PRINTF    1       /*Enable printf-ing data*/
+#define LV_EX_KEYBOARD	1		/*Add PC keyboard support to some examples (`lv_drvers` repository is required)*/
 
 /*******************
  *   TEST USAGE
@@ -34,10 +34,10 @@
 
 /*A demo application with Keyboard, Text area, List and Chart
  * placed on Tab view */
-#define USE_LV_DEMO        0
+#define USE_LV_DEMO        1
 #if USE_LV_DEMO
-#define LV_DEMO_WALLPAPER  0    /*Create a wallpaper too*/
-#define LV_DEMO_SLIDE_SHOW 1    /*Automatically switch between tabs*/
+#define LV_DEMO_WALLPAPER  1    /*Create a wallpaper too*/
+#define LV_DEMO_SLIDE_SHOW 0    /*Automatically switch between tabs*/
 #endif
 
 /*MCU and memory usage monitoring*/

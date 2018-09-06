@@ -43,7 +43,10 @@ build/release/main.o: main.c lvgl/lvgl.h lvgl/lv_misc/lv_task.h \
  lvgl/lv_objx/lv_gauge.h lvgl/lv_objx/lv_lmeter.h \
  lvgl/lv_objx/lv_lmeter.h lvgl/lv_objx/lv_sw.h lvgl/lv_objx/lv_slider.h \
  lv_drivers/display/fbdev.h lv_drivers/display/../../lv_drv_conf.h \
- lv_drivers/display/../../lv_conf.h lvgl/lv_misc/lv_color.h
+ lv_drivers/display/../../lv_conf.h lvgl/lv_misc/lv_color.h \
+ lv_examples/lv_apps/demo/demo.h \
+ lv_examples/lv_apps/demo/../../../lv_ex_conf.h lvgl/lv_hal/lv_hal.h \
+ lv_examples/lv_apps/demo/../../../lvgl/lvgl.h
 
 lvgl/lvgl.h:
 
@@ -232,3 +235,11 @@ lv_drivers/display/../../lv_drv_conf.h:
 lv_drivers/display/../../lv_conf.h:
 
 lvgl/lv_misc/lv_color.h:
+
+lv_examples/lv_apps/demo/demo.h:
+
+lv_examples/lv_apps/demo/../../../lv_ex_conf.h:
+
+lvgl/lv_hal/lv_hal.h:
+
+lv_examples/lv_apps/demo/../../../lvgl/lvgl.h:

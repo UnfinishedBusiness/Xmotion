@@ -30,8 +30,8 @@
  *===================*/
 
 /* Horizontal and vertical resolution of the library.*/
-#define LV_HOR_RES          (1280)
-#define LV_VER_RES          (1024)
+#define LV_HOR_RES          (1680)
+#define LV_VER_RES          (1050)
 #define LV_DPI              100
 
 /* Size of VDB (Virtual Display Buffer: the internal graphics buffer).
