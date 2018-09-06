@@ -1,3 +1,0 @@
-(fp_lib_table
-  (lib (name stm32)(type KiCad)(uri /run/media/haz/DATA/Alexis/robotronik/electronique/Librairies/Kicad/stm32.pretty)(options "")(descr ""))
-)
