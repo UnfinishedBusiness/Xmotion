@@ -1,6 +1,6 @@
 /**
  * @file lv_indev_proc.c
- * 
+ *
  */
 
 /*********************
@@ -16,6 +16,7 @@
 #include "../lv_misc/lv_math.h"
 #include "../lv_draw/lv_draw_rbasic.h"
 #include "lv_obj.h"
+#include "../../input_devices/mouse.h"
 
 /*********************
  *      DEFINES
@@ -249,14 +250,15 @@ static void indev_proc_task(void * param)
 
     /*Read and process all indevs*/
     while(i) {
-        indev_act = i;
 
+        indev_act = i;
         /*Handle reset query before processing the point*/
         indev_proc_reset_query_handler(i);
 
         if(i->proc.disabled == 0) {
             bool more_to_read;
             do {
+
                 /*Read the data*/
                 more_to_read = lv_indev_read(i, &data);
                 i->proc.state = data.state;
@@ -292,6 +294,9 @@ static void indev_proc_task(void * param)
  */
 static void indev_pointer_proc(lv_indev_t * i, lv_indev_data_t * data)
 {
+    //data->point.x = mouse_get_current_x();
+    //data->point.y = mouse_get_current_y();
+    //printf("Cursor is moving -> x=%d, y=%d\n", data->point.x, data->point.y);
     /*Move the cursor if set and moved*/
     if(i->cursor != NULL &&
        (i->proc.last_point.x != data->point.x ||
@@ -415,7 +420,7 @@ static void indev_button_proc(lv_indev_t * i, lv_indev_data_t * data)
 static void indev_proc_press(lv_indev_proc_t * proc)
 {
     lv_obj_t * pr_obj = proc->act_obj;
-    
+
     if(proc->wait_unil_release != 0) return;
 
     /*If there is no last object then search*/
@@ -431,23 +436,23 @@ static void indev_proc_press(lv_indev_proc_t * proc)
     }
     /*If a dragable or a protected object was the last then keep it*/
     else {
-        
+
     }
-    
+
     /*If a new object was found reset some variables and send a pressed signal*/
     if(pr_obj != proc->act_obj) {
 
         proc->last_point.x = proc->act_point.x;
         proc->last_point.y = proc->act_point.y;
-        
+
         /*If a new object found the previous was lost, so send a signal*/
         if(proc->act_obj != NULL) {
             proc->act_obj->signal_func(proc->act_obj, LV_SIGNAL_PRESS_LOST, indev_act);
             if(proc->reset_query != 0) return;
         }
-        
+
         if(pr_obj != NULL) {
-            /* Save the time when the obj pressed. 
+            /* Save the time when the obj pressed.
              * It is necessary to count the long press time.*/
             proc->pr_timestamp = lv_tick_get();
             proc->long_pr_sent = 0;
@@ -477,7 +482,7 @@ static void indev_proc_press(lv_indev_proc_t * proc)
             if(proc->reset_query != 0) return;
         }
     }
-    
+
     proc->act_obj = pr_obj;            /*Save the pressed object*/
     proc->last_obj = proc->act_obj;   /*Refresh the last_obj*/
 
@@ -542,8 +547,8 @@ static void indev_proc_release(lv_indev_proc_t * proc)
         proc->pr_timestamp = 0;
         proc->longpr_rep_timestamp = 0;
     }
-    
-    /*The reset can be set in the signal function. 
+
+    /*The reset can be set in the signal function.
      * In case of reset query ignore the remaining parts.*/
     if(proc->last_obj != NULL && proc->reset_query == 0) {
         indev_drag_throw(proc);
@@ -577,26 +582,26 @@ static void indev_proc_reset_query_handler(lv_indev_t * indev)
  * Search the most top, clickable object on the last point of an input device
  * @param indev pointer to  an input device
  * @param obj pointer to a start object, typically the screen
- * @return pointer to the found object or NULL if there was no suitable object 
+ * @return pointer to the found object or NULL if there was no suitable object
  */
 static lv_obj_t * indev_search_obj(const lv_indev_proc_t * indev, lv_obj_t * obj)
 {
     lv_obj_t * found_p = NULL;
-    
+
     /*If the point is on this object*/
     /*Check its children too*/
     if(lv_area_is_point_on(&obj->coords, &indev->act_point)) {
         lv_obj_t * i;
-    
+
         LL_READ(obj->child_ll, i) {
             found_p = indev_search_obj(indev, i);
-            
+
             /*If a child was found then break*/
             if(found_p != NULL) {
                 break;
             }
         }
-        
+
         /*If then the children was not ok, and this obj is clickable
          * and it or its parent is not hidden then save this object*/
         if(found_p == NULL && lv_obj_get_click(obj) != false) {
@@ -608,10 +613,10 @@ static lv_obj_t * indev_search_obj(const lv_indev_proc_t * indev, lv_obj_t * obj
         	/*No parent found with hidden == true*/
         	if(hidden_i == NULL) found_p = obj;
         }
-        
+
     }
-    
-    return found_p;    
+
+    return found_p;
 }
 
 /**
@@ -621,7 +626,7 @@ static lv_obj_t * indev_search_obj(const lv_indev_proc_t * indev, lv_obj_t * obj
 static void indev_drag(lv_indev_proc_t * state)
 {
     lv_obj_t * drag_obj = state->act_obj;
-    
+
     /*If drag parent is active check recursively the drag_parent attribute*/
 	while(lv_obj_get_drag_parent(drag_obj) != false &&
 		  drag_obj != NULL) {
@@ -629,14 +634,14 @@ static void indev_drag(lv_indev_proc_t * state)
 	}
 
 	if(drag_obj == NULL) return;
-    
+
     if(lv_obj_get_drag(drag_obj) == false) return;
 
     /*If still there is no drag then count the movement*/
     if(state->drag_range_out == 0) {
         state->drag_sum.x += state->vect.x;
         state->drag_sum.y += state->vect.y;
-        
+
         /*If a move is greater then LV_DRAG_LIMIT then begin the drag*/
         if(LV_MATH_ABS(state->drag_sum.x) >= LV_INDEV_DRAG_LIMIT ||
            LV_MATH_ABS(state->drag_sum.y) >= LV_INDEV_DRAG_LIMIT)
@@ -644,7 +649,7 @@ static void indev_drag(lv_indev_proc_t * state)
                 state->drag_range_out = 1;
            }
     }
-    
+
     /*If the drag limit is stepped over then handle the dragging*/
     if(state->drag_range_out != 0) {
         /*Set new position if the vector is not zero*/
@@ -688,7 +693,7 @@ static void indev_drag_throw(lv_indev_proc_t * state)
 
     /*Set new position if the vector is not zero*/
     lv_obj_t * drag_obj = state->last_obj;
-    
+
     /*If drag parent is active check recursively the drag_parent attribute*/
 	while(lv_obj_get_drag_parent(drag_obj) != false &&
 		  drag_obj != NULL) {
@@ -696,18 +701,18 @@ static void indev_drag_throw(lv_indev_proc_t * state)
 	}
 
 	if(drag_obj == NULL) return;
-    
+
     /*Return if the drag throw is not enabled*/
     if(lv_obj_get_drag_throw(drag_obj) == false ){
     	state->drag_in_prog = 0;
         drag_obj->signal_func(drag_obj, LV_SIGNAL_DRAG_END, indev_act);
         return;
     }
-    
+
     /*Reduce the vectors*/
     state->vect.x = state->vect.x * (100 -LV_INDEV_DRAG_THROW) / 100;
     state->vect.y = state->vect.y * (100 -LV_INDEV_DRAG_THROW) / 100;
-    
+
     if(state->vect.x != 0 ||
        state->vect.y != 0)
     {

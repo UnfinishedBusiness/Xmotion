@@ -1,4 +1,4 @@
-build/release/lvgl/lv_misc/lv_circ.o: lvgl/lv_misc/lv_circ.c \
- lvgl/lv_misc/lv_area.h
+build/release/lvgl/lv_misc/lv_circ.o: src/lvgl/lv_misc/lv_circ.c \
+ src/lvgl/lv_misc/lv_area.h
 
-lvgl/lv_misc/lv_area.h:
+src/lvgl/lv_misc/lv_area.h:

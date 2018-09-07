@@ -1,1 +1,1 @@
-build/release/lvgl/lv_misc/lv_templ.o: lvgl/lv_misc/lv_templ.c
+build/release/lvgl/lv_misc/lv_templ.o: src/lvgl/lv_misc/lv_templ.c

@@ -1,4 +1,4 @@
-build/release/lvgl/lv_misc/lv_math.o: lvgl/lv_misc/lv_math.c \
- lvgl/lv_misc/lv_math.h
+build/release/lvgl/lv_misc/lv_math.o: src/lvgl/lv_misc/lv_math.c \
+ src/lvgl/lv_misc/lv_math.h
 
-lvgl/lv_misc/lv_math.h:
+src/lvgl/lv_misc/lv_math.h:

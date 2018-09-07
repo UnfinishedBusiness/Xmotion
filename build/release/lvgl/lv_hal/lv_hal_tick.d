@@ -1,6 +1,6 @@
-build/release/lvgl/lv_hal/lv_hal_tick.o: lvgl/lv_hal/lv_hal_tick.c \
- lvgl/lv_hal/lv_hal_tick.h lvgl/lv_hal/../../lv_conf.h
+build/release/lvgl/lv_hal/lv_hal_tick.o: src/lvgl/lv_hal/lv_hal_tick.c \
+ src/lvgl/lv_hal/lv_hal_tick.h src/lvgl/lv_hal/../../lv_conf.h
 
-lvgl/lv_hal/lv_hal_tick.h:
+src/lvgl/lv_hal/lv_hal_tick.h:
 
-lvgl/lv_hal/../../lv_conf.h:
+src/lvgl/lv_hal/../../lv_conf.h:

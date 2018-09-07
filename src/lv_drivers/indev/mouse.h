@@ -45,6 +45,7 @@ void mouse_init(void);
  */
 bool mouse_read(lv_indev_data_t * data);
 
+void mouse_handler_native(int, int, int);
 /**
  * It will be called from the main SDL thread
  */

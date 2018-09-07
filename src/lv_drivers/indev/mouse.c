@@ -55,11 +55,26 @@ bool mouse_read(lv_indev_data_t * data)
     /*Store the collected data*/
     data->point.x = last_x;
     data->point.y = last_y;
+
     data->state = left_button_down ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
 
     return false;
 }
 
+/*void mouse_handler_native(int x_inc, int y_inc, int left_button_state)
+{
+  if (left_button_state = 0)
+  {
+    left_button_down = false;
+  }
+  if (left_button_state = 1)
+  {
+    left_button_down = true;
+  }
+  last_x += x_inc;
+  last_y += y_inc;
+
+}*/
 /**
  * It will be called from the main SDL thread
  */
