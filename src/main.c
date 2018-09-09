@@ -1,12 +1,14 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
-#include "lv_examples/lv_apps/demo/demo.h"
+//#include "lv_examples/lv_apps/demo/demo.h"
 
 #include "input_devices/keyboard.h"
 #include "input_devices/mouse.h"
 #include "utils/hardware_utils.h"
-#include "gui/jog_mode.h"
+#include "utils/duty_sim.h"
+#include "gui/elements.h"
+#include "gui/cnc_control.h"
 
 
 //https://gist.github.com/robmint/4753401
@@ -36,11 +38,18 @@ int main(void)
     lv_init();
 
     mouse_init_();
-    lv_indev_drv_t indev_drv;
-    lv_indev_drv_init(&indev_drv);          /*Basic initialization*/
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read = mouse_read;         /*This function will be called periodically (by the library) to get the mouse position and state*/
-    lv_indev_t * mouse_indev = lv_indev_drv_register(&indev_drv);
+    lv_indev_drv_t mouse_indev_drv;
+    lv_indev_drv_init(&mouse_indev_drv);          /*Basic initialization*/
+    mouse_indev_drv.type = LV_INDEV_TYPE_POINTER;
+    mouse_indev_drv.read = mouse_read;         /*This function will be called periodically (by the library) to get the mouse position and state*/
+    lv_indev_t * mouse_indev = lv_indev_drv_register(&mouse_indev_drv);
+
+    keyboard_init();
+    lv_indev_drv_t keyboard_indev_drv;
+    lv_indev_drv_init(&keyboard_indev_drv);          /*Basic initialization*/
+    keyboard_indev_drv.type = LV_INDEV_TYPE_POINTER;
+    keyboard_indev_drv.read = keyboard_read;         /*This function will be called periodically (by the library) to get the mouse position and state*/
+    lv_indev_t * keyboard_indev = lv_indev_drv_register(&keyboard_indev_drv);
 
     LV_IMG_DECLARE(mouse_cursor);
     lv_obj_t * cursor_obj =  lv_img_create(lv_scr_act(), NULL); /*Create an image for the cursor */
@@ -51,6 +60,7 @@ int main(void)
 
     /*Linux frame buffer device init*/
     fbdev_init();
+    duty_sim_init();
 
     /*Add a display the LittlevGL sing the frame buffer driver*/
     lv_disp_drv_t disp_drv;
@@ -59,10 +69,9 @@ int main(void)
     lv_disp_drv_register(&disp_drv);
 
     hardware_utils_set_graphics_mode();
-    keyboard_init();
 
-    demo_create();
-    //gui_jog_mode_create();
+    //demo_create();
+    gui_cnc_control_create();
 
     /*Handle LitlevGL tasks (tickless mode)*/
     while(kill_main_flag == false) {
@@ -70,12 +79,14 @@ int main(void)
         lv_task_handler();
         keyboard_tick();
         mouse_tick();
+        duty_sim_tick();
         usleep(1000);
     }
 
     hardware_utils_set_text_mode();
     mouse_close();
     keyboard_close();
+    duty_sim_close();
 
     return 0;
 }

@@ -60,17 +60,14 @@ build/release/main.o: src/main.c src/lvgl/lvgl.h \
  src/lv_drivers/display/../../lv_drv_conf.h \
  src/lv_drivers/display/../../lv_conf.h src/lvgl/lv_misc/lv_color.h \
  src/lv_drivers/indev/evdev.h src/lv_drv_conf.h \
- src/lv_examples/lv_apps/demo/demo.h \
- src/lv_examples/lv_apps/demo/../../../lv_ex_conf.h \
- src/lvgl/lv_hal/lv_hal.h \
- src/lv_examples/lv_apps/demo/../../../lvgl/lvgl.h \
  src/input_devices/keyboard.h src/input_devices/../lv_ex_conf.h \
  src/input_devices/../lvgl/lv_hal/lv_hal.h \
  src/input_devices/../lvgl/lvgl.h src/input_devices/mouse.h \
  src/utils/hardware_utils.h src/utils/../lv_ex_conf.h \
  src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h \
- src/gui/jog_mode.h src/gui/../lv_ex_conf.h \
- src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h
+ src/utils/duty_sim.h src/gui/elements.h src/gui/../lv_ex_conf.h \
+ src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h \
+ src/gui/cnc_control.h
 
 src/lvgl/lvgl.h:
 
@@ -264,14 +261,6 @@ src/lv_drivers/indev/evdev.h:
 
 src/lv_drv_conf.h:
 
-src/lv_examples/lv_apps/demo/demo.h:
-
-src/lv_examples/lv_apps/demo/../../../lv_ex_conf.h:
-
-src/lvgl/lv_hal/lv_hal.h:
-
-src/lv_examples/lv_apps/demo/../../../lvgl/lvgl.h:
-
 src/input_devices/keyboard.h:
 
 src/input_devices/../lv_ex_conf.h:
@@ -290,10 +279,14 @@ src/utils/../lvgl/lv_hal/lv_hal.h:
 
 src/utils/../lvgl/lvgl.h:
 
-src/gui/jog_mode.h:
+src/utils/duty_sim.h:
+
+src/gui/elements.h:
 
 src/gui/../lv_ex_conf.h:
 
 src/gui/../lvgl/lv_hal/lv_hal.h:
 
 src/gui/../lvgl/lvgl.h:
+
+src/gui/cnc_control.h:

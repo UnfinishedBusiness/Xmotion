@@ -1,8 +1,3 @@
-/**
- * @file terminal.h
- *
- */
-
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
@@ -13,10 +8,10 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../../../lv_ex_conf.h"
-#if USE_LV_DEMO
-#include "lvgl/lv_hal/lv_hal.h"
-#include "../../../lvgl/lvgl.h"
+#include "../lv_ex_conf.h"
+
+#include "../lvgl/lv_hal/lv_hal.h"
+#include "../lvgl/lvgl.h"
 
 /*********************
  *      DEFINES
@@ -31,25 +26,20 @@ extern "C" {
  **********************/
 
 /**
- * Open a terminal
- * @return pointer to the terminal window
+ * Create a keyboard application
  */
-lv_obj_t * terminal_create(void);
-
-/**
- * Add data to the terminal
- * @param txt_in character sting to add to the terminal
- */
-void terminal_add(const char * txt_in);
-
+void terminal_open(void);
+void terminal_close(void);
+void terminal_add_char(char);
+void terminal_backspace(void);
+void terminal_enter(void);
+void terminal_eval(char[2048]);
 /**********************
  *      MACROS
  **********************/
-
-#endif /*USE_LV_TERMINAL*/
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-#endif /* LV_TERMINAL_H */
+#endif /*TERMINAL_H*/

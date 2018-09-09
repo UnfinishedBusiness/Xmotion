@@ -1,10 +1,5 @@
-/**
- * @file keyboard.h
- *
- */
-
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef DUTY_SIM_H
+#define DUTY_SIM_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,13 +20,7 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
- struct keymap_t {
-    char  letter;
-    int  keycode;
-    int  alt_mod;
-    int  shift_mod;
-    char special[20];
- };
+
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
@@ -39,12 +28,10 @@ extern "C" {
 /**
  * Create a keyboard application
  */
-void keyboard_init(void);
-void keyboard_tick(void);
-char keyboard_keymap_lookup(int, int, int);
-void keyboard_event(int, int);
-bool keyboard_read(lv_indev_data_t * data);
-void keyboard_close(void);
+void duty_sim_init(void);
+void duty_sim_tick(void);
+void duty_sim_dro(bool);
+void duty_sim_close(void);
 /**********************
  *      MACROS
  **********************/
@@ -53,4 +40,4 @@ void keyboard_close(void);
 } /* extern "C" */
 #endif
 
-#endif /*KEYBOARD_H*/
+#endif /*DUTY_SIM_H*/

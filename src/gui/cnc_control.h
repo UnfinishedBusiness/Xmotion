@@ -1,10 +1,5 @@
-/**
- * @file keyboard.h
- *
- */
-
-#ifndef JOG_MODE_H
-#define JOG_MODE_H
+#ifndef CNC_CONTROL_H
+#define CNC_CONTROL_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +28,7 @@ extern "C" {
 /**
  * Create a keyboard application
  */
-void gui_jog_mode_create(void);
+void gui_cnc_control_create(void);
 /**********************
  *      MACROS
  **********************/
@@ -42,4 +37,4 @@ void gui_jog_mode_create(void);
 } /* extern "C" */
 #endif
 
-#endif /*JOG_MODE_H*/
+#endif /*CNC_CONTROL_H*/

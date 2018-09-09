@@ -2,18 +2,16 @@ build/release/lv_examples/lv_apps/terminal/terminal.o: \
  src/lv_examples/lv_apps/terminal/terminal.c \
  src/lv_examples/lv_apps/terminal/terminal.h \
  src/lv_examples/lv_apps/terminal/../../../lv_ex_conf.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/lv_hal_disp.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/../lv_misc/lv_color.h \
+ src/lvgl/lv_hal/../lv_misc/../../lv_conf.h \
+ src/lvgl/lv_hal/lv_hal_indev.h src/lvgl/lv_hal/../lv_misc/lv_area.h \
+ src/lvgl/lv_hal/lv_hal_tick.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lvgl.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_task.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_mem.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_ll.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_disp.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/lv_color.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/../../lv_conf.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_indev.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/lv_area.h \
- src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_tick.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_core/lv_obj.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_core/../../lv_conf.h \
  src/lv_examples/lv_apps/terminal/../../../lvgl/lv_core/lv_style.h \
@@ -97,6 +95,22 @@ src/lv_examples/lv_apps/terminal/terminal.h:
 
 src/lv_examples/lv_apps/terminal/../../../lv_ex_conf.h:
 
+src/lvgl/lv_hal/lv_hal.h:
+
+src/lvgl/lv_hal/lv_hal_disp.h:
+
+src/lvgl/lv_hal/lv_hal.h:
+
+src/lvgl/lv_hal/../lv_misc/lv_color.h:
+
+src/lvgl/lv_hal/../lv_misc/../../lv_conf.h:
+
+src/lvgl/lv_hal/lv_hal_indev.h:
+
+src/lvgl/lv_hal/../lv_misc/lv_area.h:
+
+src/lvgl/lv_hal/lv_hal_tick.h:
+
 src/lv_examples/lv_apps/terminal/../../../lvgl/lvgl.h:
 
 src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_task.h:
@@ -106,20 +120,6 @@ src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_mem.h:
 src/lv_examples/lv_apps/terminal/../../../lvgl/lv_misc/lv_ll.h:
 
 src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_disp.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/lv_color.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/../../lv_conf.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_indev.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/../lv_misc/lv_area.h:
-
-src/lv_examples/lv_apps/terminal/../../../lvgl/lv_hal/lv_hal_tick.h:
 
 src/lv_examples/lv_apps/terminal/../../../lvgl/lv_core/lv_obj.h:
 

@@ -62,7 +62,7 @@ lv_obj_t * terminal_create(void)
     lv_obj_set_size(win, TERMINAL_WIDTH, TERMINAL_HEIGHT);
     lv_win_set_sb_mode(win, LV_SB_MODE_AUTO);
     lv_win_add_btn(win, SYMBOL_CLOSE, win_close_action);
-
+    
     /*Make the window's content responsive*/
     lv_win_set_layout(win, LV_LAYOUT_PRETTY);
 

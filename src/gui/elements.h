@@ -1,10 +1,5 @@
-/**
- * @file keyboard.h
- *
- */
-
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
+#ifndef NC_ELEMENTS_H
+#define NC_ELEMENTS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,26 +20,24 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
- struct keymap_t {
-    char  letter;
-    int  keycode;
-    int  alt_mod;
-    int  shift_mod;
-    char special[20];
- };
+
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
+void gui_elements_background(void);
 
-/**
- * Create a keyboard application
- */
-void keyboard_init(void);
-void keyboard_tick(void);
-char keyboard_keymap_lookup(int, int, int);
-void keyboard_event(int, int);
-bool keyboard_read(lv_indev_data_t * data);
-void keyboard_close(void);
+/**********************
+ * DRO PROTOTYPES
+ **********************/
+ //Digital Read Out
+lv_obj_t *gui_elements_dro(void);
+void gui_elements_dro_update_wcs(float, float, float);
+void gui_elements_dro_update_abs(float, float, float);
+void gui_elements_dro_close();
+
+//Jog Speed Slider, Jog Cont., 0.010, 0.001, 0.0001 Steps...
+lv_obj_t *gui_elements_jog(void);
+void gui_elements_jog_close();
 /**********************
  *      MACROS
  **********************/
@@ -53,4 +46,4 @@ void keyboard_close(void);
 } /* extern "C" */
 #endif
 
-#endif /*KEYBOARD_H*/
+#endif /*NC_ELEMENTS_H*/

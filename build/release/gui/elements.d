@@ -1,4 +1,4 @@
-build/release/gui/jog_mode.o: src/gui/jog_mode.c src/gui/jog_mode.h \
+build/release/gui/elements.o: src/gui/elements.c src/gui/elements.h \
  src/gui/../lv_ex_conf.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/lv_hal_disp.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/../lv_misc/lv_color.h \
@@ -68,9 +68,9 @@ build/release/gui/jog_mode.o: src/gui/jog_mode.c src/gui/jog_mode.h \
  src/gui/../lvgl/lv_objx/lv_mbox.h src/gui/../lvgl/lv_objx/lv_gauge.h \
  src/gui/../lvgl/lv_objx/lv_lmeter.h src/gui/../lvgl/lv_objx/lv_lmeter.h \
  src/gui/../lvgl/lv_objx/lv_sw.h src/gui/../lvgl/lv_objx/lv_slider.h \
- src/gui/elements.h src/main.h
+ src/main.h
 
-src/gui/jog_mode.h:
+src/gui/elements.h:
 
 src/gui/../lv_ex_conf.h:
 
@@ -255,7 +255,5 @@ src/gui/../lvgl/lv_objx/lv_lmeter.h:
 src/gui/../lvgl/lv_objx/lv_sw.h:
 
 src/gui/../lvgl/lv_objx/lv_slider.h:
-
-src/gui/elements.h:
 
 src/main.h:
