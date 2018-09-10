@@ -101,13 +101,13 @@ void terminal_close(void)
 void terminal_eval(char cmd[2048])
 {
   //lv_label_set_text(cmd_line, "");
-  if (!strcmp(cmd, "sim_dro=true"))
+  if (!strcmp(cmd, "sim=true"))
   {
     duty_sim_dro(true);
     lv_label_set_text(cmd_line_output, "SIM on!");
     return;
   }
-  if (!strcmp(cmd, "sim_dro=false"))
+  if (!strcmp(cmd, "sim=false"))
   {
     duty_sim_dro(false);
     lv_label_set_text(cmd_line_output, "SIM off!");

@@ -70,7 +70,6 @@ int main(void)
 
     hardware_utils_set_graphics_mode();
 
-    //demo_create();
     gui_cnc_control_create();
 
     /*Handle LitlevGL tasks (tickless mode)*/
@@ -82,7 +81,7 @@ int main(void)
         duty_sim_tick();
         usleep(1000);
     }
-
+    gui_cnc_control_close();
     hardware_utils_set_text_mode();
     mouse_close();
     keyboard_close();

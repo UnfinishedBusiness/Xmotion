@@ -155,7 +155,7 @@ lv_obj_t *gui_elements_dro(void)
 }
 #define JOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define JOG_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
-lv_obj_t *jog_container;
+lv_obj_t *controls_container;
 static lv_res_t slider_action(lv_obj_t * slider)
 {
     //printf("New slider value: %d\n", lv_slider_get_value(slider));
@@ -169,13 +169,21 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
 
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
-lv_obj_t *gui_elements_jog(void)
+lv_obj_t *gui_elements_controls(void)
 {
+  static lv_style_t jog_slider_style;
+  lv_style_copy(&jog_slider_style, &lv_style_plain);
+  jog_slider_style.body.shadow.width = 6;
+  jog_slider_style.body.padding.hor = 5;
+  jog_slider_style.body.main_color = DRO_BACKGROUND_COLOR;
+  jog_slider_style.body.grad_color = DRO_BACKGROUND_COLOR;
+  jog_slider_style.body.radius = LV_RADIUS_CIRCLE;
+
   lv_obj_t *jog_slider_container = lv_cont_create(lv_scr_act(), NULL);
-  //v_obj_set_style(jog_slider_container, &style);     /*Set the new style*/
+  lv_obj_set_style(jog_slider_container, &jog_slider_style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
   lv_obj_set_size(jog_slider_container, 400, 100);
-  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 370);
+  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 330);
   /*Create a bar, an indicator and a knob style*/
   static lv_style_t style_bg;
   static lv_style_t style_indic;
@@ -207,7 +215,7 @@ lv_obj_t *gui_elements_jog(void)
   lv_slider_set_style(slider2, LV_SLIDER_STYLE_INDIC,&style_indic);
   lv_slider_set_style(slider2, LV_SLIDER_STYLE_KNOB, &style_knob);
   lv_slider_set_action(slider2, slider_action);
-  lv_obj_align(slider2, NULL, LV_ALIGN_IN_TOP_RIGHT, -100, 410);
+  lv_obj_align(slider2, NULL, LV_ALIGN_IN_TOP_RIGHT, -100, 370);
 
   /*Create a label*/
   lv_obj_t * slider2_label = lv_label_create(lv_scr_act(), NULL);
@@ -215,11 +223,11 @@ lv_obj_t *gui_elements_jog(void)
   lv_obj_align(slider2_label, slider2, LV_ALIGN_IN_TOP_MID, 0, -25);
 
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"Contin", "0.1", "0.01", "0.0001", "\n",
+  static const char * btnm_map[] = {"\202Continuous", "0.1", "0.01", "0.001", "\n",
                              "X=0", "Y=0", "Z=0", "\n",
                              "\202Probe Z", "Go Home", "\n",
                              "Torch On", "Torch Off", "\n",
-                             "Cycle Start", "Pause", "Stop", ""};
+                             "\202Cycle Start", "Pause", "Stop", "Open", ""};
 
   /*Create a new style for the button matrix back ground*/
   static lv_style_t matrix_style_bg;
@@ -253,16 +261,286 @@ lv_obj_t *gui_elements_jog(void)
   lv_btnm_set_style(btnm2, LV_BTNM_STYLE_BTN_PR, &style_btn_pr);
   lv_btnm_set_map(btnm2, btnm_map);
   lv_btnm_set_action(btnm2, btnm_action);
-  lv_obj_set_size(btnm2, 400, 600);
-  lv_obj_align(btnm2, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, 0);
+  lv_obj_set_size(btnm2, 400, 490);
+  lv_obj_align(btnm2, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
 
-  return jog_container;
+  return controls_container;
 }
-void gui_elements_jog_close()
+void gui_elements_controls_close()
 {
-  if (jog_container != NULL)
+  if (controls_container != NULL)
   {
-    lv_obj_del(jog_container);
-    jog_container = NULL;
+    lv_obj_del(controls_container);
+    controls_container = NULL;
+  }
+}
+
+#define INDICATORS_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
+#define INDICATORS_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
+lv_obj_t *indicators_container;
+lv_obj_t *torch_led;
+lv_obj_t *floating_head_led;
+lv_obj_t *arc_ok_led;
+lv_obj_t *torch_up_led;
+lv_obj_t *torch_down_led;
+void gui_elements_indicators_set_floating_head_led(bool state)
+{
+  if (indicators_container == NULL) return;
+  if (state)
+  {
+    lv_led_on(floating_head_led);
+  }
+  else
+  {
+      lv_led_off(floating_head_led);
+  }
+}
+void gui_elements_indicators_set_torch_on_led(bool state)
+{
+  if (indicators_container == NULL) return;
+  if (state)
+  {
+    lv_led_on(torch_led);
+  }
+  else
+  {
+      lv_led_off(torch_led);
+  }
+}
+void gui_elements_indicators_set_arc_ok_led(bool state)
+{
+  if (indicators_container == NULL) return;
+  if (state)
+  {
+    lv_led_on(arc_ok_led);
+  }
+  else
+  {
+      lv_led_off(arc_ok_led);
+  }
+}
+void gui_elements_indicators_set_torch_up_led(bool state)
+{
+  if (indicators_container == NULL) return;
+  if (state)
+  {
+    lv_led_on(torch_up_led);
+  }
+  else
+  {
+      lv_led_off(torch_up_led);
+  }
+}
+void gui_elements_indicators_set_torch_down_led(bool state)
+{
+  if (indicators_container == NULL) return;
+  if (state)
+  {
+    lv_led_on(torch_down_led);
+  }
+  else
+  {
+      lv_led_off(torch_down_led);
+  }
+}
+lv_obj_t *gui_elements_indicators(void)
+{
+  static lv_style_t small_text_style;
+  lv_style_copy(&small_text_style, &lv_style_plain);
+  small_text_style.text.color = DRO_TEXT_COLOR;
+  small_text_style.text.font = &lv_font_dejavu_10;
+
+  static lv_style_t text_style;
+  lv_style_copy(&text_style, &lv_style_plain);
+  text_style.text.color = DRO_TEXT_COLOR;
+  text_style.text.font = &lv_font_dejavu_40;
+
+  static lv_style_t style;
+  lv_style_copy(&style, &lv_style_plain);
+  style.body.shadow.width = 6;
+  style.body.padding.hor = 5;
+  style.body.main_color = INDICATORS_BACKGROUND_COLOR;
+  style.body.grad_color = INDICATORS_BACKGROUND_COLOR;
+
+  /*Create an other container*/
+  indicators_container = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(indicators_container, &style);     /*Set the new style*/
+  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
+  lv_obj_set_size(indicators_container, 360, 80);
+  lv_obj_align(indicators_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -30, 450);
+
+  /*Create a style for the LEDs*/
+  static lv_style_t style_led;
+  lv_style_copy(&style_led, &lv_style_pretty_color);
+  style_led.body.radius = LV_RADIUS_CIRCLE;
+  style_led.body.main_color = LV_COLOR_MAKE(0xb5, 0x0f, 0x04);
+  style_led.body.grad_color = LV_COLOR_MAKE(0x50, 0x07, 0x02);
+  style_led.body.border.color = LV_COLOR_MAKE(0xfa, 0x0f, 0x00);
+  style_led.body.border.width = 3;
+  style_led.body.border.opa = LV_OPA_40;
+  style_led.body.shadow.color = LV_COLOR_MAKE(0xb5, 0x0f, 0x04);
+  style_led.body.shadow.width = 10;
+
+  //Torch Led
+  lv_obj_t *torch = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(torch, &small_text_style);
+  lv_label_set_text(torch, "Torch");
+  lv_obj_align(torch, NULL, LV_ALIGN_IN_TOP_LEFT, 17, 10);
+  /*Create a LED and switch it ON*/
+  torch_led  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(torch_led, &style_led);
+  lv_obj_align(torch_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 15, -15);
+  lv_led_off(torch_led);
+
+  //Floating Head Led
+  lv_obj_t *floating_head = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(floating_head, &small_text_style);
+  lv_label_set_text(floating_head, "Z Probe");
+  lv_obj_align(floating_head, NULL, LV_ALIGN_IN_TOP_LEFT, 87, 10);
+  /*Create a LED and switch it ON*/
+  floating_head_led  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(floating_head_led, &style_led);
+  lv_obj_align(floating_head_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 89, -15);
+  lv_led_off(floating_head_led);
+
+  //Arc Ok Led
+  lv_obj_t *arc_ok = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(arc_ok, &small_text_style);
+  lv_label_set_text(arc_ok, "Arc Ok");
+  lv_obj_align(arc_ok, NULL, LV_ALIGN_IN_TOP_LEFT, 161, 10);
+  /*Create a LED and switch it ON*/
+  arc_ok_led  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(arc_ok_led, &style_led);
+  lv_obj_align(arc_ok_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 159, -15);
+  lv_led_off(arc_ok_led);
+
+  //Torch Up Led
+  lv_obj_t *torch_up = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(torch_up, &small_text_style);
+  lv_label_set_text(torch_up, "Torch Up");
+  lv_obj_align(torch_up, NULL, LV_ALIGN_IN_TOP_LEFT, 223, 10);
+  /*Create a LED and switch it ON*/
+  torch_up_led  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(torch_up_led, &style_led);
+  lv_obj_align(torch_up_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 229, -15);
+  lv_led_off(torch_up_led);
+
+  //Torch Down Led
+  lv_obj_t *torch_down = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(torch_down, &small_text_style);
+  lv_label_set_text(torch_down, "Torch Down");
+  lv_obj_align(torch_down, NULL, LV_ALIGN_IN_TOP_LEFT, 288, 10);
+  /*Create a LED and switch it ON*/
+  torch_down_led  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(torch_down_led, &style_led);
+  lv_obj_align(torch_down_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 301, -15);
+  lv_led_off(torch_down_led);
+
+
+  return indicators_container;
+}
+void gui_elements_indicators_close()
+{
+  if (indicators_container != NULL)
+  {
+    lv_obj_del(indicators_container);
+    indicators_container = NULL;
+  }
+}
+
+#define NAV_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
+#define NAV_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
+lv_obj_t *nav_container;
+lv_obj_t *gui_elements_nav(void)
+{
+  /*Create a button descriptor string array*/
+  static const char * btnm_map[] = {"CNC", "CAD", "CAM", "SYSTEM", ""};
+
+  /*Create a new style for the button matrix back ground*/
+  static lv_style_t matrix_style_bg;
+  lv_style_copy(&matrix_style_bg, &lv_style_plain);
+  matrix_style_bg.body.main_color = LV_COLOR_SILVER;
+  matrix_style_bg.body.grad_color = LV_COLOR_SILVER;
+  matrix_style_bg.body.padding.hor = 0;
+  matrix_style_bg.body.padding.ver = 0;
+  matrix_style_bg.body.padding.inner = 0;
+
+  /*Create 2 button styles*/
+  static lv_style_t style_btn_rel;
+  static lv_style_t style_btn_pr;
+  lv_style_copy(&style_btn_rel, &lv_style_btn_rel);
+  style_btn_rel.body.main_color = LV_COLOR_MAKE(0x30, 0x30, 0x30);
+  style_btn_rel.body.grad_color = LV_COLOR_BLACK;
+  style_btn_rel.body.border.color = LV_COLOR_SILVER;
+  style_btn_rel.body.border.width = 1;
+  style_btn_rel.body.border.opa = LV_OPA_50;
+  style_btn_rel.body.radius = 0;
+
+  lv_style_copy(&style_btn_pr, &style_btn_rel);
+  style_btn_pr.body.main_color = LV_COLOR_MAKE(0x55, 0x96, 0xd8);
+  style_btn_pr.body.grad_color = LV_COLOR_MAKE(0x37, 0x62, 0x90);
+  style_btn_pr.text.color = LV_COLOR_MAKE(0xbb, 0xd5, 0xf1);
+
+  static lv_style_t style;
+  lv_style_copy(&style, &lv_style_plain);
+  style.body.shadow.width = 6;
+  style.body.padding.hor = 5;
+  style.body.main_color = NAV_BACKGROUND_COLOR;
+  style.body.grad_color = NAV_BACKGROUND_COLOR;
+
+  nav_container = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(nav_container, &style);     /*Set the new style*/
+  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
+  lv_obj_set_size(nav_container, 1250, 60);
+  lv_obj_align(nav_container, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 10);
+
+  /*Create a second button matrix with the new styles*/
+  lv_obj_t *btn = lv_btnm_create(nav_container, NULL);
+  lv_btnm_set_style(btn, LV_BTNM_STYLE_BG, &matrix_style_bg);
+  lv_btnm_set_style(btn, LV_BTNM_STYLE_BTN_REL, &style_btn_rel);
+  lv_btnm_set_style(btn, LV_BTNM_STYLE_BTN_PR, &style_btn_pr);
+  lv_btnm_set_map(btn, btnm_map);
+  lv_btnm_set_action(btn, btnm_action);
+  lv_obj_set_size(btn, 300, 50);
+  lv_obj_align(btn, NULL, LV_ALIGN_IN_TOP_LEFT, 5, 5);
+
+  return nav_container;
+}
+void gui_elements_nav_close()
+{
+  if (nav_container != NULL)
+  {
+    lv_obj_del(nav_container);
+    nav_container = NULL;
+  }
+}
+
+
+#define VIEWER_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
+#define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
+lv_obj_t *viewer_container;
+lv_obj_t *gui_elements_viewer(void)
+{
+  static lv_style_t style;
+  lv_style_copy(&style, &lv_style_plain);
+  style.body.shadow.width = 6;
+  style.body.padding.hor = 5;
+  style.body.main_color = VIEWER_BACKGROUND_COLOR;
+  style.body.grad_color = VIEWER_BACKGROUND_COLOR;
+
+  viewer_container = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(viewer_container, &style);     /*Set the new style*/
+  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
+  lv_obj_set_size(viewer_container, 1250, 950);
+  lv_obj_align(viewer_container, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
+
+  return viewer_container;
+}
+void gui_elements_viewer_close()
+{
+  if (viewer_container != NULL)
+  {
+    lv_obj_del(viewer_container);
+    viewer_container = NULL;
   }
 }

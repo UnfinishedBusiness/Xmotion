@@ -29,6 +29,7 @@ extern "C" {
  * Create a keyboard application
  */
 void gui_cnc_control_create(void);
+void gui_cnc_control_close(void);
 /**********************
  *      MACROS
  **********************/
