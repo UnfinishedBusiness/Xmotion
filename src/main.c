@@ -2,7 +2,8 @@
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
 //#include "lv_examples/lv_apps/demo/demo.h"
-#include "config/ini.h"
+#include "config/handler.h"
+#include "linuxcnc.h"
 #include "input_devices/keyboard.h"
 #include "input_devices/mouse.h"
 #include "utils/hardware_utils.h"
@@ -32,43 +33,12 @@ void kill_main(void)
   kill_main_flag = true;
 }
 
-typedef struct
-{
-    const char* screen_size;
-    const char* screen_color;
-    const char* keyboard_device;
-    const char* mouse_device;
-} configuration;
 
-static int config_handler(void* conf, const char* section, const char* name, const char* value)
-{
-    configuration* pconfig = (configuration*)conf;
-
-    #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
-    if (MATCH("system", "screen_size")) {
-        pconfig->screen_size = atoi(value);
-    } else if (MATCH("system", "screen_color")) {
-        pconfig->screen_color = strdup(value);
-    } else if (MATCH("system", "keyboard_device")) {
-        pconfig->keyboard_device = strdup(value);
-    } else if (MATCH("system", "mouse_device")) {
-        pconfig->mouse_device = strdup(value);
-    } else {
-        return 0;  /* unknown section/name, error */
-    }
-    return 1;
-}
 
 int main(void)
 {
 
-    configuration config;
-
-    if (ini_parse("/etc/Xmotion/config.ini", config_handler, &config) < 0) {
-        printf("Can't load '/etc/Xmotion/config.ini'\n");
-        return 1;
-    }
-    printf("Config loaded from '/etc/Xmotion/config.ini'\n");
+    config_handler_init();
     /*LittlevGL init*/
     lv_init();
 
@@ -102,6 +72,8 @@ int main(void)
     disp_drv.disp_flush = fbdev_flush;      /*It flushes the internal graphical buffer to the frame buffer*/
     lv_disp_drv_register(&disp_drv);
 
+    linuxcnc_init();
+
     hardware_utils_set_graphics_mode();
 
     gui_cnc_control_create();
@@ -115,11 +87,13 @@ int main(void)
         duty_sim_tick();
         usleep(1000);
     }
+    linuxcnc_close();
     gui_cnc_control_close();
     hardware_utils_set_text_mode();
     mouse_close();
     keyboard_close();
     duty_sim_close();
+    config_handler_close();
 
     return 0;
 }

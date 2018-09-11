@@ -68,7 +68,9 @@ build/release/gui/elements.o: src/gui/elements.c src/gui/elements.h \
  src/gui/../lvgl/lv_objx/lv_mbox.h src/gui/../lvgl/lv_objx/lv_gauge.h \
  src/gui/../lvgl/lv_objx/lv_lmeter.h src/gui/../lvgl/lv_objx/lv_lmeter.h \
  src/gui/../lvgl/lv_objx/lv_sw.h src/gui/../lvgl/lv_objx/lv_slider.h \
- src/main.h
+ src/linuxcnc.h src/lv_ex_conf.h src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h \
+ src/config/handler.h src/config/../lv_ex_conf.h \
+ src/config/../lvgl/lv_hal/lv_hal.h src/config/../lvgl/lvgl.h src/main.h
 
 src/gui/elements.h:
 
@@ -255,5 +257,21 @@ src/gui/../lvgl/lv_objx/lv_lmeter.h:
 src/gui/../lvgl/lv_objx/lv_sw.h:
 
 src/gui/../lvgl/lv_objx/lv_slider.h:
+
+src/linuxcnc.h:
+
+src/lv_ex_conf.h:
+
+src/lvgl/lv_hal/lv_hal.h:
+
+src/lvgl/lvgl.h:
+
+src/config/handler.h:
+
+src/config/../lv_ex_conf.h:
+
+src/config/../lvgl/lv_hal/lv_hal.h:
+
+src/config/../lvgl/lvgl.h:
 
 src/main.h:

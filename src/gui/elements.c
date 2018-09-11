@@ -1,4 +1,6 @@
 #include "elements.h"
+#include "linuxcnc.h"
+#include "config/handler.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -12,6 +14,11 @@
 #include <stdbool.h>
 #include <linux/input.h>
 #include <linux/kd.h>
+
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
+{
+ return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 
 #define BACKGROUND_COLOR LV_COLOR_MAKE(10, 10, 10);
 void gui_elements_background(void)
@@ -159,7 +166,8 @@ lv_obj_t *controls_container;
 static lv_res_t slider_action(lv_obj_t * slider)
 {
     //printf("New slider value: %d\n", lv_slider_get_value(slider));
-
+    float jog_speed = mapfloat((float)lv_slider_get_value(slider), 0, 100, 0, config.max_jog_speed);
+    linuxcnc_set_jog_speed(jog_speed);
     return LV_RES_OK;
 }
 /*Called when a button is released or long pressed*/
@@ -216,6 +224,8 @@ lv_obj_t *gui_elements_controls(void)
   lv_slider_set_style(slider2, LV_SLIDER_STYLE_KNOB, &style_knob);
   lv_slider_set_action(slider2, slider_action);
   lv_obj_align(slider2, NULL, LV_ALIGN_IN_TOP_RIGHT, -100, 370);
+  float jog_speed = mapfloat(config.default_jog_speed, 0, config.max_jog_speed, 0, 100);
+  lv_slider_set_value (slider2, (int)jog_speed);
 
   /*Create a label*/
   lv_obj_t * slider2_label = lv_label_create(lv_scr_act(), NULL);
@@ -454,7 +464,7 @@ lv_obj_t *nav_container;
 lv_obj_t *gui_elements_nav(void)
 {
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"CNC", "CAD", "CAM", "SYSTEM", ""};
+  static const char * btnm_map[] = {"CNC", "CAD", "CAM", "CONFIG", ""};
 
   /*Create a new style for the button matrix back ground*/
   static lv_style_t matrix_style_bg;

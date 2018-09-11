@@ -90,7 +90,8 @@ build/release/input_devices/keyboard.o: src/input_devices/keyboard.c \
  src/input_devices/../lvgl/lv_objx/lv_lmeter.h \
  src/input_devices/../lvgl/lv_objx/lv_lmeter.h \
  src/input_devices/../lvgl/lv_objx/lv_sw.h \
- src/input_devices/../lvgl/lv_objx/lv_slider.h src/main.h \
+ src/input_devices/../lvgl/lv_objx/lv_slider.h src/linuxcnc.h \
+ src/lv_ex_conf.h src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h src/main.h \
  src/utils/terminal.h src/utils/../lv_ex_conf.h \
  src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h
 
@@ -279,6 +280,14 @@ src/input_devices/../lvgl/lv_objx/lv_lmeter.h:
 src/input_devices/../lvgl/lv_objx/lv_sw.h:
 
 src/input_devices/../lvgl/lv_objx/lv_slider.h:
+
+src/linuxcnc.h:
+
+src/lv_ex_conf.h:
+
+src/lvgl/lv_hal/lv_hal.h:
+
+src/lvgl/lvgl.h:
 
 src/main.h:
 

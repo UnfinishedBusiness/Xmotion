@@ -1,4 +1,5 @@
 #include "keyboard.h"
+#include "linuxcnc.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -154,24 +155,67 @@ void keyboard_event(int keycode, int state)
   {
     if  (state == down)
     {
-      printf("Right Arrow Down!\n");
+      linuxcnc_jog_x_plus(true);
     }
     if (state == up)
     {
-      printf("Right Arrow Up!\n");
+      linuxcnc_jog_x_plus(false);
     }
   }
   if (keycode == 105) //Left Arrow
   {
     if  (state == down)
     {
-      printf("Left Arrow Down!\n");
+      linuxcnc_jog_x_minus(true);
     }
     if (state == up)
     {
-      printf("Left Arrow Up!\n");
+      linuxcnc_jog_x_minus(false);
     }
-
+  }
+  if (keycode == 103) //Up Arrow
+  {
+    if  (state == down)
+    {
+      linuxcnc_jog_y_plus(true);
+    }
+    if (state == up)
+    {
+      linuxcnc_jog_y_plus(false);
+    }
+  }
+  if (keycode == 108) //Down Arrow
+  {
+    if  (state == down)
+    {
+      linuxcnc_jog_y_minus(true);
+    }
+    if (state == up)
+    {
+      linuxcnc_jog_y_minus(false);
+    }
+  }
+  if (keycode == 104) //Page Up
+  {
+    if  (state == down)
+    {
+      linuxcnc_jog_z_plus(true);
+    }
+    if (state == up)
+    {
+      linuxcnc_jog_z_plus(false);
+    }
+  }
+  if (keycode == 109) //Page Down
+  {
+    if  (state == down)
+    {
+      linuxcnc_jog_z_minus(true);
+    }
+    if (state == up)
+    {
+      linuxcnc_jog_z_minus(false);
+    }
   }
   last_key = keyboard_keymap_lookup(keycode, shift_mod, alt_mod);
   //printf("Key is %c -> %d\n", last_key, state);

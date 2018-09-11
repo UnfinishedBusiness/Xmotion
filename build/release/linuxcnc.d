@@ -1,11 +1,11 @@
-build/release/main.o: src/main.c src/lvgl/lvgl.h \
- src/lvgl/lv_misc/lv_task.h src/lvgl/lv_misc/lv_mem.h \
- src/lvgl/lv_misc/lv_ll.h src/lvgl/lv_hal/lv_hal.h \
- src/lvgl/lv_hal/lv_hal_disp.h src/lvgl/lv_hal/lv_hal.h \
- src/lvgl/lv_hal/../lv_misc/lv_color.h \
+build/release/linuxcnc.o: src/linuxcnc.c src/linuxcnc.h src/lv_ex_conf.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/lv_hal_disp.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/../lv_misc/lv_color.h \
  src/lvgl/lv_hal/../lv_misc/../../lv_conf.h \
  src/lvgl/lv_hal/lv_hal_indev.h src/lvgl/lv_hal/../lv_misc/lv_area.h \
- src/lvgl/lv_hal/lv_hal_tick.h src/lvgl/lv_core/lv_obj.h \
+ src/lvgl/lv_hal/lv_hal_tick.h src/lvgl/lvgl.h src/lvgl/lv_misc/lv_task.h \
+ src/lvgl/lv_misc/lv_mem.h src/lvgl/lv_misc/lv_ll.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_core/lv_obj.h \
  src/lvgl/lv_core/../../lv_conf.h src/lvgl/lv_core/lv_style.h \
  src/lvgl/lv_core/../lv_misc/lv_color.h \
  src/lvgl/lv_core/../lv_misc/lv_area.h \
@@ -56,29 +56,11 @@ build/release/main.o: src/main.c src/lvgl/lvgl.h \
  src/lvgl/lv_objx/../lv_objx/lv_win.h src/lvgl/lv_objx/lv_mbox.h \
  src/lvgl/lv_objx/lv_gauge.h src/lvgl/lv_objx/lv_lmeter.h \
  src/lvgl/lv_objx/lv_lmeter.h src/lvgl/lv_objx/lv_sw.h \
- src/lvgl/lv_objx/lv_slider.h src/lv_drivers/display/fbdev.h \
- src/lv_drivers/display/../../lv_drv_conf.h \
- src/lv_drivers/display/../../lv_conf.h src/lvgl/lv_misc/lv_color.h \
- src/lv_drivers/indev/evdev.h src/lv_drv_conf.h src/config/handler.h \
- src/config/../lv_ex_conf.h src/config/../lvgl/lv_hal/lv_hal.h \
- src/config/../lvgl/lvgl.h src/linuxcnc.h src/lv_ex_conf.h \
- src/lvgl/lv_hal/lv_hal.h src/input_devices/keyboard.h \
- src/input_devices/../lv_ex_conf.h \
- src/input_devices/../lvgl/lv_hal/lv_hal.h \
- src/input_devices/../lvgl/lvgl.h src/input_devices/mouse.h \
- src/utils/hardware_utils.h src/utils/../lv_ex_conf.h \
- src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h \
- src/utils/duty_sim.h src/gui/elements.h src/gui/../lv_ex_conf.h \
- src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h \
- src/gui/cnc_control.h
+ src/lvgl/lv_objx/lv_slider.h
 
-src/lvgl/lvgl.h:
+src/linuxcnc.h:
 
-src/lvgl/lv_misc/lv_task.h:
-
-src/lvgl/lv_misc/lv_mem.h:
-
-src/lvgl/lv_misc/lv_ll.h:
+src/lv_ex_conf.h:
 
 src/lvgl/lv_hal/lv_hal.h:
 
@@ -95,6 +77,16 @@ src/lvgl/lv_hal/lv_hal_indev.h:
 src/lvgl/lv_hal/../lv_misc/lv_area.h:
 
 src/lvgl/lv_hal/lv_hal_tick.h:
+
+src/lvgl/lvgl.h:
+
+src/lvgl/lv_misc/lv_task.h:
+
+src/lvgl/lv_misc/lv_mem.h:
+
+src/lvgl/lv_misc/lv_ll.h:
+
+src/lvgl/lv_hal/lv_hal.h:
 
 src/lvgl/lv_core/lv_obj.h:
 
@@ -251,59 +243,3 @@ src/lvgl/lv_objx/lv_lmeter.h:
 src/lvgl/lv_objx/lv_sw.h:
 
 src/lvgl/lv_objx/lv_slider.h:
-
-src/lv_drivers/display/fbdev.h:
-
-src/lv_drivers/display/../../lv_drv_conf.h:
-
-src/lv_drivers/display/../../lv_conf.h:
-
-src/lvgl/lv_misc/lv_color.h:
-
-src/lv_drivers/indev/evdev.h:
-
-src/lv_drv_conf.h:
-
-src/config/handler.h:
-
-src/config/../lv_ex_conf.h:
-
-src/config/../lvgl/lv_hal/lv_hal.h:
-
-src/config/../lvgl/lvgl.h:
-
-src/linuxcnc.h:
-
-src/lv_ex_conf.h:
-
-src/lvgl/lv_hal/lv_hal.h:
-
-src/input_devices/keyboard.h:
-
-src/input_devices/../lv_ex_conf.h:
-
-src/input_devices/../lvgl/lv_hal/lv_hal.h:
-
-src/input_devices/../lvgl/lvgl.h:
-
-src/input_devices/mouse.h:
-
-src/utils/hardware_utils.h:
-
-src/utils/../lv_ex_conf.h:
-
-src/utils/../lvgl/lv_hal/lv_hal.h:
-
-src/utils/../lvgl/lvgl.h:
-
-src/utils/duty_sim.h:
-
-src/gui/elements.h:
-
-src/gui/../lv_ex_conf.h:
-
-src/gui/../lvgl/lv_hal/lv_hal.h:
-
-src/gui/../lvgl/lvgl.h:
-
-src/gui/cnc_control.h:
