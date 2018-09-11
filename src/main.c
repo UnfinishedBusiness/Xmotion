@@ -85,6 +85,7 @@ int main(void)
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
+        gui_elements_dro_tick();
         usleep(1000);
     }
     linuxcnc_close();

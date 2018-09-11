@@ -38,6 +38,10 @@ void linuxcnc_jog_z_plus(bool);
 void linuxcnc_jog_z_minus(bool);
 
 void linuxcnc_set_jog_speed(float);
+
+float linuxcnc_get_x_rel_position(void);
+float linuxcnc_get_y_rel_position(void);
+float linuxcnc_get_z_rel_position(void);
 /**********************
  *      MACROS
  **********************/

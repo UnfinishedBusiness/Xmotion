@@ -93,3 +93,42 @@ void linuxcnc_set_jog_speed(float speed)
   sprintf(cmd, "halcmd setp halui.jog-speed %0.4f\n", speed);
   system(cmd);
 }
+float linuxcnc_get_x_rel_position(void)
+{
+  FILE *cmd_p = popen("halcmd getp halui.axis.0.pos-relative", "r");
+  if (!cmd_p)
+  {
+    return -1000;
+  }
+  char buffer[1024];
+  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
+  pclose(cmd_p);
+  line_p[strlen(line_p) - 1] = '\0';
+  return atof(line_p);
+}
+float linuxcnc_get_y_rel_position(void)
+{
+  FILE *cmd_p = popen("halcmd getp halui.axis.1.pos-relative", "r");
+  if (!cmd_p)
+  {
+    return -1000;
+  }
+  char buffer[1024];
+  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
+  pclose(cmd_p);
+  line_p[strlen(line_p) - 1] = '\0';
+  return atof(line_p);
+}
+float linuxcnc_get_z_rel_position(void)
+{
+  FILE *cmd_p = popen("halcmd getp halui.axis.2.pos-relative", "r");
+  if (!cmd_p)
+  {
+    return -1000;
+  }
+  char buffer[1024];
+  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
+  pclose(cmd_p);
+  line_p[strlen(line_p) - 1] = '\0';
+  return atof(line_p);
+}
