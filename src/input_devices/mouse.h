@@ -36,7 +36,7 @@ extern "C" {
 bool mouse_read(lv_indev_data_t *);
 int mouse_get_current_x(void);
 int mouse_get_current_y(void);
-void mouse_init_(void);
+void mouse_init_(const char*);
 void mouse_tick(void);
 void mouse_close(void);
 /**********************

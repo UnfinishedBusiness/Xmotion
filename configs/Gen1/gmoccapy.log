@@ -1,0 +1,451 @@
+Fri, 04 Aug 2017 11:24:33     -Pause toggled to be True
+Fri, 04 Aug 2017 11:24:34     -btn_view_tool_path_clicked
+Fri, 04 Aug 2017 11:24:34     -tbtn_view_dimensions_toggled
+Fri, 04 Aug 2017 11:24:34     -rbt_view_p_toggled
+Fri, 04 Aug 2017 11:24:34     -rbt_view_z_toggled
+Fri, 04 Aug 2017 11:24:34     -sbtn_spindle_start_rpm changed to 300.0
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-0
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-1
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-2
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-3
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-4
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-5
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-6
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-7
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-8
+Fri, 04 Aug 2017 11:24:34     -got h_button_signal h-button-9
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-0
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-1
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-2
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-3
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-4
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-5
+Fri, 04 Aug 2017 11:24:34     -got v_button_signal v-button-6
+Fri, 04 Aug 2017 11:24:35     -tbtn_estop_clicked
+Fri, 04 Aug 2017 11:24:35     -estop_reset
+Fri, 04 Aug 2017 11:24:36     -hal_tgbt_on_clicked
+Fri, 04 Aug 2017 11:24:36     -Pause toggled to be False
+Fri, 04 Aug 2017 11:24:36     -state_on
+Fri, 04 Aug 2017 11:24:36     -Manual
+Fri, 04 Aug 2017 11:24:36     -run
+Fri, 04 Aug 2017 11:24:36     -idle
+Fri, 04 Aug 2017 11:24:38     -btn_jog_2_1
+Fri, 04 Aug 2017 11:24:45     -btn_homing_clicked
+Fri, 04 Aug 2017 11:24:45     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:24:46     -button home selected clicked
+Fri, 04 Aug 2017 11:24:47     -Axis X are homed
+Fri, 04 Aug 2017 11:24:47     -not_all_homed
+Fri, 04 Aug 2017 11:24:47     -button home selected clicked
+Fri, 04 Aug 2017 11:24:47     -Axis X are homed
+Fri, 04 Aug 2017 11:24:47     -not_all_homed
+Fri, 04 Aug 2017 11:24:48     -button home selected clicked
+Fri, 04 Aug 2017 11:24:48     -Axis X are homed
+Fri, 04 Aug 2017 11:24:48     -all_homed
+Fri, 04 Aug 2017 11:24:48     -ntb_button_page changed to 3
+Fri, 04 Aug 2017 11:24:50     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:24:50     -Auto
+Fri, 04 Aug 2017 11:24:50     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:24:51     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:24:51     -Fullsize Preview set to True
+Fri, 04 Aug 2017 11:24:51     -Fullsize Preview set to False
+Fri, 04 Aug 2017 11:24:51     -ntb_button_page changed to 8
+Fri, 04 Aug 2017 11:24:51     -loaded file /home/plasma/Desktop/Post/0.ngc
+Fri, 04 Aug 2017 11:24:53     -run
+Fri, 04 Aug 2017 11:25:05     -Pause toggled to be True
+Fri, 04 Aug 2017 11:25:07     -Pause toggled to be False
+Fri, 04 Aug 2017 11:25:07     -idle
+Fri, 04 Aug 2017 11:25:07     -loaded file /home/plasma/Desktop/Post/0.ngc
+Fri, 04 Aug 2017 11:25:10     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:25:10     -Manual
+Fri, 04 Aug 2017 11:25:10     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:25:11     -btn_jog_1_1
+Fri, 04 Aug 2017 11:25:11     -btn_jog_0_1
+Fri, 04 Aug 2017 11:25:14     -btn_jog_0_1
+Fri, 04 Aug 2017 11:25:15     -btn_jog_0_-1
+Fri, 04 Aug 2017 11:25:17     -btn_jog_2_-1
+Fri, 04 Aug 2017 11:25:21     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:25:21     -Auto
+Fri, 04 Aug 2017 11:25:21     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:25:22     -run
+Fri, 04 Aug 2017 11:25:33     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:25:33     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:25:35     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:25:35     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:25:39     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:25:39     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:25:43     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:25:43     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:25:58     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:25:58     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:01     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:01     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:15     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:15     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:20     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:20     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:32     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:32     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:36     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:36     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:50     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:26:50     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:54     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:26:54     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:27:07     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:27:07     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:27:20     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:27:20     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:27:26     -idle
+Fri, 04 Aug 2017 11:27:45     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:27:45     -Manual
+Fri, 04 Aug 2017 11:27:45     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:27:46     -btn_jog_2_1
+Fri, 04 Aug 2017 11:28:32     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:28:32     -Auto
+Fri, 04 Aug 2017 11:28:32     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:28:34     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:28:34     -Fullsize Preview set to True
+Fri, 04 Aug 2017 11:28:35     -Fullsize Preview set to False
+Fri, 04 Aug 2017 11:28:35     -ntb_button_page changed to 8
+Fri, 04 Aug 2017 11:28:36     -run
+Fri, 04 Aug 2017 11:28:44     -idle
+Fri, 04 Aug 2017 11:28:44     -loaded file /home/plasma/Desktop/Post/0.ngc
+Fri, 04 Aug 2017 11:28:49     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:28:49     -Manual
+Fri, 04 Aug 2017 11:28:49     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:28:50     -btn_jog_2_1
+Fri, 04 Aug 2017 11:28:53     -btn_homing_clicked
+Fri, 04 Aug 2017 11:28:53     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:28:58     -rbt_mdi_pressed
+Fri, 04 Aug 2017 11:28:58     -MDI
+Fri, 04 Aug 2017 11:28:58     -ntb_button_page changed to 3
+Fri, 04 Aug 2017 11:29:00     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:29:00     -Auto
+Fri, 04 Aug 2017 11:29:00     -ntb_button_page changed to 1
+Fri, 04 Aug 2017 11:29:01     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:29:01     -Manual
+Fri, 04 Aug 2017 11:29:01     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:29:02     -btn_touch_clicked
+Fri, 04 Aug 2017 11:29:02     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:29:03     -btn_zero_Z_clicked
+Fri, 04 Aug 2017 11:29:05     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:29:05     -Auto
+Fri, 04 Aug 2017 11:29:05     -ntb_button_page changed to 4
+Fri, 04 Aug 2017 11:29:06     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:29:06     -Fullsize Preview set to True
+Fri, 04 Aug 2017 11:29:06     -Fullsize Preview set to False
+Fri, 04 Aug 2017 11:29:06     -ntb_button_page changed to 8
+Fri, 04 Aug 2017 11:29:08     -run
+Fri, 04 Aug 2017 11:29:21     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:29:21     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:29:25     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:29:25     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:29:39     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:29:39     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:29:42     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:29:42     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:29:56     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:29:56     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:00     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:00     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:13     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:13     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:17     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:17     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:31     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:31     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:35     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:30:35     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:48     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:30:48     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:01     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:01     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:16     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:16     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:20     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:20     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:34     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:34     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:38     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:38     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:52     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:31:52     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:57     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:31:57     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:11     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:11     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:14     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:14     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:29     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:29     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:32     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:32     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:46     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:32:46     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:59     -rbt_forward_clicked
+Fri, 04 Aug 2017 11:32:59     -rbt_stop_clicked
+Fri, 04 Aug 2017 11:33:05     -idle
+Fri, 04 Aug 2017 11:33:10     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:33:10     -Manual
+Fri, 04 Aug 2017 11:33:10     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:33:11     -btn_jog_2_1
+Fri, 04 Aug 2017 11:33:12     -btn_jog_0_-1
+Fri, 04 Aug 2017 11:33:13     -btn_jog_1_-1
+Fri, 04 Aug 2017 11:33:18     -btn_jog_1_-1
+Fri, 04 Aug 2017 11:33:18     -btn_jog_1_-1
+Fri, 04 Aug 2017 11:33:20     -btn_jog_2_-1
+Fri, 04 Aug 2017 11:33:20     -btn_jog_2_1
+Fri, 04 Aug 2017 11:33:22     -rbt_auto_pressed
+Fri, 04 Aug 2017 11:33:23     -Auto
+Fri, 04 Aug 2017 11:33:23     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:33:23     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:33:23     -Manual
+Fri, 04 Aug 2017 11:33:23     -ntb_button_page changed to 2
+Fri, 04 Aug 2017 11:33:25     -btn_homing_clicked
+Fri, 04 Aug 2017 11:33:25     -ntb_button_page changed to 0
+Fri, 04 Aug 2017 11:33:26     -button unhome all clicked
+Fri, 04 Aug 2017 11:33:26     -not_all_homed
+Fri, 04 Aug 2017 11:33:27     -btn_jog_2_1
+Fri, 04 Aug 2017 11:33:37     -btn_jog_2_1
+Fri, 04 Aug 2017 11:33:39     -rbt_manual_pressed
+Fri, 04 Aug 2017 11:33:44     -button home selected clicked
+Fri, 04 Aug 2017 11:33:44     -Axis X are homed
+Fri, 04 Aug 2017 11:33:44     -not_all_homed
+Fri, 04 Aug 2017 11:33:44     -Exceeded negative soft limit on Axis X
+Fri, 04 Aug 2017 11:33:45     -button home selected clicked
+Fri, 04 Aug 2017 11:33:45     -Axis X are homed
+Fri, 04 Aug 2017 11:33:45     -not_all_homed
+Fri, 04 Aug 2017 11:33:45     -button home selected clicked
+Fri, 04 Aug 2017 11:33:45     -Axis X are homed
+Fri, 04 Aug 2017 11:33:45     -all_homed
+Fri, 04 Aug 2017 11:33:45     -ntb_button_page changed to 3
+Sat, 05 Aug 2017 06:42:26     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:42:27     -btn_jog_2_1
+Sat, 05 Aug 2017 06:42:28     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:42:28     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:42:28     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:42:29     -btn_jog_2_1
+Sat, 05 Aug 2017 06:42:30     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:42:31     -btn_jog_2_1
+Sat, 05 Aug 2017 06:44:10     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:10     -Can't jog Axis Y further past min soft limit.
+Sat, 05 Aug 2017 06:44:10     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:13     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:13     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:13     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:13     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:14     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:15     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:15     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:16     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:16     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:16     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:16     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:17     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:18     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:18     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:18     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:18     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:18     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:20     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:20     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:21     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:22     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:24     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:36     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:36     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:37     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:37     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:38     -btn_jog_2_-1
+Sat, 05 Aug 2017 06:44:39     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:39     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:40     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:40     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:40     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:41     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:41     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:41     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:42     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:42     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:42     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:42     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:43     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:43     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:43     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:44     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:44     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:45     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:50     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:44:51     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:51     -btn_jog_0_1
+Sat, 05 Aug 2017 06:44:52     -btn_jog_0_-1
+Sat, 05 Aug 2017 06:44:52     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:53     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:58     -btn_jog_1_1
+Sat, 05 Aug 2017 06:44:59     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:00     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:10     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:13     -btn_jog_2_1
+Sat, 05 Aug 2017 06:45:14     -btn_jog_2_1
+Sat, 05 Aug 2017 06:45:15     -btn_jog_2_1
+Sat, 05 Aug 2017 06:45:16     -btn_jog_0_1
+Sat, 05 Aug 2017 06:45:17     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:20     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:21     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:23     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:25     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:35     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:38     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:42     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:43     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:43     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:44     -btn_jog_1_1
+Sat, 05 Aug 2017 06:45:45     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:50     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:50     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:51     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:51     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:51     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:52     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:52     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:57     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:57     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:45:59     -btn_jog_1_-1
+Sat, 05 Aug 2017 06:46:08     -btn_delete_view_clicked
+Sat, 05 Aug 2017 06:46:09     -rbt_mdi_pressed
+Sat, 05 Aug 2017 06:46:09     -MDI
+Sat, 05 Aug 2017 06:46:09     -ntb_button_page changed to 0
+Sat, 05 Aug 2017 06:46:10     -rbt_auto_pressed
+Sat, 05 Aug 2017 06:46:10     -Auto
+Sat, 05 Aug 2017 06:46:10     -ntb_button_page changed to 1
+Sat, 05 Aug 2017 06:46:11     -rbt_manual_pressed
+Sat, 05 Aug 2017 06:46:11     -Manual
+Sat, 05 Aug 2017 06:46:11     -ntb_button_page changed to 2
+Sat, 05 Aug 2017 06:46:12     -btn_touch_clicked
+Sat, 05 Aug 2017 06:46:12     -ntb_button_page changed to 0
+Sat, 05 Aug 2017 06:46:13     -btn_zero_X_clicked
+Sat, 05 Aug 2017 06:46:14     -btn_zero_Y_clicked
+Sat, 05 Aug 2017 06:46:15     -btn_zero_Z_clicked
+Sat, 05 Aug 2017 06:59:09     -rbt_auto_pressed
+Sat, 05 Aug 2017 06:59:09     -Auto
+Sat, 05 Aug 2017 06:59:09     -ntb_button_page changed to 4
+Sat, 05 Aug 2017 06:59:12     -ntb_button_page changed to 2
+Sat, 05 Aug 2017 06:59:12     -Fullsize Preview set to True
+Sat, 05 Aug 2017 06:59:13     -Fullsize Preview set to False
+Sat, 05 Aug 2017 06:59:13     -ntb_button_page changed to 8
+Sat, 05 Aug 2017 06:59:24     -rbt_manual_pressed
+Sat, 05 Aug 2017 06:59:24     -Manual
+Sat, 05 Aug 2017 06:59:24     -ntb_button_page changed to 2
+Sat, 05 Aug 2017 06:59:25     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:27     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:27     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:28     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:28     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:29     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:30     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:31     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:31     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:31     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:32     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:32     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:32     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:32     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:33     -btn_jog_1_1
+Sat, 05 Aug 2017 06:59:49     -btn_jog_1_-1
+Sat, 05 Aug 2017 07:00:50     -rbt_auto_pressed
+Sat, 05 Aug 2017 07:00:50     -Auto
+Sat, 05 Aug 2017 07:00:50     -ntb_button_page changed to 0
+Sat, 05 Aug 2017 07:00:52     -run
+Sat, 05 Aug 2017 07:01:09     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:01:09     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:12     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:12     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:01:27     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:01:27     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:31     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:31     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:01:46     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:01:46     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:49     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:01:49     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:04     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:04     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:08     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:08     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:23     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:23     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:26     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:26     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:41     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:02:41     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:45     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:02:45     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:00     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:00     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:03     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:03     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:18     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:18     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:22     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:22     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:36     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:36     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:40     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:40     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:55     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:03:55     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:59     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:03:59     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:14     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:14     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:17     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:17     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:36     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:36     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:39     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:39     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:55     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:04:55     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:58     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:04:58     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:13     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:13     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:17     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:17     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:32     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:32     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:35     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:35     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:50     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:05:50     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:54     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:05:54     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:08     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:08     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:12     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:12     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:26     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:26     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:30     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:30     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:46     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:06:46     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:50     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:06:50     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:07:04     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:07:04     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:07:08     -rbt_forward_clicked
+Sat, 05 Aug 2017 07:07:08     -rbt_stop_clicked
+Sat, 05 Aug 2017 07:07:14     -idle
+Sat, 05 Aug 2017 07:47:40     -rbt_manual_pressed
+Sat, 05 Aug 2017 07:47:40     -Manual
+Sat, 05 Aug 2017 07:47:40     -ntb_button_page changed to 2
+Sat, 05 Aug 2017 07:47:41     -btn_jog_2_1
+Sat, 05 Aug 2017 07:47:41     -btn_jog_0_-1
+Sat, 05 Aug 2017 07:47:41     -btn_jog_1_-1
+Sat, 05 Aug 2017 09:12:12     -rbt_manual_pressed

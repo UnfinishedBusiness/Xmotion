@@ -19,12 +19,12 @@ int current_x;
 int current_y;
 bool left_button_down;
 
-void mouse_init_(void)
+void mouse_init_(const char *mouse_device)
 {
   current_x = 0;
   current_y = 0;
   left_button_down = false;
-  if ((mouse = open ("/dev/input/mice", O_RDONLY|O_NONBLOCK)) == -1)
+  if ((mouse = open (mouse_device, O_RDONLY|O_NONBLOCK)) == -1)
   {
       printf ("Could not open mouse device\n");
   }

@@ -57,14 +57,15 @@ int last_key;
 int shift_mod;
 int alt_mod;
 
-void keyboard_init(void)
+void keyboard_init(const char* keyboard_device)
 {
   shift_mod = 0;
   alt_mod = 0;
-  if ((keyboard = open ("/dev/input/event1", O_RDONLY|O_NONBLOCK)) == -1)
+  if ((keyboard = open (keyboard_device, O_RDONLY|O_NONBLOCK)) == -1)
   {
       printf ("Could not open keyboard device\n");
   }
+  printf("Opened Keyboard: %s\n", keyboard_device);
 }
 void keyboard_close(void)
 {

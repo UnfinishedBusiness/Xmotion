@@ -2,7 +2,7 @@
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
 //#include "lv_examples/lv_apps/demo/demo.h"
-
+#include "config/ini.h"
 #include "input_devices/keyboard.h"
 #include "input_devices/mouse.h"
 #include "utils/hardware_utils.h"
@@ -32,19 +32,54 @@ void kill_main(void)
   kill_main_flag = true;
 }
 
+typedef struct
+{
+    const char* screen_size;
+    const char* screen_color;
+    const char* keyboard_device;
+    const char* mouse_device;
+} configuration;
+
+static int config_handler(void* conf, const char* section, const char* name, const char* value)
+{
+    configuration* pconfig = (configuration*)conf;
+
+    #define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
+    if (MATCH("system", "screen_size")) {
+        pconfig->screen_size = atoi(value);
+    } else if (MATCH("system", "screen_color")) {
+        pconfig->screen_color = strdup(value);
+    } else if (MATCH("system", "keyboard_device")) {
+        pconfig->keyboard_device = strdup(value);
+    } else if (MATCH("system", "mouse_device")) {
+        pconfig->mouse_device = strdup(value);
+    } else {
+        return 0;  /* unknown section/name, error */
+    }
+    return 1;
+}
+
 int main(void)
 {
+
+    configuration config;
+
+    if (ini_parse("/etc/Xmotion/config.ini", config_handler, &config) < 0) {
+        printf("Can't load '/etc/Xmotion/config.ini'\n");
+        return 1;
+    }
+    printf("Config loaded from '/etc/Xmotion/config.ini'\n");
     /*LittlevGL init*/
     lv_init();
 
-    mouse_init_();
+    mouse_init_(config.mouse_device);
     lv_indev_drv_t mouse_indev_drv;
     lv_indev_drv_init(&mouse_indev_drv);          /*Basic initialization*/
     mouse_indev_drv.type = LV_INDEV_TYPE_POINTER;
     mouse_indev_drv.read = mouse_read;         /*This function will be called periodically (by the library) to get the mouse position and state*/
     lv_indev_t * mouse_indev = lv_indev_drv_register(&mouse_indev_drv);
 
-    keyboard_init();
+    keyboard_init(config.keyboard_device);
     lv_indev_drv_t keyboard_indev_drv;
     lv_indev_drv_init(&keyboard_indev_drv);          /*Basic initialization*/
     keyboard_indev_drv.type = LV_INDEV_TYPE_POINTER;
@@ -56,7 +91,6 @@ int main(void)
     //lv_img_set_src(cursor_obj, SYMBOL_POWER);                 /*For simlicity add a built in symbol not an image*/
     lv_img_set_src(cursor_obj, &mouse_cursor);
     lv_indev_set_cursor(mouse_indev, cursor_obj); /* connect the object to the driver*/
-
 
     /*Linux frame buffer device init*/
     fbdev_init();

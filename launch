@@ -1,0 +1,2 @@
+#!/bin/bash
+linuxcnc configs/Gen1/Gen1.ini

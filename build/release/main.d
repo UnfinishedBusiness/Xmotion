@@ -59,7 +59,7 @@ build/release/main.o: src/main.c src/lvgl/lvgl.h \
  src/lvgl/lv_objx/lv_slider.h src/lv_drivers/display/fbdev.h \
  src/lv_drivers/display/../../lv_drv_conf.h \
  src/lv_drivers/display/../../lv_conf.h src/lvgl/lv_misc/lv_color.h \
- src/lv_drivers/indev/evdev.h src/lv_drv_conf.h \
+ src/lv_drivers/indev/evdev.h src/lv_drv_conf.h src/config/ini.h \
  src/input_devices/keyboard.h src/input_devices/../lv_ex_conf.h \
  src/input_devices/../lvgl/lv_hal/lv_hal.h \
  src/input_devices/../lvgl/lvgl.h src/input_devices/mouse.h \
@@ -260,6 +260,8 @@ src/lvgl/lv_misc/lv_color.h:
 src/lv_drivers/indev/evdev.h:
 
 src/lv_drv_conf.h:
+
+src/config/ini.h:
 
 src/input_devices/keyboard.h:
 

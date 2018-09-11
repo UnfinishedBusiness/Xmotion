@@ -39,7 +39,7 @@ extern "C" {
 /**
  * Create a keyboard application
  */
-void keyboard_init(void);
+void keyboard_init(const char*);
 void keyboard_tick(void);
 char keyboard_keymap_lookup(int, int, int);
 void keyboard_event(int, int);
