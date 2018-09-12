@@ -78,6 +78,7 @@ int main(void)
 
     gui_cnc_control_create();
 
+    int linuxcnc_poll_timing = 0;
     /*Handle LitlevGL tasks (tickless mode)*/
     while(kill_main_flag == false) {
         lv_tick_inc(100);
@@ -85,8 +86,14 @@ int main(void)
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
-        gui_elements_dro_tick();
+        if (linuxcnc_poll_timing > 200)
+        {
+          linuxcnc_poll_timing = 0;
+          gui_elements_dro_tick();
+          gui_elements_indicators_tick();
+        }
         usleep(1000);
+        linuxcnc_poll_timing++;
     }
     linuxcnc_close();
     gui_cnc_control_close();

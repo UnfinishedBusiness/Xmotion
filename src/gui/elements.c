@@ -44,9 +44,9 @@ lv_obj_t *dro_container;
 lv_obj_t *x_wcs_dro;
 lv_obj_t *y_wcs_dro;
 lv_obj_t *z_wcs_dro;
-lv_obj_t *x_abs_dro;
-lv_obj_t *y_abs_dro;
-lv_obj_t *z_abs_dro;
+//lv_obj_t *x_abs_dro;
+//lv_obj_t *y_abs_dro;
+//lv_obj_t *z_abs_dro;
 
 void gui_elements_dro_tick(void)
 {
@@ -81,7 +81,7 @@ void gui_elements_dro_update_wcs(float x, float y, float z)
     lv_label_set_text(z_wcs_dro, z_text);
   }
 }
-void gui_elements_dro_update_abs(float x, float y, float z)
+/*void gui_elements_dro_update_abs(float x, float y, float z)
 {
   if (dro_container != NULL)
   {
@@ -95,7 +95,7 @@ void gui_elements_dro_update_abs(float x, float y, float z)
     lv_label_set_text(y_abs_dro, y_text);
     lv_label_set_text(z_abs_dro, z_text);
   }
-}
+}*/
 lv_obj_t *gui_elements_dro(void)
 {
   static lv_style_t small_text_style;
@@ -153,7 +153,7 @@ lv_obj_t *gui_elements_dro(void)
   lv_obj_align(z_wcs_dro, NULL, LV_ALIGN_IN_TOP_RIGHT, -70, 230);
 
   //Left side, abs
-  x_abs_dro = lv_label_create(dro_container, NULL);
+  /*x_abs_dro = lv_label_create(dro_container, NULL);
   lv_obj_set_style(x_abs_dro, &small_text_style);
   lv_label_set_text(x_abs_dro, "0.0000");
   lv_obj_align(x_abs_dro, NULL, LV_ALIGN_IN_TOP_LEFT, 60, 30);
@@ -166,7 +166,7 @@ lv_obj_t *gui_elements_dro(void)
   z_abs_dro = lv_label_create(dro_container, NULL);
   lv_obj_set_style(z_abs_dro, &small_text_style);
   lv_label_set_text(z_abs_dro, "0.0000");
-  lv_obj_align(z_abs_dro, NULL, LV_ALIGN_IN_TOP_LEFT, 60, 250);
+  lv_obj_align(z_abs_dro, NULL, LV_ALIGN_IN_TOP_LEFT, 60, 250);*/
 
 
   return dro_container;
@@ -304,6 +304,14 @@ lv_obj_t *floating_head_led;
 lv_obj_t *arc_ok_led;
 lv_obj_t *torch_up_led;
 lv_obj_t *torch_down_led;
+void gui_elements_indicators_tick(void)
+{
+  gui_elements_indicators_set_torch_on_led(linuxcnc_get_pin_state("thcud.torch-on"));
+  gui_elements_indicators_set_torch_up_led(linuxcnc_get_pin_state("thcud.torch-up"));
+  gui_elements_indicators_set_torch_down_led(linuxcnc_get_pin_state("thcud.torch-down"));
+  gui_elements_indicators_set_arc_ok_led(linuxcnc_get_pin_state("thcud.arc-ok"));
+  gui_elements_indicators_set_floating_head_led(linuxcnc_get_pin_state("motion.probe-input"));
+}
 void gui_elements_indicators_set_floating_head_led(bool state)
 {
   if (indicators_container == NULL) return;

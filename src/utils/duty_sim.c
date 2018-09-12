@@ -81,6 +81,6 @@ void duty_sim_tick(void)
       f = 0;
     }
     gui_elements_dro_update_wcs(a, b, c);
-    gui_elements_dro_update_abs(d, e, f);
+    //gui_elements_dro_update_abs(d, e, f);
   }
 }

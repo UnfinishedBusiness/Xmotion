@@ -32,7 +32,7 @@ void gui_elements_background(void);
  //Digital Read Out
 lv_obj_t *gui_elements_dro(void);
 void gui_elements_dro_update_wcs(float, float, float);
-void gui_elements_dro_update_abs(float, float, float);
+//void gui_elements_dro_update_abs(float, float, float);
 void gui_elements_dro_tick(void);
 void gui_elements_dro_close();
 
@@ -48,6 +48,7 @@ void gui_elements_indicators_set_torch_on_led(bool);
 void gui_elements_indicators_set_arc_ok_led(bool);
 void gui_elements_indicators_set_torch_up_led(bool);
 void gui_elements_indicators_set_torch_down_led(bool);
+void gui_elements_indicators_tick(void);
 
 //Nav Menu
 lv_obj_t *gui_elements_nav(void);

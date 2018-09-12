@@ -56,7 +56,9 @@ build/release/linuxcnc.o: src/linuxcnc.c src/linuxcnc.h src/lv_ex_conf.h \
  src/lvgl/lv_objx/../lv_objx/lv_win.h src/lvgl/lv_objx/lv_mbox.h \
  src/lvgl/lv_objx/lv_gauge.h src/lvgl/lv_objx/lv_lmeter.h \
  src/lvgl/lv_objx/lv_lmeter.h src/lvgl/lv_objx/lv_sw.h \
- src/lvgl/lv_objx/lv_slider.h
+ src/lvgl/lv_objx/lv_slider.h src/config/handler.h \
+ src/config/../lv_ex_conf.h src/config/../lvgl/lv_hal/lv_hal.h \
+ src/config/../lvgl/lvgl.h
 
 src/linuxcnc.h:
 
@@ -243,3 +245,11 @@ src/lvgl/lv_objx/lv_lmeter.h:
 src/lvgl/lv_objx/lv_sw.h:
 
 src/lvgl/lv_objx/lv_slider.h:
+
+src/config/handler.h:
+
+src/config/../lv_ex_conf.h:
+
+src/config/../lvgl/lv_hal/lv_hal.h:
+
+src/config/../lvgl/lvgl.h:
