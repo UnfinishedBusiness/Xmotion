@@ -14,6 +14,7 @@
 
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
+#include "linuxcnc.h"
 
 #define TERMINAL_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define TERMINAL_TEXT_COLOR LV_COLOR_MAKE(255, 255, 255);
@@ -123,6 +124,13 @@ void terminal_eval(char cmd[2048])
   {
     gui_elements_dro_close();
     lv_label_set_text(cmd_line_output, "DRO is closed!");
+    return;
+  }
+  if (!strcmp(cmd, "home"))
+  {
+    linuxcnc_home_axis(0);
+    linuxcnc_home_axis(1);
+    linuxcnc_home_axis(2);
     return;
   }
   if (!strcmp(cmd, "close"))

@@ -182,9 +182,51 @@ static lv_res_t slider_action(lv_obj_t * slider)
     return LV_RES_OK;
 }
 /*Called when a button is released or long pressed*/
+//static const char * btnm_map[] = {"\224Continuous", "\2220.1", "\2220.01", "\2220.001", "\n",
+                           //"\222X=0", "\222Y=0", "\222Z=0", "\n",
+                           //"\224Probe Z", "\222Go Home", "\222Home", "\n",
+                           //"\222Torch On", "\222Torch Off", "\n",
+                           //"\224Cycle Start", "\222Pause", "\222Stop", "\222Open", ""};
 static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
 {
-  printf("Button: %s released\n", txt);
+  //printf("Button: %s released\n", txt);
+  if (!strcmp("Home", txt))
+  {
+    printf("Homing!\n");
+    linuxcnc_home_axis(0);
+    linuxcnc_home_axis(1);
+    linuxcnc_home_axis(2);
+  }
+  else if (!strcmp("Torch On", txt))
+  {
+    printf("Torch on!\n");
+    linuxcnc_mdi("S100M3");
+  }
+  else if (!strcmp("Torch Off", txt))
+  {
+    printf("Torch off!\n");
+    linuxcnc_mdi("M5");
+  }
+  else if (!strcmp("Go Home", txt))
+  {
+    printf("Return Home!\n");
+    linuxcnc_mdi("G28 X0 Y0");
+  }
+  else if (!strcmp("X=0", txt))
+  {
+    printf("X=0\n");
+    linuxcnc_mdi("G92 X0");
+  }
+  else if (!strcmp("Y=0", txt))
+  {
+    printf("Y=0\n");
+    linuxcnc_mdi("G92 Y0");
+  }
+  else if (!strcmp("Z=0", txt))
+  {
+    printf("Z=0\n");
+    linuxcnc_mdi("G92 Z0");
+  }
 
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
@@ -244,11 +286,11 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_align(slider2_label, slider2, LV_ALIGN_IN_TOP_MID, 0, -25);
 
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"\202Continuous", "0.1", "0.01", "0.001", "\n",
-                             "X=0", "Y=0", "Z=0", "\n",
-                             "\202Probe Z", "Go Home", "\n",
-                             "Torch On", "Torch Off", "\n",
-                             "\202Cycle Start", "Pause", "Stop", "Open", ""};
+  static const char * btnm_map[] = {"\224Continuous", "\2220.1", "\2220.01", "\2220.001", "\n",
+                             "\222X=0", "\222Y=0", "\222Z=0", "\n",
+                             "\224Probe Z", "\222Go Home", "\222Home", "\n",
+                             "\222Torch On", "\222Torch Off", "\n",
+                             "\224Cycle Start", "\222Pause", "\222Stop", "\222Open", ""};
 
   /*Create a new style for the button matrix back ground*/
   static lv_style_t matrix_style_bg;

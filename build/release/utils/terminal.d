@@ -75,7 +75,8 @@ build/release/utils/terminal.o: src/utils/terminal.c src/utils/terminal.h \
  src/utils/../lvgl/lv_objx/lv_slider.h src/utils/duty_sim.h \
  src/utils/../lv_ex_conf.h src/utils/../lvgl/lv_hal/lv_hal.h \
  src/utils/../lvgl/lvgl.h src/gui/elements.h src/gui/../lv_ex_conf.h \
- src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h
+ src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h src/linuxcnc.h \
+ src/lv_ex_conf.h src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h
 
 src/utils/terminal.h:
 
@@ -278,3 +279,11 @@ src/gui/../lv_ex_conf.h:
 src/gui/../lvgl/lv_hal/lv_hal.h:
 
 src/gui/../lvgl/lvgl.h:
+
+src/linuxcnc.h:
+
+src/lv_ex_conf.h:
+
+src/lvgl/lv_hal/lv_hal.h:
+
+src/lvgl/lvgl.h:

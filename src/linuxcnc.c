@@ -16,17 +16,25 @@
 
 #include <python2.7/Python.h>
 
+//http://www.linuxcnc.org/docs/html/config/python-interface.html#_usage_patterns_for_the_linuxcnc_nml_interface
+
 float jog_speed;
 
 void linuxcnc_init(void)
 {
   jog_speed = config.default_jog_speed / 60;
   Py_Initialize();
-  PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\nc.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)\n");
+  PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\nc.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)\ns = linuxcnc.stat()\ne = linuxcnc.error_channel()");
 }
 void linuxcnc_close(void)
 {
   Py_Finalize();
+}
+void wait_complete()
+{
+  char cmd[1024];
+  sprintf(cmd, "c.wait_complete()\n");
+  PyRun_SimpleString(cmd);
 }
 void jog_continous_plus(int axis)
 {
@@ -114,11 +122,8 @@ void linuxcnc_jog_z_minus(bool jog)
 }
 void linuxcnc_set_jog_speed(float speed)
 {
-  /*char cmd[1024];
-  sprintf(cmd, "halcmd setp halui.jog-speed %0.4f\n", speed);
-  system(cmd);*/
   jog_speed = speed / 60;
-  printf("Jog Speed [in/sec] = %0.4f\n", jog_speed);
+  //printf("Jog Speed [in/sec] = %0.4f\n", jog_speed);
 }
 float linuxcnc_get_x_rel_position(void)
 {
@@ -181,4 +186,33 @@ float linuxcnc_get_pin_state(char *pin)
   {
     return true;
   }
+}
+void linuxcnc_home_axis(int axis)
+{
+  wait_complete();
+  char cmd[1024];
+  sprintf(cmd, "c.home(%d)\n", axis);
+  PyRun_SimpleString(cmd);
+  wait_complete();
+}
+void linuxcnc_unhome_axis(int axis)
+{
+  wait_complete();
+  char cmd[1024];
+  sprintf(cmd, "c.unhome(%d)\n", axis);
+  PyRun_SimpleString(cmd);
+  wait_complete();
+}
+void linuxcnc_mdi(char *mdi)
+{
+  char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
+  PyRun_SimpleString(cmd);
+  wait_complete();
+  sprintf(cmd, "c.mdi(\"%s\")\n", mdi);
+  PyRun_SimpleString(cmd);
+  wait_complete();
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
+  PyRun_SimpleString(cmd);
+  wait_complete();
 }

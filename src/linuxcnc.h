@@ -24,9 +24,6 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
-/**
- * Create a keyboard application
- */
 void linuxcnc_init(void);
 void linuxcnc_close(void);
 
@@ -44,6 +41,12 @@ float linuxcnc_get_y_rel_position(void);
 float linuxcnc_get_z_rel_position(void);
 
 float linuxcnc_get_pin_state(char *);
+
+void linuxcnc_mdi(char *);
+
+void linuxcnc_home_axis(int);
+void linuxcnc_unhome_axis(int);
+
 /**********************
  *      MACROS
  **********************/
