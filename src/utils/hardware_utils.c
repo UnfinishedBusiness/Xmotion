@@ -16,6 +16,7 @@ int tty;
 
 void hardware_utils_set_graphics_mode(void)
 {
+  //system("setterm -powersave off -blank 0");
   tty = open("/dev/tty0", O_RDWR);
   if(ioctl(tty, KDSETMODE, KD_GRAPHICS) == -1)
   {

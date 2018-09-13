@@ -43,9 +43,13 @@ float linuxcnc_get_z_rel_position(void);
 float linuxcnc_get_pin_state(char *);
 
 void linuxcnc_mdi(char *);
+void linuxcnc_jog_mode(void);
 
+bool linuxcnc_is_axis_homed(int);
 void linuxcnc_home_axis(int);
 void linuxcnc_unhome_axis(int);
+
+void linuxcnc_abort(void);
 
 /**********************
  *      MACROS

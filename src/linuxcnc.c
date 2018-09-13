@@ -38,18 +38,21 @@ void wait_complete()
 }
 void jog_continous_plus(int axis)
 {
+  linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed);
   PyRun_SimpleString(cmd);
 }
 void jog_continous_minus(int axis)
 {
+  linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed * -1);
   PyRun_SimpleString(cmd);
 }
 void jog_stop(int axis)
 {
+  linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_STOP, %d)\n", axis);
   PyRun_SimpleString(cmd);
@@ -178,27 +181,67 @@ float linuxcnc_get_pin_state(char *pin)
   char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
   pclose(cmd_p);
   line_p[strlen(line_p) - 1] = '\0';
+  //printf("GETP Says: %s\n", line_p);
   if (strcmp(line_p, "TRUE") != 0)
   {
+    //printf("\tReturn False!\n");
     return false;
   }
   else
   {
+    //printf("\tReturn True!\n");
     return true;
   }
 }
+bool linuxcnc_is_axis_homed(int axis)
+{
+  usleep(5 * 100000); //Wait two seconds
+  char cmd[1024];
+  sprintf(cmd, "halcmd getp halui.joint.%d.is-homed", axis);
+  FILE *cmd_p = popen(cmd, "r");
+  if (!cmd_p)
+  {
+    return false;
+  }
+  char buffer[1024];
+  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
+  pclose(cmd_p);
+  line_p[strlen(line_p) - 1] = '\0';
+  printf("GETP Says: %s\n", line_p);
+  if (strcmp(line_p, "TRUE") != 0)
+  {
+    printf("\tReturn False!\n");
+    return false;
+  }
+  else
+  {
+    printf("\tReturn True!\n");
+    return true;
+  }
+}
+void linuxcnc_jog_mode()
+{
+  char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
+  PyRun_SimpleString(cmd);
+  //wait_complete();
+}
 void linuxcnc_home_axis(int axis)
 {
-  wait_complete();
   char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
+  PyRun_SimpleString(cmd);
+  wait_complete();
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
 }
 void linuxcnc_unhome_axis(int axis)
 {
-  wait_complete();
   char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
+  PyRun_SimpleString(cmd);
+  wait_complete();
   sprintf(cmd, "c.unhome(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
@@ -211,8 +254,11 @@ void linuxcnc_mdi(char *mdi)
   wait_complete();
   sprintf(cmd, "c.mdi(\"%s\")\n", mdi);
   PyRun_SimpleString(cmd);
-  wait_complete();
-  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
+  //wait_complete();
+}
+void linuxcnc_abort(void)
+{
+  char cmd[1024];
+  sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
-  wait_complete();
 }

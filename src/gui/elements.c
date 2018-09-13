@@ -192,10 +192,7 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   //printf("Button: %s released\n", txt);
   if (!strcmp("Home", txt))
   {
-    printf("Homing!\n");
-    linuxcnc_home_axis(0);
-    linuxcnc_home_axis(1);
-    linuxcnc_home_axis(2);
+    terminal_eval("home");
   }
   else if (!strcmp("Torch On", txt))
   {
@@ -210,7 +207,7 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   else if (!strcmp("Go Home", txt))
   {
     printf("Return Home!\n");
-    linuxcnc_mdi("G28 X0 Y0");
+    linuxcnc_mdi("G53 G0 X0.010 Y0.010 Z-0.010");
   }
   else if (!strcmp("X=0", txt))
   {

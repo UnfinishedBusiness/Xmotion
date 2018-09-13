@@ -1,5 +1,5 @@
 #include "terminal.h"
-
+#include "main.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -16,8 +16,8 @@
 #include "gui/elements.h"
 #include "linuxcnc.h"
 
-#define TERMINAL_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
-#define TERMINAL_TEXT_COLOR LV_COLOR_MAKE(255, 255, 255);
+#define TERMINAL_BACKGROUND_COLOR LV_COLOR_MAKE(96, 96, 96);
+#define TERMINAL_TEXT_COLOR LV_COLOR_MAKE(192, 192, 192);
 lv_obj_t *terminal_container;
 lv_obj_t *cmd_line;
 lv_obj_t *cmd_line_output;
@@ -99,44 +99,108 @@ void terminal_close(void)
     terminal_container = NULL;
   }
 }
+void terminal_set_output_text(char* text)
+{
+  if (terminal_container != NULL)
+  {
+    lv_label_set_text(cmd_line_output, text);
+  }
+}
 void terminal_eval(char cmd[2048])
 {
-  //lv_label_set_text(cmd_line, "");
   if (!strcmp(cmd, "sim=true"))
   {
     duty_sim_dro(true);
-    lv_label_set_text(cmd_line_output, "SIM on!");
-    return;
+    terminal_set_output_text("SIM on!");
   }
-  if (!strcmp(cmd, "sim=false"))
+  else if (!strcmp(cmd, "sim=false"))
   {
     duty_sim_dro(false);
-    lv_label_set_text(cmd_line_output, "SIM off!");
-    return;
+    terminal_set_output_text("SIM off!");
   }
-  if (!strcmp(cmd, "dro=true"))
+  else if (!strcmp(cmd, "dro=true"))
   {
     gui_elements_dro();
-    lv_label_set_text(cmd_line_output, "DRO is open!");
-    return;
+    terminal_set_output_text("DRO is open!");
   }
-  if (!strcmp(cmd, "dro=false"))
+  else if (!strcmp(cmd, "dro=false"))
   {
     gui_elements_dro_close();
-    lv_label_set_text(cmd_line_output, "DRO is closed!");
-    return;
+    terminal_set_output_text("DRO is closed!");
   }
-  if (!strcmp(cmd, "home"))
+  else if (!strcmp(cmd, "home"))
   {
-    linuxcnc_home_axis(0);
-    linuxcnc_home_axis(1);
-    linuxcnc_home_axis(2);
-    return;
+    char output[1024];
+    sprintf(output, "");
+    for (int x = 0; x < 3; x++)
+    {
+      if (!linuxcnc_is_axis_homed(x)) linuxcnc_home_axis(x);
+      if (linuxcnc_is_axis_homed(x))
+      {
+        sprintf(output, "%s Axis %d homed ok\n", output, x);
+      }
+      else
+      {
+        sprintf(output, "%s Axis %d not homed ok\n", output, x);
+      }
+    }
+    terminal_set_output_text(output);
+
+    linuxcnc_mdi("G55");
+    usleep(5000);
+    linuxcnc_mdi("G54");
   }
-  if (!strcmp(cmd, "close"))
+  else if (!strcmp(cmd, "unhome"))
+  {
+    char output[1024];
+    sprintf(output, "");
+    for (int x = 0; x < 3; x++)
+    {
+      if (linuxcnc_is_axis_homed(x)) linuxcnc_unhome_axis(x);
+      if (!linuxcnc_is_axis_homed(x))
+      {
+        sprintf(output, "%s Axis %d unhomed ok\n", output, x);
+      }
+      else
+      {
+        sprintf(output, "%s Axis %d not unhomed ok\n", output, x);
+      }
+    }
+    terminal_set_output_text(output);
+  }
+  else if (!strcmp(cmd, "ishomed"))
+  {
+    char output[1024];
+    sprintf(output, "");
+    for (int x = 0; x < 3; x++)
+    {
+      if (linuxcnc_is_axis_homed(x))
+      {
+        sprintf(output, "%s Axis %d Homed!\n", output, x);
+      }
+      else
+      {
+        sprintf(output, "%s Axis %d not Homed!\n", output, x);
+      }
+    }
+    terminal_set_output_text(output);
+  }
+  else if (!strcmp(cmd, "close"))
   {
     printf("Closing terminal!\n");
     terminal_close();
-    return;
   }
+  else if (!strcmp(cmd, "kill"))
+  {
+    kill_main();
+  }
+  else
+  {
+    linuxcnc_mdi(cmd);
+  }
+  if (terminal_container != NULL)
+  {
+    lv_label_set_text(cmd_line, cmd_string);
+  }
+  sprintf(cmd_string, "");
 }
