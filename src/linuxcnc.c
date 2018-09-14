@@ -262,3 +262,16 @@ void linuxcnc_abort(void)
   sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
 }
+void linuxcnc_program_open(char *file)
+{
+  char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
+  PyRun_SimpleString(cmd);
+  wait_complete();
+  sprintf(cmd, "c.program_open(\"%s\")\n", file);
+  PyRun_SimpleString(cmd);
+  wait_complete();
+  sprintf(cmd, "c.reset_interpreter()\n");
+  PyRun_SimpleString(cmd);
+
+}

@@ -91,6 +91,7 @@ int main(void)
           linuxcnc_poll_timing = 0;
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
+          gui_elements_viewer_tick();
         }
         usleep(1000);
         linuxcnc_poll_timing++;

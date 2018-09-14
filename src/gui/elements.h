@@ -56,6 +56,9 @@ void gui_elements_nav_close();
 
 //Gcode Viewer
 lv_obj_t *gui_elements_viewer(void);
+void gui_elements_viewer_tick(void);
+void gui_elements_viewer_pan_x(int);
+void gui_elements_viewer_zoom(int);
 void gui_elements_viewer_close();
 
 /**********************

@@ -194,6 +194,18 @@ void terminal_eval(char cmd[2048])
   {
     kill_main();
   }
+  else if (!strcmp(cmd, "pan_x"))
+  {
+    gui_elements_viewer_pan_x(10);
+  }
+  else if (!strcmp(cmd, "zoom_in"))
+  {
+    gui_elements_viewer_zoom(1);
+  }
+  else if (!strcmp(cmd, "zoom_out"))
+  {
+    gui_elements_viewer_zoom(-1);
+  }
   else
   {
     linuxcnc_mdi(cmd);

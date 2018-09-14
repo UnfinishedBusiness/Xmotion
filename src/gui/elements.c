@@ -1,6 +1,7 @@
 #include "elements.h"
 #include "linuxcnc.h"
 #include "config/handler.h"
+#include "utils/terminal.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -587,6 +588,17 @@ void gui_elements_nav_close()
 #define VIEWER_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *viewer_container;
+int viewer_offset[] = {10, 10}; //Offset from Bottom Left of container
+float viewer_zoom = 1;
+lv_obj_t *boundry;
+lv_point_t machine_boundry[] = {{0, 0}, {0, 45}, {45, 45}, {45, 0}, {0, 0}};
+lv_point_t zoomed_machine_boundry[] = {{0, 0}, {0, }, {0, 0}, {0, 0}, {0, 0}};
+
+static lv_point_t line_points[] = {{5, 5}, {70, 70}, {120, 10}, {180, 60}, {240, 10}};
+static lv_style_t style_line_feed;
+static lv_style_t style_line_rapid;
+static lv_style_t style_line_boundry;
+
 lv_obj_t *gui_elements_viewer(void)
 {
   static lv_style_t style;
@@ -602,7 +614,78 @@ lv_obj_t *gui_elements_viewer(void)
   lv_obj_set_size(viewer_container, 1250, 950);
   lv_obj_align(viewer_container, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
 
+
+  lv_style_copy(&style_line_boundry, &lv_style_plain);
+  style_line_boundry.line.color = LV_COLOR_MAKE(255, 0, 0);
+  style_line_boundry.line.width = 2;
+
+  lv_style_copy(&style_line_feed, &lv_style_plain);
+  style_line_feed.line.color = LV_COLOR_MAKE(255, 255, 255);
+  style_line_feed.line.width = 2;
+
+  lv_style_copy(&style_line_rapid, &lv_style_plain);
+  style_line_rapid.line.color = LV_COLOR_MAKE(0, 255, 0);
+  style_line_rapid.line.width = 2;
+
+
+  boundry = lv_line_create(viewer_container, NULL);
+  lv_line_set_style(boundry, &style_line_boundry);
+  gui_elements_viewer_zoom(0);
+  //lv_line_set_points(boundry, machine_boundry, 5);     /*Set the points*/
   return viewer_container;
+}
+void gui_elements_viewer_tick(void)
+{
+  if (viewer_container != NULL)
+  {
+    lv_line_set_points(boundry, zoomed_machine_boundry, 5);     /*Set the points*/
+    lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+  }
+}
+float fround(float var)
+{
+    // 37.66666 * 100 =3766.66
+    // 3766.66 + .5 =37.6716    for rounding off value
+    // then type cast to int so value is 3766
+    // then divided by 100 so the value converted into 37.66
+    float value = (int)(var * 100 + .5);
+    return (float)value / 100;
+}
+void gui_elements_viewer_zoom(int zoom_inc)
+{
+  bool direction = true; //true = zoom in, false = zoom out
+  if (zoom_inc < 0)
+  {
+    direction = false;
+    zoom_inc = abs(zoom_inc);
+  }
+  float zoom_small = fround((float)zoom_inc / 10);
+  if (direction)
+  {
+    viewer_zoom += zoom_small;
+    if (viewer_zoom < 1) viewer_zoom = 1;
+  }
+  else
+  {
+    viewer_zoom -= zoom_small;
+    if (viewer_zoom > 10) viewer_zoom = 10;
+  }
+
+  printf("Zoom: %0.4f\n", viewer_zoom);
+
+  for (int x = 0; x < 5; x++)
+  {
+    zoomed_machine_boundry[x].x = fround(machine_boundry[x].x * viewer_zoom);
+    zoomed_machine_boundry[x].y = fround(machine_boundry[x].y * viewer_zoom);
+  }
+}
+void gui_elements_viewer_pan_x(int pan)
+{
+  if (viewer_container != NULL)
+  {
+    viewer_offset[0] += pan;
+    lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+  }
 }
 void gui_elements_viewer_close()
 {

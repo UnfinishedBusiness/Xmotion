@@ -51,6 +51,9 @@ void linuxcnc_unhome_axis(int);
 
 void linuxcnc_abort(void);
 
+void linuxcnc_program_open(char *file);
+
+
 /**********************
  *      MACROS
  **********************/

@@ -1,5 +1,6 @@
 #include "mouse.h"
 #include "main.h"
+#include "gui/elements.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,6 +25,7 @@ void mouse_init_(const char *mouse_device)
   current_x = 0;
   current_y = 0;
   left_button_down = false;
+  printf("Opened mouse: %s\n", mouse_device);
   if ((mouse = open (mouse_device, O_RDONLY|O_NONBLOCK)) == -1)
   {
       printf ("Could not open mouse device\n");
@@ -35,15 +37,50 @@ void mouse_close(void)
 }
 void mouse_tick(void)
 {
+  int nbytes;
+  struct input_event event;
+  nbytes = read(mouse, &event, sizeof(event));
+  if (nbytes > 0)
+  {
+    //printf("event.type = %d, event.code = %d, event.value = %d\n", event.type, event.code, event.value);
+    if (event.type == 2 && event.code == 8 && event.value == -1) //Scroll down
+    {
+      gui_elements_viewer_zoom(-1);
+    }
+    else if (event.type == 2 && event.code == 8 && event.value == 1)
+    {
+      gui_elements_viewer_zoom(1);
+    }
+    else if (event.type == 1 && event.code == 272) //left button up/down
+    {
+      left_button_down = event.value;
+    }
+    else if (event.type == 2 && event.code == 0) //X inc
+    {
+      current_x += event.value;
+    }
+    else if (event.type == 2 && event.code == 1) //Y inc
+    {
+      current_y += event.value;
+    }
+    else
+    {
+
+    }
+  }
+}
+void mouse_tick_(void)
+{
   int bytes;
   unsigned char data[3];
-  int left, middle, right;
+  int left, middle, right, scroll_up, scroll_down;
   signed char x, y;
   bytes = read(mouse, data, sizeof(data));
   if (bytes > 0)
   {
     left = data[0] & 0x1;
     right = data[0] & 0x2;
+    scroll_up = data[0] & 0x5;
     middle = data[0] & 0x4;
 
     x = data[1];
@@ -53,7 +90,7 @@ void mouse_tick(void)
     current_y -= y;
 
     left_button_down = left;
-    //printf("x=%d, y=%d, left=%d, right=%d, middle=%d\n", x, y, left, right, middle);
+    printf("x=%d, y=%d, left=%d, right=%d, middle=%d, scroll_up=%d\n", x, y, left, right, middle, scroll_up);
   }
 }
 int mouse_get_current_x(void)
