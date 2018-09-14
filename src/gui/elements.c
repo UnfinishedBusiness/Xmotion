@@ -589,15 +589,59 @@ void gui_elements_nav_close()
 #define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *viewer_container;
 int viewer_offset[] = {10, 10}; //Offset from Bottom Left of container
-float viewer_zoom = 1;
+float viewer_zoom = 12;
 lv_obj_t *boundry;
-lv_point_t machine_boundry[] = {{0, 0}, {0, 45}, {45, 45}, {45, 0}, {0, 0}};
-lv_point_t zoomed_machine_boundry[] = {{0, 0}, {0, }, {0, 0}, {0, 0}, {0, 0}};
+lv_point_t machine_boundry[] = {{0, 0}, {0, 45}, {45, 45}, {45, 0}, {0, 0}}; //Real life size. Coordinates are scaled in zoomed_machine_boundry. This needs to be read from ini
+lv_point_t zoomed_machine_boundry[] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
 
-static lv_point_t line_points[] = {{5, 5}, {70, 70}, {120, 10}, {180, 60}, {240, 10}};
 static lv_style_t style_line_feed;
 static lv_style_t style_line_rapid;
 static lv_style_t style_line_boundry;
+static lv_style_t style_cross_hair;
+ViewerEntity Entities;
+
+void initEntityArray(ViewerEntity *a, size_t initialSize)
+{
+  a->array = (lv_obj_t **)malloc(initialSize * sizeof(lv_obj_t*));
+  a->points_array = (lv_point_t **)malloc(initialSize * sizeof(lv_point_t*));
+  a->used = 0;
+  a->size = initialSize;
+}
+int insertEntity(ViewerEntity *a, lv_point_t points[], int number_of_points)
+{
+  if (viewer_container != NULL)
+  {
+    // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
+    // Therefore a->used can go up to a->size
+    lv_obj_t *obj = lv_line_create(viewer_container, NULL);
+    if (a->used == a->size) {
+      a->size *= 2;
+      a->array = (lv_obj_t **)realloc(a->array, a->size * sizeof(lv_obj_t*));
+      a->points_array = (lv_point_t **)realloc(a->points_array, a->size * sizeof(lv_point_t*));
+    }
+    a->used++;
+    a->array[a->used] = (lv_obj_t *)malloc(sizeof(lv_obj_t));
+    a->array[a->used] = obj;
+    //memcpy(a->array[a->used], obj, sizeof(lv_obj_t*));
+    a->points_array[a->used] = (lv_point_t *)malloc(number_of_points * sizeof(lv_point_t));
+    for (int x = 0; x < number_of_points; x++)
+    {
+      a->points_array[a->used][x].x = points[x].x;
+      a->points_array[a->used][x].y = points[x].y;
+    }
+    lv_line_set_style(a->array[a->used], &style_line_boundry); //style needs to be an argument
+    lv_line_set_points(a->array[a->used], a->points_array[a->used], number_of_points);     /*Set the points*/
+    lv_obj_align(a->array[a->used], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+    return a->used;
+  }
+  return -1;
+}
+void freeEntityArray(ViewerEntity *a) {
+  free(a->array);
+  free(a->points_array);
+  a->array = NULL;
+  a->used = a->size = 0;
+}
 
 lv_obj_t *gui_elements_viewer(void)
 {
@@ -627,10 +671,24 @@ lv_obj_t *gui_elements_viewer(void)
   style_line_rapid.line.color = LV_COLOR_MAKE(0, 255, 0);
   style_line_rapid.line.width = 2;
 
+  lv_style_copy(&style_cross_hair, &lv_style_plain);
+  style_cross_hair.line.color = LV_COLOR_MAKE(0, 0, 255);
+  style_cross_hair.line.width = 2;
 
   boundry = lv_line_create(viewer_container, NULL);
   lv_line_set_style(boundry, &style_line_boundry);
+
+  initEntityArray(&Entities, 5); //Allocate 5 slots to start with
+
+  lv_point_t entity[] = {{0, 0}, {250, 250}};
+  insertEntity(&Entities, entity , 2);
+
+  lv_point_t entity1[] = {{10, 10}, {10, 30}};
+  insertEntity(&Entities, entity1 , 2);
+
   gui_elements_viewer_zoom(0);
+
+
   //lv_line_set_points(boundry, machine_boundry, 5);     /*Set the points*/
   return viewer_container;
 }
@@ -640,6 +698,12 @@ void gui_elements_viewer_tick(void)
   {
     lv_line_set_points(boundry, zoomed_machine_boundry, 5);     /*Set the points*/
     lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+
+    for (size_t x = 0; x < Entities.used; x++)
+    {
+      printf("i=%d\n", x);
+      lv_obj_align(Entities.array[x], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+    }
   }
 }
 float fround(float var)
@@ -650,6 +714,10 @@ float fround(float var)
     // then divided by 100 so the value converted into 37.66
     float value = (int)(var * 100 + .5);
     return (float)value / 100;
+}
+float gui_elements_viewer_get_zoom(void)
+{
+  return viewer_zoom;
 }
 void gui_elements_viewer_zoom(int zoom_inc)
 {
@@ -671,12 +739,15 @@ void gui_elements_viewer_zoom(int zoom_inc)
     if (viewer_zoom > 10) viewer_zoom = 10;
   }
 
-  printf("Zoom: %0.4f\n", viewer_zoom);
+  //printf("Zoom: %0.4f\n", viewer_zoom);
 
   for (int x = 0; x < 5; x++)
   {
-    zoomed_machine_boundry[x].x = fround(machine_boundry[x].x * viewer_zoom);
-    zoomed_machine_boundry[x].y = fround(machine_boundry[x].y * viewer_zoom);
+    //zoomed_machine_boundry[x].x = fround(machine_boundry[x].x * viewer_zoom);
+    //zoomed_machine_boundry[x].y = fround(machine_boundry[x].y * viewer_zoom);
+
+    zoomed_machine_boundry[x].x = machine_boundry[x].x * viewer_zoom;
+    zoomed_machine_boundry[x].y = machine_boundry[x].y * viewer_zoom;
   }
 }
 void gui_elements_viewer_pan_x(int pan)
@@ -684,7 +755,15 @@ void gui_elements_viewer_pan_x(int pan)
   if (viewer_container != NULL)
   {
     viewer_offset[0] += pan;
-    lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+    //lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+  }
+}
+void gui_elements_viewer_pan_y(int pan)
+{
+  if (viewer_container != NULL)
+  {
+    viewer_offset[1] -= pan;
+    //lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
   }
 }
 void gui_elements_viewer_close()

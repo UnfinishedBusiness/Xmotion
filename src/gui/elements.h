@@ -55,10 +55,19 @@ lv_obj_t *gui_elements_nav(void);
 void gui_elements_nav_close();
 
 //Gcode Viewer
+typedef struct {
+  lv_obj_t **array; //address of lv_obj_t
+  lv_point_t **points_array; //array of points
+  size_t used;
+  size_t size;
+} ViewerEntity;
+
 lv_obj_t *gui_elements_viewer(void);
 void gui_elements_viewer_tick(void);
 void gui_elements_viewer_pan_x(int);
+void gui_elements_viewer_pan_y(int);
 void gui_elements_viewer_zoom(int);
+float gui_elements_viewer_get_zoom(void);
 void gui_elements_viewer_close();
 
 /**********************

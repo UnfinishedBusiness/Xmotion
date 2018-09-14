@@ -45,11 +45,11 @@ void mouse_tick(void)
     //printf("event.type = %d, event.code = %d, event.value = %d\n", event.type, event.code, event.value);
     if (event.type == 2 && event.code == 8 && event.value == -1) //Scroll down
     {
-      gui_elements_viewer_zoom(-1);
+      gui_elements_viewer_zoom(-1 * gui_elements_viewer_get_zoom());
     }
     else if (event.type == 2 && event.code == 8 && event.value == 1)
     {
-      gui_elements_viewer_zoom(1);
+      gui_elements_viewer_zoom(gui_elements_viewer_get_zoom());
     }
     else if (event.type == 1 && event.code == 272) //left button up/down
     {
@@ -57,16 +57,25 @@ void mouse_tick(void)
     }
     else if (event.type == 2 && event.code == 0) //X inc
     {
+      if (left_button_down == 1 && current_x < 1262 && current_y > 87) //Click Dragging
+      {
+        gui_elements_viewer_pan_x(event.value);
+      }
       current_x += event.value;
     }
     else if (event.type == 2 && event.code == 1) //Y inc
     {
+      if (left_button_down == 1 && current_x < 1262 && current_y > 87)  //Click Dragging
+      {
+        gui_elements_viewer_pan_y(event.value);
+      }
       current_y += event.value;
     }
     else
     {
 
     }
+    //printf("Current_X = %d, Current_y = %d\n", current_x, current_y);
   }
 }
 void mouse_tick_(void)
