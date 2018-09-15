@@ -24,6 +24,9 @@ extern "C" {
  * GLOBAL PROTOTYPES
  **********************/
 
+extern float linuxcnc_x_dro;
+extern float linuxcnc_y_dro;
+
 void linuxcnc_init(void);
 void linuxcnc_close(void);
 

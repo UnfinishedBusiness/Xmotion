@@ -19,9 +19,13 @@
 //http://www.linuxcnc.org/docs/html/config/python-interface.html#_usage_patterns_for_the_linuxcnc_nml_interface
 
 float jog_speed;
+float linuxcnc_x_dro;
+float linuxcnc_y_dro;
 
 void linuxcnc_init(void)
 {
+  linuxcnc_x_dro = 0;
+  linuxcnc_y_dro = 0;
   jog_speed = config.default_jog_speed / 60;
   Py_Initialize();
   PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\nc.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)\ns = linuxcnc.stat()\ne = linuxcnc.error_channel()");
@@ -139,6 +143,7 @@ float linuxcnc_get_x_rel_position(void)
   char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
   pclose(cmd_p);
   line_p[strlen(line_p) - 1] = '\0';
+  linuxcnc_x_dro = atof(line_p);
   return atof(line_p);
 }
 float linuxcnc_get_y_rel_position(void)
@@ -152,6 +157,7 @@ float linuxcnc_get_y_rel_position(void)
   char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
   pclose(cmd_p);
   line_p[strlen(line_p) - 1] = '\0';
+  linuxcnc_y_dro = atof(line_p);
   return atof(line_p);
 }
 float linuxcnc_get_z_rel_position(void)

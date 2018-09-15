@@ -57,8 +57,8 @@ void gui_elements_nav_close();
 //Gcode Viewer
 typedef struct {
   lv_obj_t *obj; //address of lv_obj_t
-  lv_point_t points[2048]; //array of points, make sure to not exceed 2,048 points!
-  lv_point_t zoomed_points[2048];
+  lv_point_t mcs_points[2048]; //array of points, make sure to not exceed 2,048 points!
+  lv_point_t matrix_points[2048];
   int number_of_points;
 } ViewerEntity;
 
@@ -68,7 +68,7 @@ void gui_elements_viewer_pan_x(int);
 void gui_elements_viewer_pan_y(int);
 void gui_elements_viewer_zoom(int);
 float gui_elements_viewer_get_zoom(void);
-int gui_elements_viewer_addEntitity(lv_point_t[2048], int);
+int gui_elements_viewer_addEntitity(lv_point_t[2048], int, char*);
 void gui_elements_viewer_close();
 
 /**********************

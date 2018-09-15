@@ -593,12 +593,9 @@ void gui_elements_nav_close()
 #define VIEWER_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *viewer_container;
-int viewer_offset[] = {10, 10}; //Offset from Bottom Left of container
+int viewer_offset[] = {300, -1000}; //Offset from top Left of container
 float viewer_zoom = 12;
-lv_obj_t *boundry;
-lv_point_t machine_boundry[] = {{0, 0}, {0, 45}, {45, 45}, {45, 0}, {0, 0}}; //Real life size. Coordinates are scaled in zoomed_machine_boundry. This needs to be read from ini
-lv_point_t zoomed_machine_boundry[] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
-
+size_t y_hair_index, x_hair_index, machine_boundry;
 static lv_style_t style_line_feed;
 static lv_style_t style_line_rapid;
 static lv_style_t style_line_boundry;
@@ -637,27 +634,58 @@ lv_obj_t *gui_elements_viewer(void)
   style_cross_hair.line.color = LV_COLOR_MAKE(0, 0, 255);
   style_cross_hair.line.width = 2;
 
-  boundry = lv_line_create(viewer_container, NULL);
-  lv_line_set_style(boundry, &style_line_boundry);
+  lv_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
+  machine_boundry = gui_elements_viewer_addEntitity(boundry, 5, (char*)"boundry");
+
+  lv_point_t x_hair[] = { {-15,0}, {15,0} };
+  lv_point_t y_hair[] = { {0,-15}, {0,15} };
+  y_hair_index = gui_elements_viewer_addEntitity(y_hair, 2, (char*)"crosshair");
+  x_hair_index = gui_elements_viewer_addEntitity(x_hair, 2, (char*)"crosshair");
+
+  lv_point_t test[] = { {0,0}, {60,60} };
+  gui_elements_viewer_addEntitity(test, 2, (char*)"crosshair");
+
+  lv_point_t test1[] = { {0,0}, {0,5} };
+  gui_elements_viewer_addEntitity(test1, 2, (char*)"feed");
 
   gui_elements_viewer_zoom(0);
 
 
   return viewer_container;
 }
-int gui_elements_viewer_addEntitity(lv_point_t points[2048], int count)
+int gui_elements_viewer_addEntitity(lv_point_t *points, int count, char *type)
 {
   ViewerEntity e;
   for (int x = 0; x < count; x++)
   {
-    e.points[x].x = points[x].x;
-    e.points[x].y = points[x].y;
+    e.mcs_points[x].x = points[x].x;
+    e.mcs_points[x].y = points[x].y;
   }
-  e.number_of_points = 2;
+  e.number_of_points = count;
   e.obj = lv_line_create(viewer_container, NULL);
-  lv_line_set_style(e.obj, &style_line_boundry);
-  lv_line_set_points(e.obj, e.points, e.number_of_points);
-  lv_obj_align(e.obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+  if (!strcmp(type, "boundry"))
+  {
+    lv_line_set_style(e.obj, &style_line_boundry);
+  }
+  else if (!strcmp(type, "rapid"))
+  {
+    lv_line_set_style(e.obj, &style_line_rapid);
+  }
+  else if (!strcmp(type, "feed"))
+  {
+    lv_line_set_style(e.obj, &style_line_feed);
+  }
+  else if (!strcmp(type, "crosshair"))
+  {
+    lv_line_set_style(e.obj, &style_cross_hair);
+  }
+  else
+  {
+    lv_line_set_style(e.obj, &style_line_boundry);
+  }
+
+  //lv_line_set_points(e.obj, e.matrix_points, e.number_of_points);
+  lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   Entities.push_back(e);
   return (int)Entities.size() -1;
 }
@@ -665,23 +693,26 @@ void gui_elements_viewer_tick(void)
 {
   if (viewer_container != NULL)
   {
-    for (int x = 0; x < 5; x++)
-    {
-      zoomed_machine_boundry[x].x = machine_boundry[x].x * viewer_zoom;
-      zoomed_machine_boundry[x].y = machine_boundry[x].y * viewer_zoom;
-    }
-    lv_line_set_points(boundry, zoomed_machine_boundry, 5);     /*Set the points*/
-    lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
-
     for (size_t x = 0; x < Entities.size(); x++)
     {
-      for (int i = 0; i < Entities[x].number_of_points; i++)
+      if (x == x_hair_index || x == y_hair_index)
       {
-        Entities[x].zoomed_points[i].x = Entities[x].points[i].x * viewer_zoom;
-        Entities[x].zoomed_points[i].y = Entities[x].points[i].y * viewer_zoom;
+        for (int i = 0; i < Entities[x].number_of_points; i++)
+        {
+          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x) + viewer_offset[0] + (linuxcnc_x_dro * viewer_zoom);
+          Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) + ((viewer_offset[1] + (linuxcnc_y_dro * viewer_zoom)) * -1));
+        }
+        lv_line_set_points(Entities[x].obj, Entities[x].matrix_points, Entities[x].number_of_points);     /*Set the points*/
       }
-      lv_line_set_points(Entities[x].obj, Entities[x].zoomed_points, Entities[x].number_of_points);     /*Set the points*/
-      lv_obj_align(Entities[x].obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+      else
+      {
+        for (int i = 0; i < Entities[x].number_of_points; i++)
+        {
+          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x * viewer_zoom) + viewer_offset[0];;
+          Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) * viewer_zoom + (viewer_offset[1] * -1));
+        }
+        lv_line_set_points(Entities[x].obj, Entities[x].matrix_points, Entities[x].number_of_points);     /*Set the points*/
+      }
     }
   }
 }
