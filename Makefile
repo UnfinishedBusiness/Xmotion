@@ -2,15 +2,18 @@
 # The name of the executable to be created
 BIN_NAME := Xmotion
 # Compiler used
-CC ?= g++
+CC ?= gcc
+CXX ?= g++
 # Extension of source files used in the project
-SRC_EXT = c
+C_SRC_EXT = c
+CPP_SRC_EXT = cpp
 # Path to the source directory, relative to the makefile
 SRC_PATH = ./src
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-COMPILE_FLAGS = -std=gnu99 -Wextra -g
+CXX_COMPILE_FLAGS = -Wextra -g -std=gnu++11 
+CC_COMPILE_FLAGS = -Wextra -g -std=gnu99
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
@@ -55,7 +58,7 @@ INSTALL_DATA = $(INSTALL) -m 644
 
 # Append pkg-config specific libraries if need be
 ifneq ($(LIBS),)
-	COMPILE_FLAGS += $(shell pkg-config --cflags $(LIBS))
+	CC_COMPILE_FLAGS += $(shell pkg-config --cflags $(LIBS))
 	LINK_FLAGS += $(shell pkg-config --libs $(LIBS))
 endif
 
@@ -67,9 +70,10 @@ ifeq ($(V),true)
 endif
 
 # Combine compiler and linker flags
-release: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(RCOMPILE_FLAGS)
+release: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(RCOMPILE_FLAGS)
+release: export CXXFLAGS := $(CXXFLAGS) $(CXX_COMPILE_FLAGS) $(RCOMPILE_FLAGS)
 release: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
-debug: export CFLAGS := $(CFLAGS) $(COMPILE_FLAGS) $(DCOMPILE_FLAGS)
+debug: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(DCOMPILE_FLAGS)
 debug: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(DLINK_FLAGS)
 
 # Build and output paths
@@ -82,9 +86,9 @@ install: export BIN_PATH := bin/release
 # Find all source files in the source directory, sorted by most
 # recently modified
 ifeq ($(UNAME_S),Darwin)
-	SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
+	SOURCES = $(shell find $(SRC_PATH) -name '*.$(C_SRC_EXT)' | sort -k 1nr | cut -f2-)
 else
-	SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' -printf '%T@\t%p\n' \
+	SOURCES = $(shell find $(SRC_PATH) -name '*.$(C_SRC_EXT)' -printf '%T@\t%p\n' \
 						| sort -k 1nr | cut -f2-)
 endif
 
@@ -92,12 +96,28 @@ endif
 rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
 						$(filter $(subst *,%,$2), $d))
 ifeq ($(SOURCES),)
-	SOURCES := $(call rwildcard, $(SRC_PATH), *.$(SRC_EXT))
+	SOURCES := $(call rwildcard, $(SRC_PATH), *.$(C_SRC_EXT))
 endif
+
+ifeq ($(UNAME_S),Darwin)
+	CPP_SOURCES = $(shell find $(SRC_PATH) -name '*.$(CPP_SRC_EXT)' | sort -k 1nr | cut -f2-)
+else
+	CPP_SOURCES = $(shell find $(SRC_PATH) -name '*.$(CPP_SRC_EXT)' -printf '%T@\t%p\n' \
+						| sort -k 1nr | cut -f2-)
+endif
+
+# fallback in case the above fails
+rwildcard = $(foreach d, $(wildcard $1*), $(call rwildcard,$d/,$2) \
+						$(filter $(subst *,%,$2), $d))
+ifeq ($(SOURCES),)
+	CPP_SOURCES := $(call rwildcard, $(SRC_PATH), *.$(CPP_SRC_EXT))
+endif
+
 
 # Set the object file names, with the source directory stripped
 # from the path, and the build path prepended in its place
-OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
+OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(C_SRC_EXT)=$(BUILD_PATH)/%.o)
+OBJECTS += $(CPP_SOURCES:$(SRC_PATH)/%.$(CPP_SRC_EXT)=$(BUILD_PATH)/%.o)
 # Set the dependency files that will be used to add header dependencies
 DEPS = $(OBJECTS:.o=.d)
 
@@ -206,7 +226,7 @@ all: $(BIN_PATH)/$(BIN_NAME)
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 	@echo "Linking: $@"
 	@$(START_TIME)
-	$(CMD_PREFIX)$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	$(CMD_PREFIX)$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 	@echo -en "\t Link time: "
 	@$(END_TIME)
 
@@ -216,9 +236,16 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 # Source file rules
 # After the first compilation they will be joined with the rules from the
 # dependency files to provide header dependencies
-$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
-	@echo "Compiling: $< -> $@"
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(C_SRC_EXT)
+	@echo "Compiling CC: $< -> $@"
 	@$(START_TIME)
 	$(CMD_PREFIX)$(CC) $(CFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
+	@echo -en "\t Compile time: "
+	@$(END_TIME)
+
+$(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(CPP_SRC_EXT)
+	@echo "Compiling CXX: $< -> $@"
+	@$(START_TIME)
+	$(CMD_PREFIX)$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
 	@echo -en "\t Compile time: "
 	@$(END_TIME)

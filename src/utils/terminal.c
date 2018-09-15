@@ -206,6 +206,14 @@ void terminal_eval(char cmd[2048])
   {
     gui_elements_viewer_zoom(-1);
   }
+  else if (!strcmp(cmd, "add_line"))
+  {
+    lv_point_t line[] = {{0, 0}, {45, 45}};
+    int id = gui_elements_viewer_addEntitity(line, 2);
+    char output[1024];
+    sprintf(output, "Added entity, ID=%d\n", id);
+    terminal_set_output_text(output);
+  }
   else
   {
     linuxcnc_mdi(cmd);

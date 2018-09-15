@@ -16,6 +16,11 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
+#include <unistd.h>
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -193,37 +198,37 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   //printf("Button: %s released\n", txt);
   if (!strcmp("Home", txt))
   {
-    terminal_eval("home");
+    terminal_eval((char*)"home");
   }
   else if (!strcmp("Torch On", txt))
   {
     printf("Torch on!\n");
-    linuxcnc_mdi("S100M3");
+    linuxcnc_mdi((char*)"S100M3");
   }
   else if (!strcmp("Torch Off", txt))
   {
     printf("Torch off!\n");
-    linuxcnc_mdi("M5");
+    linuxcnc_mdi((char*)"M5");
   }
   else if (!strcmp("Go Home", txt))
   {
     printf("Return Home!\n");
-    linuxcnc_mdi("G53 G0 X0.010 Y0.010 Z-0.010");
+    linuxcnc_mdi((char*)"G53 G0 X0.010 Y0.010 Z-0.010");
   }
   else if (!strcmp("X=0", txt))
   {
     printf("X=0\n");
-    linuxcnc_mdi("G92 X0");
+    linuxcnc_mdi((char*)"G92 X0");
   }
   else if (!strcmp("Y=0", txt))
   {
     printf("Y=0\n");
-    linuxcnc_mdi("G92 Y0");
+    linuxcnc_mdi((char*)"G92 Y0");
   }
   else if (!strcmp("Z=0", txt))
   {
     printf("Z=0\n");
-    linuxcnc_mdi("G92 Z0");
+    linuxcnc_mdi((char*)"G92 Z0");
   }
 
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
@@ -346,11 +351,11 @@ lv_obj_t *torch_up_led;
 lv_obj_t *torch_down_led;
 void gui_elements_indicators_tick(void)
 {
-  gui_elements_indicators_set_torch_on_led(linuxcnc_get_pin_state("thcud.torch-on"));
-  gui_elements_indicators_set_torch_up_led(linuxcnc_get_pin_state("thcud.torch-up"));
-  gui_elements_indicators_set_torch_down_led(linuxcnc_get_pin_state("thcud.torch-down"));
-  gui_elements_indicators_set_arc_ok_led(linuxcnc_get_pin_state("thcud.arc-ok"));
-  gui_elements_indicators_set_floating_head_led(linuxcnc_get_pin_state("motion.probe-input"));
+  gui_elements_indicators_set_torch_on_led(linuxcnc_get_pin_state((char*)"thcud.torch-on"));
+  gui_elements_indicators_set_torch_up_led(linuxcnc_get_pin_state((char*)"thcud.torch-up"));
+  gui_elements_indicators_set_torch_down_led(linuxcnc_get_pin_state((char*)"thcud.torch-down"));
+  gui_elements_indicators_set_arc_ok_led(linuxcnc_get_pin_state((char*)"thcud.arc-ok"));
+  gui_elements_indicators_set_floating_head_led(linuxcnc_get_pin_state((char*)"motion.probe-input"));
 }
 void gui_elements_indicators_set_floating_head_led(bool state)
 {
@@ -598,50 +603,7 @@ static lv_style_t style_line_feed;
 static lv_style_t style_line_rapid;
 static lv_style_t style_line_boundry;
 static lv_style_t style_cross_hair;
-ViewerEntity Entities;
-
-void initEntityArray(ViewerEntity *a, size_t initialSize)
-{
-  a->array = (lv_obj_t **)malloc(initialSize * sizeof(lv_obj_t*));
-  a->points_array = (lv_point_t **)malloc(initialSize * sizeof(lv_point_t*));
-  a->used = 0;
-  a->size = initialSize;
-}
-int insertEntity(ViewerEntity *a, lv_point_t points[], int number_of_points)
-{
-  if (viewer_container != NULL)
-  {
-    // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
-    // Therefore a->used can go up to a->size
-    if (a->used == a->size) {
-      a->size *= 2;
-      a->array = (lv_obj_t **)realloc(a->array, a->size * sizeof(lv_obj_t*));
-      a->points_array = (lv_point_t **)realloc(a->points_array, a->size * sizeof(lv_point_t*));
-    }
-    a->used++;
-
-    lv_obj_t *obj = lv_line_create(viewer_container, NULL);
-    a->array[a->used] = obj;
-
-    a->points_array[a->used] = (lv_point_t *)malloc(number_of_points * sizeof(lv_point_t));
-    for (int x = 0; x < number_of_points; x++)
-    {
-      a->points_array[a->used][x].x = points[x].x;
-      a->points_array[a->used][x].y = points[x].y;
-    }
-    lv_line_set_style((lv_obj_t *)a->array[a->used], &style_line_boundry); //style needs to be an argument
-    lv_line_set_points((lv_obj_t *)a->array[a->used], a->points_array[a->used], number_of_points);     /*Set the points*/
-    lv_obj_align((lv_obj_t *)a->array[a->used], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
-    return a->used;
-  }
-  return -1;
-}
-void freeEntityArray(ViewerEntity *a) {
-  free(a->array);
-  free(a->points_array);
-  a->array = NULL;
-  a->used = a->size = 0;
-}
+std::vector<ViewerEntity> Entities;
 
 lv_obj_t *gui_elements_viewer(void)
 {
@@ -678,33 +640,48 @@ lv_obj_t *gui_elements_viewer(void)
   boundry = lv_line_create(viewer_container, NULL);
   lv_line_set_style(boundry, &style_line_boundry);
 
-  initEntityArray(&Entities, 5); //Allocate 5 slots to start with
-
-  lv_point_t entity[] = {{0, 0}, {250, 250}};
-  insertEntity(&Entities, entity , 2);
-
-  lv_point_t entity1[] = {{10, 10}, {10, 30}};
-  insertEntity(&Entities, entity1 , 2);
-
   gui_elements_viewer_zoom(0);
 
 
-  //lv_line_set_points(boundry, machine_boundry, 5);     /*Set the points*/
   return viewer_container;
+}
+int gui_elements_viewer_addEntitity(lv_point_t points[2048], int count)
+{
+  ViewerEntity e;
+  for (int x = 0; x < count; x++)
+  {
+    e.points[x].x = points[x].x;
+    e.points[x].y = points[x].y;
+  }
+  e.number_of_points = 2;
+  e.obj = lv_line_create(viewer_container, NULL);
+  lv_line_set_style(e.obj, &style_line_boundry);
+  lv_line_set_points(e.obj, e.points, e.number_of_points);
+  lv_obj_align(e.obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+  Entities.push_back(e);
+  return (int)Entities.size() -1;
 }
 void gui_elements_viewer_tick(void)
 {
   if (viewer_container != NULL)
   {
+    for (int x = 0; x < 5; x++)
+    {
+      zoomed_machine_boundry[x].x = machine_boundry[x].x * viewer_zoom;
+      zoomed_machine_boundry[x].y = machine_boundry[x].y * viewer_zoom;
+    }
     lv_line_set_points(boundry, zoomed_machine_boundry, 5);     /*Set the points*/
     lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
 
-    for (size_t x = 0; x < Entities.used; x++)
+    for (size_t x = 0; x < Entities.size(); x++)
     {
-      printf("i=%d\n", x);
-      lv_obj_t *obj = Entities.array[x];
-      printf("%p\n", obj);
-      lv_obj_align(obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+      for (int i = 0; i < Entities[x].number_of_points; i++)
+      {
+        Entities[x].zoomed_points[i].x = Entities[x].points[i].x * viewer_zoom;
+        Entities[x].zoomed_points[i].y = Entities[x].points[i].y * viewer_zoom;
+      }
+      lv_line_set_points(Entities[x].obj, Entities[x].zoomed_points, Entities[x].number_of_points);     /*Set the points*/
+      lv_obj_align(Entities[x].obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
     }
   }
 }
@@ -739,17 +716,6 @@ void gui_elements_viewer_zoom(int zoom_inc)
   {
     viewer_zoom -= zoom_small;
     if (viewer_zoom > 10) viewer_zoom = 10;
-  }
-
-  //printf("Zoom: %0.4f\n", viewer_zoom);
-
-  for (int x = 0; x < 5; x++)
-  {
-    //zoomed_machine_boundry[x].x = fround(machine_boundry[x].x * viewer_zoom);
-    //zoomed_machine_boundry[x].y = fround(machine_boundry[x].y * viewer_zoom);
-
-    zoomed_machine_boundry[x].x = machine_boundry[x].x * viewer_zoom;
-    zoomed_machine_boundry[x].y = machine_boundry[x].y * viewer_zoom;
   }
 }
 void gui_elements_viewer_pan_x(int pan)

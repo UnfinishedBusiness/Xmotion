@@ -1,4 +1,4 @@
-build/release/gui/elements.o: src/gui/elements.c src/gui/elements.h \
+build/release/gui/elements.o: src/gui/elements.cpp src/gui/elements.h \
  src/gui/../lv_ex_conf.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/lv_hal_disp.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/../lv_misc/lv_color.h \

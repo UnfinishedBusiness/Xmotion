@@ -117,8 +117,8 @@ void keyboard_tick(void)
 }
 bool keyboard_read(lv_indev_data_t * data)
 {
-    data->state = last_state;
-    data->key = last_key;
+    data->state = (lv_indev_state_t)last_state;
+    data->key = (lv_indev_state_t)last_key;
 
     return false;		/*No more data to read so return false*/
 }
