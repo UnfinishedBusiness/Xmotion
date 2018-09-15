@@ -613,25 +613,25 @@ int insertEntity(ViewerEntity *a, lv_point_t points[], int number_of_points)
   {
     // a->used is the number of used entries, because a->array[a->used++] updates a->used only *after* the array has been accessed.
     // Therefore a->used can go up to a->size
-    lv_obj_t *obj = lv_line_create(viewer_container, NULL);
     if (a->used == a->size) {
       a->size *= 2;
       a->array = (lv_obj_t **)realloc(a->array, a->size * sizeof(lv_obj_t*));
       a->points_array = (lv_point_t **)realloc(a->points_array, a->size * sizeof(lv_point_t*));
     }
     a->used++;
-    a->array[a->used] = (lv_obj_t *)malloc(sizeof(lv_obj_t));
+
+    lv_obj_t *obj = lv_line_create(viewer_container, NULL);
     a->array[a->used] = obj;
-    //memcpy(a->array[a->used], obj, sizeof(lv_obj_t*));
+
     a->points_array[a->used] = (lv_point_t *)malloc(number_of_points * sizeof(lv_point_t));
     for (int x = 0; x < number_of_points; x++)
     {
       a->points_array[a->used][x].x = points[x].x;
       a->points_array[a->used][x].y = points[x].y;
     }
-    lv_line_set_style(a->array[a->used], &style_line_boundry); //style needs to be an argument
-    lv_line_set_points(a->array[a->used], a->points_array[a->used], number_of_points);     /*Set the points*/
-    lv_obj_align(a->array[a->used], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+    lv_line_set_style((lv_obj_t *)a->array[a->used], &style_line_boundry); //style needs to be an argument
+    lv_line_set_points((lv_obj_t *)a->array[a->used], a->points_array[a->used], number_of_points);     /*Set the points*/
+    lv_obj_align((lv_obj_t *)a->array[a->used], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
     return a->used;
   }
   return -1;
@@ -702,7 +702,9 @@ void gui_elements_viewer_tick(void)
     for (size_t x = 0; x < Entities.used; x++)
     {
       printf("i=%d\n", x);
-      lv_obj_align(Entities.array[x], NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
+      lv_obj_t *obj = Entities.array[x];
+      printf("%p\n", obj);
+      lv_obj_align(obj, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
     }
   }
 }
