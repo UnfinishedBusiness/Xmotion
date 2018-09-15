@@ -87,7 +87,7 @@ int main(void)
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
-        if (linuxcnc_poll_timing > 200)
+        if (linuxcnc_poll_timing > 100)
         {
           linuxcnc_poll_timing = 0;
           gui_elements_dro_tick();

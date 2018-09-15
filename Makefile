@@ -12,7 +12,7 @@ SRC_PATH = ./src
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-CXX_COMPILE_FLAGS = -Wextra -g -std=gnu++11 
+CXX_COMPILE_FLAGS = -Wextra -g -std=gnu++11
 CC_COMPILE_FLAGS = -Wextra -g -std=gnu99
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
@@ -21,7 +21,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
-LINK_FLAGS = `python-config --libs`
+LINK_FLAGS = `python-config --libs` -lnml -llinuxcnc
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings

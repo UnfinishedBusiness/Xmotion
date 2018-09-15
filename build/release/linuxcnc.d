@@ -1,5 +1,5 @@
-build/release/linuxcnc.o: src/linuxcnc.c src/linuxcnc.h src/lv_ex_conf.h \
- src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/lv_hal_disp.h \
+build/release/linuxcnc.o: src/linuxcnc.cpp src/linuxcnc.h \
+ src/lv_ex_conf.h src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/lv_hal_disp.h \
  src/lvgl/lv_hal/lv_hal.h src/lvgl/lv_hal/../lv_misc/lv_color.h \
  src/lvgl/lv_hal/../lv_misc/../../lv_conf.h \
  src/lvgl/lv_hal/lv_hal_indev.h src/lvgl/lv_hal/../lv_misc/lv_area.h \

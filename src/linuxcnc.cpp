@@ -13,17 +13,26 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
+#include <linuxcnc/emc.hh>
+#include <linuxcnc/emc_nml.hh>
+#include <iostream>
+#include <cstdlib>
+
 
 #include <python2.7/Python.h>
 
 //http://www.linuxcnc.org/docs/html/config/python-interface.html#_usage_patterns_for_the_linuxcnc_nml_interface
 
+RCS_STAT_CHANNEL *nml_stat;
 float jog_speed;
 float linuxcnc_x_dro;
 float linuxcnc_y_dro;
 
+const char *nmlfile = "/usr/share/linuxcnc/linuxcnc.nml";
+
 void linuxcnc_init(void)
 {
+  nml_stat = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", nmlfile);
   linuxcnc_x_dro = 0;
   linuxcnc_y_dro = 0;
   jog_speed = config.default_jog_speed / 60;
@@ -32,6 +41,7 @@ void linuxcnc_init(void)
 }
 void linuxcnc_close(void)
 {
+  nml_stat = NULL;
   Py_Finalize();
 }
 void wait_complete()
@@ -134,44 +144,41 @@ void linuxcnc_set_jog_speed(float speed)
 }
 float linuxcnc_get_x_rel_position(void)
 {
-  FILE *cmd_p = popen("halcmd getp halui.axis.0.pos-relative", "r");
-  if (!cmd_p)
+  while(1)
   {
-    return -1000;
+    if(!nml_stat->valid()) continue;
+    if(nml_stat->peek() != EMC_STAT_TYPE) continue;
+    EMC_STAT *emcStatus = static_cast<EMC_STAT*>(nml_stat->get_address());
+    //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
+    linuxcnc_x_dro = emcStatus->motion.traj.position.tran.x;
+    return linuxcnc_x_dro;
   }
-  char buffer[1024];
-  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
-  pclose(cmd_p);
-  line_p[strlen(line_p) - 1] = '\0';
-  linuxcnc_x_dro = atof(line_p);
-  return atof(line_p);
+  return -1000;
 }
 float linuxcnc_get_y_rel_position(void)
 {
-  FILE *cmd_p = popen("halcmd getp halui.axis.1.pos-relative", "r");
-  if (!cmd_p)
+  while(1)
   {
-    return -1000;
+    if(!nml_stat->valid()) continue;
+    if(nml_stat->peek() != EMC_STAT_TYPE) continue;
+    EMC_STAT *emcStatus = static_cast<EMC_STAT*>(nml_stat->get_address());
+    //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
+    linuxcnc_y_dro = emcStatus->motion.traj.position.tran.y;
+    return emcStatus->motion.traj.position.tran.y;
   }
-  char buffer[1024];
-  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
-  pclose(cmd_p);
-  line_p[strlen(line_p) - 1] = '\0';
-  linuxcnc_y_dro = atof(line_p);
-  return atof(line_p);
+  return -1000;
 }
 float linuxcnc_get_z_rel_position(void)
 {
-  FILE *cmd_p = popen("halcmd getp halui.axis.2.pos-relative", "r");
-  if (!cmd_p)
+  while(1)
   {
-    return -1000;
+    if(!nml_stat->valid()) continue;
+    if(nml_stat->peek() != EMC_STAT_TYPE) continue;
+    EMC_STAT *emcStatus = static_cast<EMC_STAT*>(nml_stat->get_address());
+    //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
+    return emcStatus->motion.traj.position.tran.z;
   }
-  char buffer[1024];
-  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
-  pclose(cmd_p);
-  line_p[strlen(line_p) - 1] = '\0';
-  return atof(line_p);
+  return -1000;
 }
 
 float linuxcnc_get_pin_state(char *pin)
