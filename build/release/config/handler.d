@@ -1,5 +1,5 @@
 build/release/config/handler.o: src/config/handler.c src/config/handler.h \
- src/config/../lv_ex_conf.h src/config/../lvgl/lv_hal/lv_hal.h \
+ src/config/../lvgl/lv_hal/lv_hal.h \
  src/config/../lvgl/lv_hal/lv_hal_disp.h \
  src/config/../lvgl/lv_hal/lv_hal.h \
  src/config/../lvgl/lv_hal/../lv_misc/lv_color.h \
@@ -83,8 +83,6 @@ build/release/config/handler.o: src/config/handler.c src/config/handler.h \
  src/config/../lvgl/lv_objx/lv_slider.h src/config/ini.h
 
 src/config/handler.h:
-
-src/config/../lv_ex_conf.h:
 
 src/config/../lvgl/lv_hal/lv_hal.h:
 

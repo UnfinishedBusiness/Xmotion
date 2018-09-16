@@ -13,11 +13,15 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
-#include <linuxcnc/emc.hh>
-#include <linuxcnc/emc_nml.hh>
+//#include <linuxcnc/emc.hh>
+//#include <linuxcnc/emc_nml.hh>
+#include "emc.hh"
+#include "emc_nml.hh"
+
 #include <iostream>
 #include <cstdlib>
-
+#include <cstring>
+using std::strlen;
 
 #include <python2.7/Python.h>
 

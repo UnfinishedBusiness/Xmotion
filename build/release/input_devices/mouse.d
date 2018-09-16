@@ -1,6 +1,5 @@
 build/release/input_devices/mouse.o: src/input_devices/mouse.c \
- src/input_devices/mouse.h src/input_devices/../lv_ex_conf.h \
- src/input_devices/../lvgl/lv_hal/lv_hal.h \
+ src/input_devices/mouse.h src/input_devices/../lvgl/lv_hal/lv_hal.h \
  src/input_devices/../lvgl/lv_hal/lv_hal_disp.h \
  src/input_devices/../lvgl/lv_hal/lv_hal.h \
  src/input_devices/../lvgl/lv_hal/../lv_misc/lv_color.h \
@@ -91,12 +90,10 @@ build/release/input_devices/mouse.o: src/input_devices/mouse.c \
  src/input_devices/../lvgl/lv_objx/lv_lmeter.h \
  src/input_devices/../lvgl/lv_objx/lv_sw.h \
  src/input_devices/../lvgl/lv_objx/lv_slider.h src/main.h \
- src/gui/elements.h src/gui/../lv_ex_conf.h \
- src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h
+ src/gui/elements.h src/gui/../lvgl/lv_hal/lv_hal.h \
+ src/gui/../lvgl/lvgl.h
 
 src/input_devices/mouse.h:
-
-src/input_devices/../lv_ex_conf.h:
 
 src/input_devices/../lvgl/lv_hal/lv_hal.h:
 
@@ -283,8 +280,6 @@ src/input_devices/../lvgl/lv_objx/lv_slider.h:
 src/main.h:
 
 src/gui/elements.h:
-
-src/gui/../lv_ex_conf.h:
 
 src/gui/../lvgl/lv_hal/lv_hal.h:
 

@@ -1,7 +1,6 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
-//#include "lv_examples/lv_apps/demo/demo.h"
 #include "config/handler.h"
 #include "linuxcnc.h"
 #include "input_devices/keyboard.h"

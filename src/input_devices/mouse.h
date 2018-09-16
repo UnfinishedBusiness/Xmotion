@@ -13,8 +13,6 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_ex_conf.h"
-
 #include "../lvgl/lv_hal/lv_hal.h"
 #include "../lvgl/lvgl.h"
 

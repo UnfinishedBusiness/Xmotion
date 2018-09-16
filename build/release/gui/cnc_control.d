@@ -1,7 +1,6 @@
 build/release/gui/cnc_control.o: src/gui/cnc_control.c \
- src/gui/cnc_control.h src/gui/../lv_ex_conf.h \
- src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lv_hal/lv_hal_disp.h \
- src/gui/../lvgl/lv_hal/lv_hal.h \
+ src/gui/cnc_control.h src/gui/../lvgl/lv_hal/lv_hal.h \
+ src/gui/../lvgl/lv_hal/lv_hal_disp.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/../lv_misc/lv_color.h \
  src/gui/../lvgl/lv_hal/../lv_misc/../../lv_conf.h \
  src/gui/../lvgl/lv_hal/lv_hal_indev.h \
@@ -72,8 +71,6 @@ build/release/gui/cnc_control.o: src/gui/cnc_control.c \
  src/gui/elements.h src/main.h
 
 src/gui/cnc_control.h:
-
-src/gui/../lv_ex_conf.h:
 
 src/gui/../lvgl/lv_hal/lv_hal.h:
 

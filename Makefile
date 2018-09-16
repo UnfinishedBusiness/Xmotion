@@ -19,7 +19,7 @@ RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
-INCLUDES = -I $(SRC_PATH) `python-config --includes`
+INCLUDES = -I $(SRC_PATH) `python-config --includes` -I machinekit_includes/
 # General linker settings
 LINK_FLAGS = `python-config --libs` -lnml -llinuxcnc
 # Additional release-specific linker settings

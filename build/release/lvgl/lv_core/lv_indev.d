@@ -31,7 +31,6 @@ build/release/lvgl/lv_core/lv_indev.o: src/lvgl/lv_core/lv_indev.c \
  src/lvgl/lv_core/../lv_draw/../lv_misc/lv_area.h \
  src/lvgl/lv_core/../lv_draw/../lv_misc/lv_font.h \
  src/lvgl/lv_core/../../input_devices/mouse.h \
- src/lvgl/lv_core/../../input_devices/../lv_ex_conf.h \
  src/lvgl/lv_core/../../input_devices/../lvgl/lv_hal/lv_hal.h \
  src/lvgl/lv_core/../../input_devices/../lvgl/lvgl.h \
  src/lvgl/lv_core/../../input_devices/../lvgl/lv_misc/lv_task.h \
@@ -172,8 +171,6 @@ src/lvgl/lv_core/../lv_draw/../lv_misc/lv_area.h:
 src/lvgl/lv_core/../lv_draw/../lv_misc/lv_font.h:
 
 src/lvgl/lv_core/../../input_devices/mouse.h:
-
-src/lvgl/lv_core/../../input_devices/../lv_ex_conf.h:
 
 src/lvgl/lv_core/../../input_devices/../lvgl/lv_hal/lv_hal.h:
 
