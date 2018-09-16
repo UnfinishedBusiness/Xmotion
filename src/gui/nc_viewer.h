@@ -48,6 +48,7 @@ void gui_elements_viewer_pan_y(int);
 void gui_elements_viewer_zoom(int);
 float gui_elements_viewer_get_zoom(void);
 size_t gui_elements_viewer_addEntitity(viewer_point_t[2048], int, char*);
+void gui_elements_viewer_open_drawing(char*);
 void gui_elements_viewer_close();
 
 /**********************

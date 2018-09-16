@@ -206,6 +206,13 @@ void terminal_eval(char cmd[2048])
   {
     gui_elements_viewer_zoom(-1);
   }
+  else if (!strcmp(cmd, "open"))
+  {
+    gui_elements_viewer_open_drawing("test/0.ngc");
+    //char output[1024];
+    //sprintf(output, "Added entity, ID=%d\n", id);
+    //terminal_set_output_text(output);
+  }
   else if (!strcmp(cmd, "add_line"))
   {
     viewer_point_t line[] = {{0, 0.1}, {45, 0.1}};

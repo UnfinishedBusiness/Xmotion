@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "utils/gcode_parser.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -34,6 +35,10 @@ static lv_style_t style_line_boundry;
 static lv_style_t style_cross_hair;
 std::vector<ViewerEntity> Entities;
 
+void gui_elements_viewer_open_drawing(char* drawing)
+{
+  gcode_parse(drawing);
+}
 lv_obj_t *gui_elements_viewer(void)
 {
   static lv_style_t style;
