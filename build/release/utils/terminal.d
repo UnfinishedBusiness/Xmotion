@@ -74,9 +74,10 @@ build/release/utils/terminal.o: src/utils/terminal.c src/utils/terminal.h \
  src/utils/../lvgl/lv_objx/lv_lmeter.h src/utils/../lvgl/lv_objx/lv_sw.h \
  src/utils/../lvgl/lv_objx/lv_slider.h src/main.h src/utils/duty_sim.h \
  src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h \
- src/gui/elements.h src/gui/../lvgl/lv_hal/lv_hal.h \
- src/gui/../lvgl/lvgl.h src/linuxcnc.h src/lvgl/lv_hal/lv_hal.h \
- src/lvgl/lvgl.h
+ src/gui/elements.h src/gui/nc_controls.h src/gui/../lvgl/lv_hal/lv_hal.h \
+ src/gui/../lvgl/lvgl.h src/gui/nc_dro.h src/gui/nc_indicators.h \
+ src/gui/nc_nav.h src/gui/nc_viewer.h src/linuxcnc.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h
 
 src/utils/terminal.h:
 
@@ -272,9 +273,19 @@ src/utils/../lvgl/lvgl.h:
 
 src/gui/elements.h:
 
+src/gui/nc_controls.h:
+
 src/gui/../lvgl/lv_hal/lv_hal.h:
 
 src/gui/../lvgl/lvgl.h:
+
+src/gui/nc_dro.h:
+
+src/gui/nc_indicators.h:
+
+src/gui/nc_nav.h:
+
+src/gui/nc_viewer.h:
 
 src/linuxcnc.h:
 

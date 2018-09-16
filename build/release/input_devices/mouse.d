@@ -90,8 +90,9 @@ build/release/input_devices/mouse.o: src/input_devices/mouse.c \
  src/input_devices/../lvgl/lv_objx/lv_lmeter.h \
  src/input_devices/../lvgl/lv_objx/lv_sw.h \
  src/input_devices/../lvgl/lv_objx/lv_slider.h src/main.h \
- src/gui/elements.h src/gui/../lvgl/lv_hal/lv_hal.h \
- src/gui/../lvgl/lvgl.h
+ src/gui/elements.h src/gui/nc_controls.h src/gui/../lvgl/lv_hal/lv_hal.h \
+ src/gui/../lvgl/lvgl.h src/gui/nc_dro.h src/gui/nc_indicators.h \
+ src/gui/nc_nav.h src/gui/nc_viewer.h
 
 src/input_devices/mouse.h:
 
@@ -281,6 +282,16 @@ src/main.h:
 
 src/gui/elements.h:
 
+src/gui/nc_controls.h:
+
 src/gui/../lvgl/lv_hal/lv_hal.h:
 
 src/gui/../lvgl/lvgl.h:
+
+src/gui/nc_dro.h:
+
+src/gui/nc_indicators.h:
+
+src/gui/nc_nav.h:
+
+src/gui/nc_viewer.h:

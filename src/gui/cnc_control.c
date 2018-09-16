@@ -1,6 +1,6 @@
 #include "cnc_control.h"
-#include "elements.h"
 #include "main.h"
+#include "elements.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,9 +14,27 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
+#define BACKGROUND_COLOR LV_COLOR_MAKE(10, 10, 10);
+void set_background()
+{
+  static lv_style_t style;
+  lv_style_copy(&style, &lv_style_plain);
+  style.body.shadow.width = 6;
+  style.body.padding.hor = 5;                                 /*Set a great horizontal padding*/
+  style.body.main_color = BACKGROUND_COLOR;
+  style.body.grad_color = BACKGROUND_COLOR;
+
+  /*Create an other container*/
+  lv_obj_t * box1;
+  box1 = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(box1, &style);     /*Set the new style*/
+  lv_cont_set_fit(box1, true, false); /*Do not enable the vertical fit */
+  //lv_obj_set_height(box2, 55);        /*Set a fix height*/
+  lv_obj_set_size(box1, 1680, 1050);
+}
 void gui_cnc_control_create()
 {
-  gui_elements_background();
+  set_background();
   gui_elements_dro();
   gui_elements_controls();
   gui_elements_indicators();
