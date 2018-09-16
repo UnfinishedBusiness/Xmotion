@@ -1,6 +1,6 @@
 /**
  * @file lv_area.h
- * 
+ *
  */
 
 #ifndef LV_AREA_H
@@ -27,7 +27,7 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
-typedef int16_t lv_coord_t;
+typedef int lv_coord_t;
 
 typedef struct
 {
@@ -38,9 +38,9 @@ typedef struct
 typedef struct
 {
     lv_coord_t x1;
-    lv_coord_t y1;        
+    lv_coord_t y1;
     lv_coord_t x2;
-    lv_coord_t y2;        
+    lv_coord_t y2;
 }lv_area_t;
 
 /**********************

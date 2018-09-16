@@ -67,7 +67,7 @@ build/release/main.o: src/main.c src/lvgl/lvgl.h \
  src/utils/hardware_utils.h src/utils/../lvgl/lv_hal/lv_hal.h \
  src/utils/../lvgl/lvgl.h src/utils/duty_sim.h src/gui/elements.h \
  src/gui/../lvgl/lv_hal/lv_hal.h src/gui/../lvgl/lvgl.h \
- src/gui/cnc_control.h
+ src/gui/cnc_control.h src/main.h
 
 src/lvgl/lvgl.h:
 
@@ -294,3 +294,5 @@ src/gui/../lvgl/lv_hal/lv_hal.h:
 src/gui/../lvgl/lvgl.h:
 
 src/gui/cnc_control.h:
+
+src/main.h:

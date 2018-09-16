@@ -208,11 +208,29 @@ void terminal_eval(char cmd[2048])
   }
   else if (!strcmp(cmd, "add_line"))
   {
-    lv_point_t line[] = {{0, 0}, {45, 45}};
+    viewer_point_t line[] = {{0, 0.1}, {45, 0.1}};
     int id = gui_elements_viewer_addEntitity(line, 2, "feed");
+    DEBUG_PRINT(("Terminal->add_line: id=%d\n", id));
     char output[1024];
     sprintf(output, "Added entity, ID=%d\n", id);
     terminal_set_output_text(output);
+  }
+  else if (!strcmp(cmd, "line_test"))
+  {
+    viewer_point_t start_line[] = {{0, 0.1}, {45, 0.1}};
+    char output[1024];
+    int id;
+    for (int x = 0; x < 10000; x++)
+    {
+      DEBUG_PRINT(("Terminal->line_test: y=%0.4f\n", start_line[0].y));
+      int id = gui_elements_viewer_addEntitity(start_line, 2, "feed");
+      DEBUG_PRINT(("Terminal->line_test: id=%d\n", id));
+      start_line[0].y += 0.1;
+      start_line[1].y += 0.1;
+      sprintf(output, "Added entity, ID=%d\n", id);
+      terminal_set_output_text(output);
+    }
+
   }
   else
   {

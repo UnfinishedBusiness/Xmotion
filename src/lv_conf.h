@@ -14,7 +14,7 @@
 
 /* Memory size which will be used by the library
  * to store the graphical objects and other data */
-#define LV_MEM_CUSTOM      0                /*1: use custom malloc/free, 0: use the built-in lv_mem_alloc/lv_mem_free*/
+#define LV_MEM_CUSTOM      1                /*1: use custom malloc/free, 0: use the built-in lv_mem_alloc/lv_mem_free*/
 #if LV_MEM_CUSTOM == 0
 #define LV_MEM_SIZE    (32U * 1024U)        /*Size memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
 #define LV_MEM_ATTR                         /*Complier prefix for big array declaration*/
@@ -67,9 +67,9 @@
 
 /*Color settings*/
 #ifdef XMOTION_EMBEDDED
-	#define LV_COLOR_DEPTH     16                     /*Color depth: 1/8/16/24*/
+  #define LV_COLOR_DEPTH     16                     /*Color depth: 1/8/16/24*/
 #else
-	#define LV_COLOR_DEPTH     24
+  #define LV_COLOR_DEPTH     24
 #endif
 #define LV_COLOR_TRANSP    LV_COLOR_LIME          /*Images pixels with this color will not be drawn (with chroma keying)*/
 

@@ -23,7 +23,7 @@ INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
 LINK_FLAGS = `python-config --libs`
 # Additional release-specific linker settings
-RLINK_FLAGS = -D XMOTION_EMBEDDED
+RLINK_FLAGS =
 # Additional debug-specific linker settings
 DLINK_FLAGS =
 # Destination directory, like a jail or mounted system
@@ -74,6 +74,7 @@ release: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(RCOMPILE_FLAGS)
 release: export CXXFLAGS := $(CXXFLAGS) $(CXX_COMPILE_FLAGS) $(RCOMPILE_FLAGS)
 release: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
 debug: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(DCOMPILE_FLAGS)
+debug: export CXXFLAGS := $(CXXFLAGS) $(CXX_COMPILE_FLAGS) $(DCOMPILE_FLAGS)
 debug: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(DLINK_FLAGS)
 
 # Build and output paths

@@ -20,6 +20,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <cmath>
 
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
@@ -634,27 +635,22 @@ lv_obj_t *gui_elements_viewer(void)
   style_cross_hair.line.color = LV_COLOR_MAKE(0, 0, 255);
   style_cross_hair.line.width = 2;
 
-  lv_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
-  machine_boundry = gui_elements_viewer_addEntitity(boundry, 5, (char*)"boundry");
+  viewer_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
+  machine_boundry = gui_elements_viewer_addEntitity(boundry, 5, "boundry");
 
-  lv_point_t x_hair[] = { {-15,0}, {15,0} };
-  lv_point_t y_hair[] = { {0,-15}, {0,15} };
-  y_hair_index = gui_elements_viewer_addEntitity(y_hair, 2, (char*)"crosshair");
-  x_hair_index = gui_elements_viewer_addEntitity(x_hair, 2, (char*)"crosshair");
-
-  lv_point_t test[] = { {0,0}, {60,60} };
-  gui_elements_viewer_addEntitity(test, 2, (char*)"crosshair");
-
-  lv_point_t test1[] = { {0,0}, {0,5} };
-  gui_elements_viewer_addEntitity(test1, 2, (char*)"feed");
+  viewer_point_t x_hair[] = { {-15,0}, {15,0} };
+  viewer_point_t y_hair[] = { {0,-15}, {0,15} };
+  y_hair_index = gui_elements_viewer_addEntitity(y_hair, 2, "crosshair");
+  x_hair_index = gui_elements_viewer_addEntitity(x_hair, 2, "crosshair");
 
   gui_elements_viewer_zoom(0);
 
 
   return viewer_container;
 }
-int gui_elements_viewer_addEntitity(lv_point_t *points, int count, char *type)
+size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *type)
 {
+  DEBUG_PRINT(("addEntitity!\n"));
   ViewerEntity e;
   for (int x = 0; x < count; x++)
   {
@@ -663,55 +659,83 @@ int gui_elements_viewer_addEntitity(lv_point_t *points, int count, char *type)
   }
   e.number_of_points = count;
   e.obj = lv_line_create(viewer_container, NULL);
-  if (!strcmp(type, "boundry"))
+  if (e.obj != NULL)
   {
-    lv_line_set_style(e.obj, &style_line_boundry);
-  }
-  else if (!strcmp(type, "rapid"))
-  {
-    lv_line_set_style(e.obj, &style_line_rapid);
-  }
-  else if (!strcmp(type, "feed"))
-  {
-    lv_line_set_style(e.obj, &style_line_feed);
-  }
-  else if (!strcmp(type, "crosshair"))
-  {
-    lv_line_set_style(e.obj, &style_cross_hair);
+    DEBUG_PRINT(("\tLine created ok!\n"));
+    if (!strcmp(type, "boundry"))
+    {
+      lv_line_set_style(e.obj, &style_line_boundry);
+    }
+    else if (!strcmp(type, "rapid"))
+    {
+      lv_line_set_style(e.obj, &style_line_rapid);
+    }
+    else if (!strcmp(type, "feed"))
+    {
+      lv_line_set_style(e.obj, &style_line_feed);
+    }
+    else if (!strcmp(type, "crosshair"))
+    {
+      lv_line_set_style(e.obj, &style_cross_hair);
+    }
+    else
+    {
+      lv_line_set_style(e.obj, &style_line_boundry);
+    }
+    DEBUG_PRINT(("\tLine style set ok!\n"));
+    //lv_line_set_points(e.obj, e.matrix_points, e.number_of_points); //viewer_tick rounds floats into int16_t aka lv_coord_t!
+    DEBUG_PRINT(("\tLine points set ok!\n"));
+    lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    DEBUG_PRINT(("\tLine obj aligned ok!\n"));
+    Entities.push_back(e);
+    gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults
+    DEBUG_PRINT(("\tLine pushed back ok!\n"));
+    return Entities.size() -1;
   }
   else
   {
-    lv_line_set_style(e.obj, &style_line_boundry);
+    DEBUG_PRINT(("\tLine not pushed back ok!\n"));
+    return -1;
   }
-
-  //lv_line_set_points(e.obj, e.matrix_points, e.number_of_points);
-  lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  Entities.push_back(e);
-  return (int)Entities.size() -1;
 }
 void gui_elements_viewer_tick(void)
 {
+  //DEBUG_PRINT(("Viewer Tick!\n"));
   if (viewer_container != NULL)
   {
     for (size_t x = 0; x < Entities.size(); x++)
     {
       if (x == x_hair_index || x == y_hair_index)
       {
+        //DEBUG_PRINT(("\tIndex Hair translation!"));
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
           Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x) + viewer_offset[0] + (linuxcnc_x_dro * viewer_zoom);
           Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) + ((viewer_offset[1] + (linuxcnc_y_dro * viewer_zoom)) * -1));
+
+          Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
+          Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
         }
-        lv_line_set_points(Entities[x].obj, Entities[x].matrix_points, Entities[x].number_of_points);     /*Set the points*/
+        //DEBUG_PRINT(("\t\tOK\n"));
+        //DEBUG_PRINT(("\t\tSet Points!"));
+        lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
+        //DEBUG_PRINT(("\t\tOK\n"));
       }
       else
       {
+        //DEBUG_PRINT(("\tStatic Entity translation!"));
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
-          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x * viewer_zoom) + viewer_offset[0];;
+          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x * viewer_zoom) + viewer_offset[0];
           Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) * viewer_zoom + (viewer_offset[1] * -1));
+
+          Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
+          Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
         }
-        lv_line_set_points(Entities[x].obj, Entities[x].matrix_points, Entities[x].number_of_points);     /*Set the points*/
+        //DEBUG_PRINT(("\t\tOK\n"));
+        //DEBUG_PRINT(("\t\tSet Points!"));
+        lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
+        //DEBUG_PRINT(("\t\tOK\n"));
       }
     }
   }
@@ -741,12 +765,13 @@ void gui_elements_viewer_zoom(int zoom_inc)
   if (direction)
   {
     viewer_zoom += zoom_small;
-    if (viewer_zoom < 1) viewer_zoom = 1;
+    if (viewer_zoom > 10) viewer_zoom = 20;
   }
   else
   {
     viewer_zoom -= zoom_small;
-    if (viewer_zoom > 10) viewer_zoom = 10;
+    if (viewer_zoom < 1) viewer_zoom = 1;
+
   }
 }
 void gui_elements_viewer_pan_x(int pan)

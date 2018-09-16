@@ -1,6 +1,7 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/fbdev.h"
 #include "lv_drivers/indev/evdev.h"
+//#include "lv_examples/lv_apps/demo/demo.h"
 #include "config/handler.h"
 #include "linuxcnc.h"
 #include "input_devices/keyboard.h"
@@ -9,6 +10,7 @@
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
 #include "gui/cnc_control.h"
+#include "main.h"
 
 
 //https://gist.github.com/robmint/4753401
@@ -36,7 +38,7 @@ void kill_main(void)
 
 int main(void)
 {
-
+    DEBUG_PRINT(("Debug Mode!\n"));
     config_handler_init();
     /*LittlevGL init*/
     lv_init();
@@ -79,23 +81,22 @@ int main(void)
 
     int linuxcnc_poll_timing = 0;
     int viewer_tick_timing = 0;
-    /*Handle LitlevGL tasks (tickless mode)*/
     while(kill_main_flag == false) {
         lv_tick_inc(100);
         lv_task_handler();
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
-        if (linuxcnc_poll_timing > 1000)
+        if (linuxcnc_poll_timing > 100)
         {
           linuxcnc_poll_timing = 0;
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
         }
-        if (viewer_tick_timing > 200)
+        if (viewer_tick_timing > 30)
         {
           viewer_tick_timing = 0;
-          //gui_elements_viewer_tick();
+          gui_elements_viewer_tick();
         }
         usleep(1000);
         linuxcnc_poll_timing++;
