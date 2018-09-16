@@ -66,7 +66,11 @@
 #define LV_INDEV_LONG_PRESS_REP_TIME    100                    /*Repeated trigger period in long press [ms] */
 
 /*Color settings*/
-#define LV_COLOR_DEPTH     24                     /*Color depth: 1/8/16/24*/
+#ifdef XMOTION_EMBEDDED
+	#define LV_COLOR_DEPTH     16                     /*Color depth: 1/8/16/24*/
+#else
+	#define LV_COLOR_DEPTH     24
+#endif
 #define LV_COLOR_TRANSP    LV_COLOR_LIME          /*Images pixels with this color will not be drawn (with chroma keying)*/
 
 /*Text settings*/

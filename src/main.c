@@ -86,16 +86,16 @@ int main(void)
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
-        if (linuxcnc_poll_timing > 100)
+        if (linuxcnc_poll_timing > 1000)
         {
           linuxcnc_poll_timing = 0;
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
         }
-        if (viewer_tick_timing > 30)
+        if (viewer_tick_timing > 200)
         {
           viewer_tick_timing = 0;
-          gui_elements_viewer_tick();
+          //gui_elements_viewer_tick();
         }
         usleep(1000);
         linuxcnc_poll_timing++;

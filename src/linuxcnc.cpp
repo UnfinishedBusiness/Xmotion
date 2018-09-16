@@ -15,19 +15,17 @@
 
 //#include <linuxcnc/emc.hh>
 //#include <linuxcnc/emc_nml.hh>
-#include "emc.hh"
-#include "emc_nml.hh"
 
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
-using std::strlen;
+
 
 #include <python2.7/Python.h>
 
 //http://www.linuxcnc.org/docs/html/config/python-interface.html#_usage_patterns_for_the_linuxcnc_nml_interface
 
-RCS_STAT_CHANNEL *nml_stat;
+//RCS_STAT_CHANNEL *nml_stat;
 float jog_speed;
 float linuxcnc_x_dro;
 float linuxcnc_y_dro;
@@ -36,7 +34,7 @@ const char *nmlfile = "/usr/share/linuxcnc/linuxcnc.nml";
 
 void linuxcnc_init(void)
 {
-  nml_stat = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", nmlfile);
+  //nml_stat = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", nmlfile);
   linuxcnc_x_dro = 0;
   linuxcnc_y_dro = 0;
   jog_speed = config.default_jog_speed / 60;
@@ -45,17 +43,19 @@ void linuxcnc_init(void)
 }
 void linuxcnc_close(void)
 {
-  nml_stat = NULL;
+  //nml_stat = NULL;
   Py_Finalize();
 }
 void wait_complete()
 {
+  return;
   char cmd[1024];
   sprintf(cmd, "c.wait_complete()\n");
   PyRun_SimpleString(cmd);
 }
 void jog_continous_plus(int axis)
 {
+  return;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed);
@@ -63,6 +63,7 @@ void jog_continous_plus(int axis)
 }
 void jog_continous_minus(int axis)
 {
+  return;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed * -1);
@@ -70,6 +71,7 @@ void jog_continous_minus(int axis)
 }
 void jog_stop(int axis)
 {
+  return;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_STOP, %d)\n", axis);
@@ -77,6 +79,7 @@ void jog_stop(int axis)
 }
 void linuxcnc_jog_x_plus(bool jog)
 {
+ return;
   if (jog == true)
   {
     jog_continous_plus(0);
@@ -88,6 +91,7 @@ void linuxcnc_jog_x_plus(bool jog)
 }
 void linuxcnc_jog_x_minus(bool jog)
 {
+return;
   if (jog == true)
   {
     jog_continous_minus(0);
@@ -99,6 +103,7 @@ void linuxcnc_jog_x_minus(bool jog)
 }
 void linuxcnc_jog_y_plus(bool jog)
 {
+return;
   if (jog == true)
   {
     jog_continous_plus(1);
@@ -110,6 +115,7 @@ void linuxcnc_jog_y_plus(bool jog)
 }
 void linuxcnc_jog_y_minus(bool jog)
 {
+return;
   if (jog == true)
   {
     jog_continous_minus(1);
@@ -121,6 +127,7 @@ void linuxcnc_jog_y_minus(bool jog)
 }
 void linuxcnc_jog_z_plus(bool jog)
 {
+return;
   if (jog == true)
   {
     jog_continous_plus(2);
@@ -132,6 +139,7 @@ void linuxcnc_jog_z_plus(bool jog)
 }
 void linuxcnc_jog_z_minus(bool jog)
 {
+return;
   if (jog == true)
   {
     jog_continous_minus(2);
@@ -148,7 +156,7 @@ void linuxcnc_set_jog_speed(float speed)
 }
 float linuxcnc_get_x_rel_position(void)
 {
-  while(1)
+  /*while(1)
   {
     if(!nml_stat->valid()) continue;
     if(nml_stat->peek() != EMC_STAT_TYPE) continue;
@@ -156,12 +164,12 @@ float linuxcnc_get_x_rel_position(void)
     //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
     linuxcnc_x_dro = emcStatus->motion.traj.position.tran.x;
     return linuxcnc_x_dro;
-  }
+  }*/
   return -1000;
 }
 float linuxcnc_get_y_rel_position(void)
 {
-  while(1)
+  /*while(1)
   {
     if(!nml_stat->valid()) continue;
     if(nml_stat->peek() != EMC_STAT_TYPE) continue;
@@ -169,24 +177,25 @@ float linuxcnc_get_y_rel_position(void)
     //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
     linuxcnc_y_dro = emcStatus->motion.traj.position.tran.y;
     return emcStatus->motion.traj.position.tran.y;
-  }
+  }*/
   return -1000;
 }
 float linuxcnc_get_z_rel_position(void)
 {
-  while(1)
+  /*while(1)
   {
     if(!nml_stat->valid()) continue;
     if(nml_stat->peek() != EMC_STAT_TYPE) continue;
     EMC_STAT *emcStatus = static_cast<EMC_STAT*>(nml_stat->get_address());
     //printf("X location = %0.4f\n", emcStatus->motion.traj.position.tran.x);
     return emcStatus->motion.traj.position.tran.z;
-  }
+  }*/
   return -1000;
 }
 
 float linuxcnc_get_pin_state(char *pin)
 {
+return false;
   char cmd[1024];
   sprintf(cmd, "halcmd getp %s", pin);
   FILE *cmd_p = popen(cmd, "r");
@@ -212,6 +221,7 @@ float linuxcnc_get_pin_state(char *pin)
 }
 bool linuxcnc_is_axis_homed(int axis)
 {
+return false;
   usleep(5 * 100000); //Wait two seconds
   char cmd[1024];
   sprintf(cmd, "halcmd getp halui.joint.%d.is-homed", axis);
@@ -238,6 +248,7 @@ bool linuxcnc_is_axis_homed(int axis)
 }
 void linuxcnc_jog_mode()
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -245,6 +256,7 @@ void linuxcnc_jog_mode()
 }
 void linuxcnc_home_axis(int axis)
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -255,6 +267,7 @@ void linuxcnc_home_axis(int axis)
 }
 void linuxcnc_unhome_axis(int axis)
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -265,6 +278,7 @@ void linuxcnc_unhome_axis(int axis)
 }
 void linuxcnc_mdi(char *mdi)
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
   PyRun_SimpleString(cmd);
@@ -275,12 +289,14 @@ void linuxcnc_mdi(char *mdi)
 }
 void linuxcnc_abort(void)
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
 }
 void linuxcnc_program_open(char *file)
 {
+return;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
   PyRun_SimpleString(cmd);
