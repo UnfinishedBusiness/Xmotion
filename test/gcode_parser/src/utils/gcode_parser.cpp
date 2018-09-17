@@ -17,6 +17,10 @@
 
 using namespace std;
 vector<gcode_t> lines;
+vector<gcode_move_t> moves;
+
+size_t move_count;
+size_t current_move;
 
 void gcode_parse(char *file)
 {
@@ -52,13 +56,20 @@ void gcode_parse(char *file)
         //printf("Line: %s\n", gline.c_str());
         g.g_word_counter = 0; //Reset counter on each new line
         g.m_word_counter = 0;
+        g.status = GCODE_MOVE;
         for (size_t x = 0; x < gline.size(); x++)
         {
           char c = gline[x];
           if (c != ' ') //Ignore all spaces on line
           {
-            if (c == '(') //Ignore any line with a comment!
+            if (c == '(') //Ignore any line with a comment
             {
+              g.status = GCODE_COMMENT;
+              break;
+            }
+            if (c == 'O') //Ignore any line with a comment
+            {
+              g.status = GCODE_SUBROUTINE;
               break;
             }
             if (c == 'G') //Found G word!
@@ -105,7 +116,7 @@ void gcode_parse(char *file)
               x--;
               g.x = atof(number);
             }
-            if (c == 'Y') //Found X word!
+            if (c == 'Y') //Found Y word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -118,7 +129,7 @@ void gcode_parse(char *file)
               x--;
               g.y = atof(number);
             }
-            if (c == 'Z') //Found X word!
+            if (c == 'Z') //Found Z word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -132,7 +143,7 @@ void gcode_parse(char *file)
               g.z = atof(number);
             }
 
-            if (c == 'I') //Found X word!
+            if (c == 'I') //Found I word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -145,7 +156,7 @@ void gcode_parse(char *file)
               x--;
               g.i = atof(number);
             }
-            if (c == 'J') //Found X word!
+            if (c == 'J') //Found J word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -158,7 +169,7 @@ void gcode_parse(char *file)
               x--;
               g.j = atof(number);
             }
-            if (c == 'K') //Found X word!
+            if (c == 'K') //Found K word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -172,7 +183,7 @@ void gcode_parse(char *file)
               g.k = atof(number);
             }
 
-            if (c == 'R') //Found X word!
+            if (c == 'R') //Found R word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -186,7 +197,7 @@ void gcode_parse(char *file)
               g.r = atof(number);
             }
 
-            if (c == 'F') //Found X word!
+            if (c == 'F') //Found F word!
             {
               number[0] = '\0';
               num_p = 0;
@@ -198,6 +209,20 @@ void gcode_parse(char *file)
               number[num_p-1] = '\0';
               x--;
               g.f = atof(number);
+            }
+
+            if (c == 'N') //Found N word!
+            {
+              number[0] = '\0';
+              num_p = 0;
+              do{
+                x++;
+                number[num_p] = gline[x];
+                num_p++;
+              }while(isdigit(gline[x]) || gline[x] == '.');
+              number[num_p-1] = '\0';
+              x--;
+              g.n = atoi(number);
             }
           }
         }
@@ -239,4 +264,90 @@ void gcode_stack_dump()
     printf(" X=%0.4f, Y=%0.4f, Z=%0.4f, I=%0.4f, J=%0.4f, K=%0.4f, R=%0.4f, F=%0.4f", g.x, g.y, g.z, g.i, g.j, g.k, g.r, g.f);
     printf("\n");
   }
+}
+void gcode_parse_moves()
+{
+  gcode_t last_g;
+  gcode_t g;
+  int current_move = -1;
+  for (size_t x = 0; x < lines.size(); x++)
+  {
+    g = lines[x];
+    if (g.status == GCODE_MOVE)
+    {
+      if (g.g_word_counter > 0)
+      {
+        //printf("(%d) G Words - ", g.g_word_counter);
+        for (int y = 0; y < g.g_word_counter; y++)
+        {
+          //printf("G%0.2f ", g.g[y]);
+          if (g.g[y] == 0 || g.g[y] == 1 || g.g[y] == 2 || g.g[y] == 3)
+          {
+            current_move = g.g[y];
+          }
+          else
+          {
+            current_move = -1;
+          }
+        }
+      }
+      if (last_g.x == g.x && last_g.y == g.y && last_g.z == g.z) //Last move is the same as this move, likly a f word set
+      {
+        current_move = -1;
+      }
+      if (current_move == 0) //Rapid move
+      {
+        //printf("Rapid move to X%0.4f Y%0.4f Z%0.4f\n", g.x, g.y, g.z);
+        if (last_g.z != last_g.z)
+        {
+          gcode_move_t move;
+          move.g = 0;
+          move.x = g.x;
+          move.y = g.y;
+          moves.push_back(move);
+        }
+      }
+      else if (current_move == 1) //Line move
+      {
+        //printf("Line move to X%0.4f Y%0.4f Z%0.4f F%0.4f\n", g.x, g.y, g.z, g.f);
+        gcode_move_t move;
+        move.g = 1;
+        move.x = g.x;
+        move.y = g.y;
+        moves.push_back(move);
+      }
+      else if (current_move == 2) //Clockwise arc
+      {
+        //printf("Clockwise arc move to X%0.4f Y%0.4f Z%0.4f I%0.4f J%0.4f K%0.4f F%0.4f\n", g.x, g.y, g.z, g.i, g.j, g.k, g.f);
+        gcode_move_t move;
+        move.g = 2;
+        move.x = g.x;
+        move.y = g.y;
+        move.i = g.i;
+        move.j = g.j;
+        moves.push_back(move);
+      }
+      else if (current_move == 3) //Counter-Clockwise arc
+      {
+        //printf("Counter-Clockwise arc move to X%0.4f Y%0.4f Z%0.4f I%0.4f J%0.4f K%0.4f F%0.4f\n", g.x, g.y, g.z, g.i, g.j, g.k, g.f);
+        gcode_move_t move;
+        move.g = 3;
+        move.x = g.x;
+        move.y = g.y;
+        move.i = g.i;
+        move.j = g.j;
+        moves.push_back(move);
+      }
+    }
+    last_g = g;
+  }
+  move_count = moves.size();
+}
+size_t gcode_get_move_count()
+{
+  return move_count;
+}
+gcode_move_t gcode_get_move(size_t i)
+{
+  return moves.at(i);
 }

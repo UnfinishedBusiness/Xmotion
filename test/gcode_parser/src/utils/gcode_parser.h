@@ -8,7 +8,7 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-
+#include <stddef.h>
 /*********************
  *      DEFINES
  *********************/
@@ -25,6 +25,11 @@ extern "C" {
 /**********************
  * VIEWER PROTOTYPES
  **********************/
+#define GCODE_COMMENT 1
+#define GCODE_SUBROUTINE 2
+#define GCODE_NOFILE -1
+#define GCODE_MOVE 0
+#define GCODE_NONMOVE 3
 typedef struct
 {
     int n;
@@ -49,9 +54,23 @@ typedef struct
     int m_word_counter;
 }gcode_t;
 
+typedef struct
+{
+    int g;
+    float x;
+    float y;
+    //float z; //Viewer is 2D for now
+    float i;
+    float j;
+    //float k; //Viewer is 2D for now
+}gcode_move_t;
+
 void gcode_parse(char *);
 gcode_t gcode_stack_next();
 void gcode_stack_dump();
+void gcode_parse_moves();
+gcode_move_t gcode_get_move(size_t);
+size_t gcode_get_move_count();
 /**********************
  *      MACROS
  **********************/
