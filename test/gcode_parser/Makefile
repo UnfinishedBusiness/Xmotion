@@ -8,7 +8,7 @@ CXX ?= g++
 C_SRC_EXT = c
 CPP_SRC_EXT = cpp
 # Path to the source directory, relative to the makefile
-SRC_PATH = src/
+SRC_PATH = ./src
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags

@@ -37,7 +37,34 @@ std::vector<ViewerEntity> Entities;
 
 void gui_elements_viewer_open_drawing(char* drawing)
 {
-  gcode_parse(drawing);
+  gcode_parse("test/gcode_parser/1.ngc");
+  gcode_parse_moves();
+
+  gcode_move_t move;
+  viewer_point_t current_position;
+  current_position.x = 0; //Should set this to dro_rel
+  current_position.y = 0;
+  for (size_t x = 0; x < gcode_get_move_count(); x++)
+  {
+    move = gcode_get_move(x);
+    //printf("Move.g = %d\n", move.g);
+    /*if (move.g == 0)
+    {
+      //printf("Rapid move to X%0.4f Y%0.4f\n", move.x, move.y);
+      viewer_point_t line[] = {{current_position.x, current_position.y}, {move.x, move.y}};
+      gui_elements_viewer_addEntitity(line, 2, "rapid");
+    }*/
+    if (move.g == 1)
+    {
+      //printf("Line move to X%0.4f Y%0.4f\n", move.x, move.y);
+      viewer_point_t line[] = {{current_position.x, current_position.y}, {move.x, move.y}};
+      gui_elements_viewer_addEntitity(line, 2, "feed");
+    }
+    //if (move.g == 2 ) printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+    //if (move.g == 3 ) printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+    current_position.x = move.x;
+    current_position.y = move.y;
+  }
 }
 lv_obj_t *gui_elements_viewer(void)
 {
@@ -61,11 +88,11 @@ lv_obj_t *gui_elements_viewer(void)
 
   lv_style_copy(&style_line_feed, &lv_style_plain);
   style_line_feed.line.color = LV_COLOR_MAKE(255, 255, 255);
-  style_line_feed.line.width = 2;
+  style_line_feed.line.width = 1;
 
   lv_style_copy(&style_line_rapid, &lv_style_plain);
   style_line_rapid.line.color = LV_COLOR_MAKE(0, 255, 0);
-  style_line_rapid.line.width = 2;
+  style_line_rapid.line.width = 1;
 
   lv_style_copy(&style_cross_hair, &lv_style_plain);
   style_cross_hair.line.color = LV_COLOR_MAKE(0, 0, 255);
@@ -201,7 +228,7 @@ void gui_elements_viewer_zoom(int zoom_inc)
   if (direction)
   {
     viewer_zoom += zoom_small;
-    if (viewer_zoom > 10) viewer_zoom = 20;
+    if (viewer_zoom > 200) viewer_zoom = 200;
   }
   else
   {
