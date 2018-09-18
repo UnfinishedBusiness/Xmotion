@@ -3,6 +3,7 @@
 #include "config/handler.h"
 #include "utils/terminal.h"
 #include "utils/gcode_parser.h"
+#include "geometry/geometry.h"
 #include "main.h"
 
 #include <stdlib.h>

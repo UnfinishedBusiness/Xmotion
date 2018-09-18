@@ -14,6 +14,7 @@
 
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
+#include "geometry/geometry.h"
 #include "linuxcnc.h"
 
 #define TERMINAL_BACKGROUND_COLOR LV_COLOR_MAKE(96, 96, 96);
@@ -218,6 +219,33 @@ void terminal_eval(char cmd[2048])
     viewer_point_t line[] = {{0, 0.1}, {45, 0.1}};
     int id = gui_elements_viewer_addEntitity(line, 2, "feed");
     DEBUG_PRINT(("Terminal->add_line: id=%d\n", id));
+    char output[1024];
+    sprintf(output, "Added entity, ID=%d\n", id);
+    terminal_set_output_text(output);
+  }
+  else if (!strcmp(cmd, "add_arc"))
+  {
+    //viewer_point_t arc[] = {{0, 0.1}, {45, 0.1}};
+    geo_arc_t arc;
+    arc.center = { 0, 0 };
+    arc.start = { 0, 5 };
+    arc.end = { 5, 0 };
+    arc.radius = 5;
+    arc.direction = ARC_CW;
+
+    std::vector<geo_point_t> vector_points = geoGetPointsOfArc(arc);
+    viewer_point_t arc_points[2048];
+    int num_p = 0;
+    int end_p = (int)vector_points.size();
+    if (vector_points.size() > 2048) end_p = 2048;
+    for (size_t x = 0; x < end_p; x++)
+    {
+      arc_points[x].x = vector_points[x].x;
+      arc_points[x].y = vector_points[x].y;
+      num_p++;
+    }
+    int id = gui_elements_viewer_addEntitity(arc_points, num_p, "rapid");
+    DEBUG_PRINT(("Terminal->add_arc: id=%d\n", id));
     char output[1024];
     sprintf(output, "Added entity, ID=%d\n", id);
     terminal_set_output_text(output);

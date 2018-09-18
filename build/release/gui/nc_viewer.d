@@ -72,7 +72,7 @@ build/release/gui/nc_viewer.o: src/gui/nc_viewer.cpp src/gui/nc_viewer.h \
  src/config/handler.h src/config/../lvgl/lv_hal/lv_hal.h \
  src/config/../lvgl/lvgl.h src/utils/terminal.h \
  src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h \
- src/utils/gcode_parser.h src/main.h
+ src/utils/gcode_parser.h src/geometry/geometry.h src/main.h
 
 src/gui/nc_viewer.h:
 
@@ -277,5 +277,7 @@ src/utils/../lvgl/lv_hal/lv_hal.h:
 src/utils/../lvgl/lvgl.h:
 
 src/utils/gcode_parser.h:
+
+src/geometry/geometry.h:
 
 src/main.h:
