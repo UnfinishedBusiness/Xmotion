@@ -56,6 +56,14 @@ void gcode_parse(char *file)
         //printf("Line: %s\n", gline.c_str());
         g.g_word_counter = 0; //Reset counter on each new line
         g.m_word_counter = 0;
+        g.x_set = false;
+        g.y_set = false;
+        g.z_set = false;
+        g.i_set = false;
+        g.j_set = false;
+        g.k_set = false;
+        g.r_set = false;
+        g.f_set = false;
         g.status = GCODE_MOVE;
         for (size_t x = 0; x < gline.size(); x++)
         {
@@ -80,7 +88,7 @@ void gcode_parse(char *file)
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.g[g.g_word_counter] = atof(number);
@@ -95,7 +103,7 @@ void gcode_parse(char *file)
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.m[g.m_word_counter] = atof(number);
@@ -105,39 +113,42 @@ void gcode_parse(char *file)
 
             if (c == 'X') //Found X word!
             {
+              g.x_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.x = atof(number);
             }
             if (c == 'Y') //Found Y word!
             {
+              g.y_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.y = atof(number);
             }
             if (c == 'Z') //Found Z word!
             {
+              g.z_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.z = atof(number);
@@ -145,39 +156,42 @@ void gcode_parse(char *file)
 
             if (c == 'I') //Found I word!
             {
+              g.i_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.i = atof(number);
             }
             if (c == 'J') //Found J word!
             {
+              g.j_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.j = atof(number);
             }
             if (c == 'K') //Found K word!
             {
+              g.k_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.k = atof(number);
@@ -185,13 +199,14 @@ void gcode_parse(char *file)
 
             if (c == 'R') //Found R word!
             {
+              g.r_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.r = atof(number);
@@ -199,13 +214,14 @@ void gcode_parse(char *file)
 
             if (c == 'F') //Found F word!
             {
+              g.f_set = true;
               number[0] = '\0';
               num_p = 0;
               do{
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.f = atof(number);
@@ -219,14 +235,17 @@ void gcode_parse(char *file)
                 x++;
                 number[num_p] = gline[x];
                 num_p++;
-              }while(isdigit(gline[x]) || gline[x] == '.');
+              }while(isdigit(gline[x]) || gline[x] == '.' || gline[x] == '-');
               number[num_p-1] = '\0';
               x--;
               g.n = atoi(number);
             }
           }
         }
-        lines.push_back(g);
+        if (g.x_set != false || g.y_set != false || g.z_set != false || g.i_set != false || g.j_set != false || g.k_set != false || g.r_set != false || g.f_set != false)
+        {
+          lines.push_back(g);
+        }
     }
     fclose(fp);
   }
@@ -316,7 +335,7 @@ void gcode_parse_moves()
         move.y = g.y;
         moves.push_back(move);
       }
-      else if (current_move == 2) //Clockwise arc
+      else if (current_move == 2 && g.k_set == false) //Clockwise arc, don't include arcs on XZ or YZ planes
       {
         //printf("Clockwise arc move to X%0.4f Y%0.4f Z%0.4f I%0.4f J%0.4f K%0.4f F%0.4f\n", g.x, g.y, g.z, g.i, g.j, g.k, g.f);
         gcode_move_t move;
@@ -327,7 +346,7 @@ void gcode_parse_moves()
         move.j = g.j;
         moves.push_back(move);
       }
-      else if (current_move == 3) //Counter-Clockwise arc
+      else if (current_move == 3 && g.k_set == false) //Counter-Clockwise arc, don't include arcs on XZ or YZ planes
       {
         //printf("Counter-Clockwise arc move to X%0.4f Y%0.4f Z%0.4f I%0.4f J%0.4f K%0.4f F%0.4f\n", g.x, g.y, g.z, g.i, g.j, g.k, g.f);
         gcode_move_t move;

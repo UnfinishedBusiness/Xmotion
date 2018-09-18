@@ -431,7 +431,7 @@ std::vector<geo_point_t> geoGetPointsOfArc(geo_arc_t a)
   int steps;
   if (a.start == a.end)
   {
-    //Were a circle
+    //We're a circle
     steps = 361; //Go the full 360 to close the gap
   }
   else
@@ -439,7 +439,7 @@ std::vector<geo_point_t> geoGetPointsOfArc(geo_arc_t a)
     steps = geoGetIncludedAngle(a);
   }
   float inc_angle = 1; //Degrees
-  for (int x=0; x < steps; x++)
+  for (int x=0; x < steps; x+=inc_angle)
   {
     if (a.direction == ARC_CW)
     {

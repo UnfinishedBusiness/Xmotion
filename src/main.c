@@ -38,6 +38,9 @@ void kill_main(void)
 
 int main(void)
 {
+    //gcode_parse("test/gcode_parser/3.ngc");
+    //gcode_stack_dump();
+    //return;
     DEBUG_PRINT(("Debug Mode!\n"));
     config_handler_init();
     /*LittlevGL init*/

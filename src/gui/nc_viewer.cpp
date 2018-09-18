@@ -48,6 +48,7 @@ void gui_elements_viewer_open_drawing(char* drawing)
   for (size_t x = 0; x < gcode_get_move_count(); x++)
   {
     move = gcode_get_move(x);
+    bool good_arc = true;
     //printf("Move.g = %d\n", move.g);
     /*if (move.g == 0)
     {
@@ -61,8 +62,86 @@ void gui_elements_viewer_open_drawing(char* drawing)
       viewer_point_t line[] = {{current_position.x, current_position.y}, {move.x, move.y}};
       gui_elements_viewer_addEntitity(line, 2, "feed");
     }
-    //if (move.g == 2 ) printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
-    //if (move.g == 3 ) printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+    if (move.g == 2 )
+    {
+      printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+      geo_arc_t arc;
+      arc.center.x = current_position.x + move.i;
+      arc.center.y = current_position.y + move.j;
+
+      arc.start.x = current_position.x;
+      arc.start.y = current_position.y;
+
+      arc.end.x = move.x;
+      arc.end.y =  move.y;
+
+      geo_line_t line;
+      line.start.x = move.x;
+      line.start.y = move.y;
+
+      line.end.x = arc.center.x;
+      line.end.y = arc.center.y;
+
+      arc.radius = geoGetLineLength(line);
+      if (move.i == 0 && move.j == 0) good_arc = false;
+      if (arc.radius > 0 && good_arc == true)
+      {
+        arc.direction = ARC_CW;
+        printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
+        std::vector<geo_point_t> vector_points = geoGetPointsOfArc(arc);
+        viewer_point_t arc_points[2048];
+        int num_p = 0;
+        int end_p = (int)vector_points.size();
+        if (vector_points.size() > 2048) end_p = 2048;
+        for (size_t x = 0; x < end_p; x++)
+        {
+          arc_points[x].x = vector_points[x].x;
+          arc_points[x].y = vector_points[x].y;
+          num_p++;
+        }
+        gui_elements_viewer_addEntitity(arc_points, num_p, "feed");
+      }
+    }
+    if (move.g == 3 )
+    {
+      printf("Counter-Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+      geo_arc_t arc;
+      arc.center.x = current_position.x + move.i;
+      arc.center.y = current_position.y + move.j;
+
+      arc.start.x = current_position.x;
+      arc.start.y = current_position.y;
+
+      arc.end.x = move.x;
+      arc.end.y =  move.y;
+
+      geo_line_t line;
+      line.start.x = move.x;
+      line.start.y = move.y;
+
+      line.end.x = arc.center.x;
+      line.end.y = arc.center.y;
+
+      arc.radius = geoGetLineLength(line);
+      if (move.i == 0 && move.j == 0) good_arc = false;
+      if (arc.radius > 0 && good_arc == true)
+      {
+        arc.direction = ARC_CCW;
+        printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
+        std::vector<geo_point_t> vector_points = geoGetPointsOfArc(arc);
+        viewer_point_t arc_points[2048];
+        int num_p = 0;
+        int end_p = (int)vector_points.size();
+        if (vector_points.size() > 2048) end_p = 2048;
+        for (size_t x = 0; x < end_p; x++)
+        {
+          arc_points[x].x = vector_points[x].x;
+          arc_points[x].y = vector_points[x].y;
+          num_p++;
+        }
+        gui_elements_viewer_addEntitity(arc_points, num_p, "feed");
+      }
+    }
     current_position.x = move.x;
     current_position.y = move.y;
   }

@@ -37,16 +37,24 @@ typedef struct
     float m[100];
 
     float x;
+    bool x_set;
     float y;
+    bool y_set;
     float z;
+    bool z_set;
 
     float i;
+    bool i_set;
     float j;
+    bool j_set;
     float k;
+    bool k_set;
 
     float r;
+    bool r_set;
 
     float f;
+    bool f_set;
 
     int type;
     int status; //is -1 at end of stack
