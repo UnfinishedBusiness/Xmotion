@@ -12,7 +12,7 @@ SRC_PATH = ./src
 # Space-separated pkg-config libraries used by this project
 LIBS =
 # General compiler flags
-CXX_COMPILE_FLAGS = -Wextra -g -std=gnu++14
+CXX_COMPILE_FLAGS = -Wextra -g -std=gnu++11
 CC_COMPILE_FLAGS = -Wextra -g -std=gnu99
 # Additional release-specific flags
 RCOMPILE_FLAGS = -D NDEBUG
