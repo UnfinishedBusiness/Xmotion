@@ -1,4 +1,4 @@
-#include "nc_open_dialog.h"
+#include "elements.h"
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
@@ -27,7 +27,7 @@
 
 using namespace std;
 
-vector<string> split(const string& str, const string& delim)
+/*vector<string> split(const string& str, const string& delim)
 {
     vector<string> tokens;
     size_t prev = 0, pos = 0;
@@ -41,7 +41,7 @@ vector<string> split(const string& str, const string& delim)
     }
     while (pos < str.length() && prev < str.length());
     return tokens;
-}
+}*/
 
 typedef struct
 {
@@ -53,9 +53,12 @@ typedef struct
 {
   lv_obj_t *container;
   lv_obj_t *image;
+  lv_obj_t *button;
   lv_obj_t *label;
   float x_offset;
   float y_offset;
+  std::string name;
+  std::string path;
 }icon_struct_t;
 
 std::vector<gcode_file_t> File_Array;
@@ -69,7 +72,21 @@ static lv_res_t btnm_close_action(lv_obj_t * btnm)
 {
   gui_elements_open_dialog_close();
 }
+static lv_res_t btn_click_action(lv_obj_t * btn)
+{
+    uint8_t id = lv_obj_get_free_num(btn);
 
+    //printf("Button %d is released\n", id);
+    lv_obj_set_style(Icon_Array[id].button, &lv_style_transp); //Keep the botton from going non-transparent
+    gui_elements_open_dialog_close();
+    gui_elements_viewer_close_drawing();
+    /* The button is released.
+     * Make something here */
+     printf("Opening file: %s\n", Icon_Array[id].path.c_str());
+    gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
+
+    return LV_RES_OK; /*Return OK if the button is not deleted*/
+}
 
 lv_obj_t *gui_elements_open_dialog(void)
 {
@@ -99,13 +116,16 @@ lv_obj_t *gui_elements_open_dialog(void)
   text_style.text.color = OPEN_DIALOG_TEXT_COLOR;
   text_style.text.font = &lv_font_dejavu_10;
 
+  static lv_style_t button_style;
+  lv_style_copy(&button_style, &lv_style_transp);
+
   open_dialog_container = lv_win_create(lv_scr_act(), NULL);
+
   lv_win_set_title(open_dialog_container, "Open Program");
   lv_obj_set_style(open_dialog_container, &style);     /*Set the new style*/
   lv_obj_set_size(open_dialog_container, LV_HOR_RES /2, (LV_VER_RES /2) + 200);
   lv_obj_align(open_dialog_container, NULL, LV_ALIGN_IN_TOP_LEFT, 100, 200);
   lv_win_add_btn(open_dialog_container, SYMBOL_CLOSE, btnm_close_action);
-  //lv_obj_set_drag(open_dialog_container, true);
 
   gui_elements_read_directories();
 
@@ -124,13 +144,21 @@ lv_obj_t *gui_elements_open_dialog(void)
     icon.container = lv_cont_create(open_dialog_container, NULL);
     icon.image = lv_img_create(icon.container, NULL);
     icon.label = lv_label_create(icon.container, NULL);
+    icon.button = lv_btn_create(icon.container, NULL);
 
+    icon.name = File_Array[x].name;
+    icon.path = File_Array[x].path;
     Icon_Array.push_back(icon);
-
 
     lv_obj_set_style(Icon_Array[Icon_Array.size()-1].container, &icon_style);     /*Set the new style*/
     lv_obj_set_size(Icon_Array[Icon_Array.size()-1].container, 120, 120);
-    lv_obj_align(Icon_Array[Icon_Array.size()-1].container, NULL, LV_ALIGN_IN_TOP_LEFT, icon.x_offset, icon.y_offset);
+    lv_obj_align(Icon_Array[Icon_Array.size()-1].container, NULL, LV_ALIGN_IN_TOP_LEFT, Icon_Array[Icon_Array.size()-1].x_offset, Icon_Array[Icon_Array.size()-1].y_offset);
+
+    lv_obj_set_free_num(Icon_Array[Icon_Array.size()-1].button, Icon_Array.size()-1);
+    lv_obj_set_size(Icon_Array[Icon_Array.size()-1].button, 120, 120);
+    lv_btn_set_action(Icon_Array[Icon_Array.size()-1].button, LV_BTN_ACTION_CLICK, btn_click_action);
+    lv_obj_set_style(Icon_Array[Icon_Array.size()-1].button, &button_style);
+    lv_obj_align(Icon_Array[Icon_Array.size()-1].button, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
     if (File_Array[x].name.find(".") != std::string::npos)
     {
@@ -145,7 +173,6 @@ lv_obj_t *gui_elements_open_dialog(void)
     lv_label_set_text(Icon_Array[Icon_Array.size()-1].label, File_Array[x].name.c_str());
     lv_obj_set_style(Icon_Array[Icon_Array.size()-1].label, &text_style);
     lv_obj_align(Icon_Array[Icon_Array.size()-1].label, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-
 
 
     x_offset += 125;
@@ -169,12 +196,11 @@ void gui_elements_read_directories(void)
   {
      while (epdf = readdir(dpdf))
      {
-        split_path = split(string(epdf->d_name), "/");
-        file_struct.path = epdf->d_name;
-        file_struct.name = split_path[split_path.size()-1];
+        file_struct.path = string(config.post_directory) + "/" + string(epdf->d_name);
+        file_struct.name = string(epdf->d_name);
         if (file_struct.name != "." && file_struct.name != "..")
         {
-          DEBUG_PRINT(("Path: %s, Name: %s\n",file_struct.path.c_str(), file_struct.name.c_str()));
+          //printf("Path: %s, Name: %s\n",file_struct.path.c_str(), file_struct.name.c_str());
           File_Array.push_back(file_struct);
         }
      }

@@ -36,9 +36,26 @@ static lv_style_t style_line_boundry;
 static lv_style_t style_cross_hair;
 std::vector<ViewerEntity> Entities;
 
-void gui_elements_viewer_open_drawing(char* drawing)
+
+void prime_viewer_stack()
 {
-  gcode_parse("test/gcode_parser/1.ngc");
+  viewer_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
+  machine_boundry = gui_elements_viewer_addEntitity(boundry, 5, "boundry");
+
+  viewer_point_t x_hair[] = { {-15,0}, {15,0} };
+  viewer_point_t y_hair[] = { {0,-15}, {0,15} };
+  y_hair_index = gui_elements_viewer_addEntitity(y_hair, 2, "crosshair");
+  x_hair_index = gui_elements_viewer_addEntitity(x_hair, 2, "crosshair");
+}
+void gui_elements_viewer_close_drawing()
+{
+  gui_elements_viewer_close();
+  gui_elements_viewer();
+}
+void gui_elements_viewer_open_drawing(const char* drawing)
+{
+  if (viewer_container == NULL) return; //Can't draw if viewer is closed!
+  gcode_parse(drawing);
   gcode_parse_moves();
 
   gcode_move_t move;
@@ -178,13 +195,7 @@ lv_obj_t *gui_elements_viewer(void)
   style_cross_hair.line.color = LV_COLOR_MAKE(0, 0, 255);
   style_cross_hair.line.width = 2;
 
-  viewer_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
-  machine_boundry = gui_elements_viewer_addEntitity(boundry, 5, "boundry");
-
-  viewer_point_t x_hair[] = { {-15,0}, {15,0} };
-  viewer_point_t y_hair[] = { {0,-15}, {0,15} };
-  y_hair_index = gui_elements_viewer_addEntitity(y_hair, 2, "crosshair");
-  x_hair_index = gui_elements_viewer_addEntitity(x_hair, 2, "crosshair");
+  prime_viewer_stack(); //Draw boundry and crosshair!
 
   gui_elements_viewer_zoom(0);
 
@@ -339,5 +350,6 @@ void gui_elements_viewer_close()
   {
     lv_obj_del(viewer_container);
     viewer_container = NULL;
+    Entities.clear();
   }
 }

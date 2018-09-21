@@ -22,8 +22,14 @@ vector<gcode_move_t> moves;
 size_t move_count;
 size_t current_move;
 
-void gcode_parse(char *file)
+void gcode_stack_clear()
 {
+  lines.clear();
+  moves.clear();
+}
+void gcode_parse(const char *file)
+{
+  gcode_stack_clear();
   FILE * fp;
   char * line = NULL;
   size_t len = 0;

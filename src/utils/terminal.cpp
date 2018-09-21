@@ -209,10 +209,14 @@ void terminal_eval(char cmd[2048])
   }
   else if (!strcmp(cmd, "open"))
   {
-    gui_elements_viewer_open_drawing("test/0.ngc");
+    gui_elements_viewer_open_drawing("test/gcode_parser/3.ngc");
     //char output[1024];
     //sprintf(output, "Added entity, ID=%d\n", id);
     //terminal_set_output_text(output);
+  }
+  else if (!strcmp(cmd, "close_drawing"))
+  {
+    gui_elements_viewer_close_drawing();
   }
   else if (!strcmp(cmd, "add_line"))
   {

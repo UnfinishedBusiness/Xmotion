@@ -73,9 +73,10 @@ typedef struct
     //float k; //Viewer is 2D for now
 }gcode_move_t;
 
-void gcode_parse(char *);
+void gcode_parse(const char *);
 gcode_t gcode_stack_next();
 void gcode_stack_dump();
+void gcode_stack_clear();
 void gcode_parse_moves();
 gcode_move_t gcode_get_move(size_t);
 size_t gcode_get_move_count();
