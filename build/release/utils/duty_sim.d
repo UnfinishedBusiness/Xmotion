@@ -75,7 +75,7 @@ build/release/utils/duty_sim.o: src/utils/duty_sim.c src/utils/duty_sim.h \
  src/utils/../lvgl/lv_objx/lv_slider.h src/gui/elements.h \
  src/gui/nc_controls.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lvgl.h src/gui/nc_dro.h src/gui/nc_indicators.h \
- src/gui/nc_nav.h src/gui/nc_viewer.h
+ src/gui/nc_nav.h src/gui/nc_viewer.h src/gui/nc_open_dialog.h
 
 src/utils/duty_sim.h:
 
@@ -276,3 +276,5 @@ src/gui/nc_indicators.h:
 src/gui/nc_nav.h:
 
 src/gui/nc_viewer.h:
+
+src/gui/nc_open_dialog.h:

@@ -3,3 +3,4 @@
 #include "nc_indicators.h"
 #include "nc_nav.h"
 #include "nc_viewer.h"
+#include "nc_open_dialog.h"

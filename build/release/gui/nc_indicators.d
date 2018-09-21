@@ -69,10 +69,11 @@ build/release/gui/nc_indicators.o: src/gui/nc_indicators.cpp \
  src/gui/../lvgl/lv_objx/lv_lmeter.h src/gui/../lvgl/lv_objx/lv_lmeter.h \
  src/gui/../lvgl/lv_objx/lv_sw.h src/gui/../lvgl/lv_objx/lv_slider.h \
  src/gui/nc_dro.h src/gui/nc_indicators.h src/gui/nc_nav.h \
- src/gui/nc_viewer.h src/linuxcnc.h src/lvgl/lv_hal/lv_hal.h \
- src/lvgl/lvgl.h src/config/handler.h src/config/../lvgl/lv_hal/lv_hal.h \
- src/config/../lvgl/lvgl.h src/utils/terminal.h \
- src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h src/main.h
+ src/gui/nc_viewer.h src/gui/nc_open_dialog.h src/linuxcnc.h \
+ src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h src/config/handler.h \
+ src/config/../lvgl/lv_hal/lv_hal.h src/config/../lvgl/lvgl.h \
+ src/utils/terminal.h src/utils/../lvgl/lv_hal/lv_hal.h \
+ src/utils/../lvgl/lvgl.h src/main.h
 
 src/gui/elements.h:
 
@@ -267,6 +268,8 @@ src/gui/nc_indicators.h:
 src/gui/nc_nav.h:
 
 src/gui/nc_viewer.h:
+
+src/gui/nc_open_dialog.h:
 
 src/linuxcnc.h:
 

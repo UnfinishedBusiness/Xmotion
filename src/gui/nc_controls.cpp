@@ -1,4 +1,4 @@
-#include "nc_controls.h"
+#include "elements.h"
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
@@ -79,7 +79,10 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
     printf("Z=0\n");
     linuxcnc_mdi((char*)"G92 Z0");
   }
-
+  else if (!strcmp("Open", txt))
+  {
+    gui_elements_open_dialog();
+  }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
 lv_obj_t *gui_elements_controls(void)

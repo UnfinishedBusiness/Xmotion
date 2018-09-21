@@ -37,6 +37,10 @@ static int config_handler(void* conf, const char* section, const char* name, con
     {
         pconfig->mouse_device = strdup(value);
     }
+    else if (MATCH("system", "post_directory"))
+    {
+        pconfig->post_directory = strdup(value);
+    }
     else if (MATCH("motion", "max_jog_speed"))
     {
         pconfig->max_jog_speed = atof(value);
@@ -57,6 +61,7 @@ void config_handler_set_defaults()
   char *ms = "/dev/input/mice";
   config.keyboard_device = kb;
   config.mouse_device = ms;
+  config.post_directory = "/";
 
   config.max_jog_speed = 600;
   config.default_jog_speed = 400;

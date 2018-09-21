@@ -69,7 +69,8 @@ build/release/gui/cnc_control.o: src/gui/cnc_control.c \
  src/gui/../lvgl/lv_objx/lv_lmeter.h src/gui/../lvgl/lv_objx/lv_lmeter.h \
  src/gui/../lvgl/lv_objx/lv_sw.h src/gui/../lvgl/lv_objx/lv_slider.h \
  src/main.h src/gui/elements.h src/gui/nc_controls.h src/gui/nc_dro.h \
- src/gui/nc_indicators.h src/gui/nc_nav.h src/gui/nc_viewer.h
+ src/gui/nc_indicators.h src/gui/nc_nav.h src/gui/nc_viewer.h \
+ src/gui/nc_open_dialog.h
 
 src/gui/cnc_control.h:
 
@@ -268,3 +269,5 @@ src/gui/nc_indicators.h:
 src/gui/nc_nav.h:
 
 src/gui/nc_viewer.h:
+
+src/gui/nc_open_dialog.h:

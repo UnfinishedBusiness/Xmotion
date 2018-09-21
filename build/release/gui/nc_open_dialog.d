@@ -1,5 +1,5 @@
-build/release/gui/nc_controls.o: src/gui/nc_controls.cpp \
- src/gui/elements.h src/gui/nc_controls.h src/gui/../lvgl/lv_hal/lv_hal.h \
+build/release/gui/nc_open_dialog.o: src/gui/nc_open_dialog.cpp \
+ src/gui/nc_open_dialog.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/lv_hal_disp.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lv_hal/../lv_misc/lv_color.h \
  src/gui/../lvgl/lv_hal/../lv_misc/../../lv_conf.h \
@@ -68,16 +68,13 @@ build/release/gui/nc_controls.o: src/gui/nc_controls.cpp \
  src/gui/../lvgl/lv_objx/lv_mbox.h src/gui/../lvgl/lv_objx/lv_gauge.h \
  src/gui/../lvgl/lv_objx/lv_lmeter.h src/gui/../lvgl/lv_objx/lv_lmeter.h \
  src/gui/../lvgl/lv_objx/lv_sw.h src/gui/../lvgl/lv_objx/lv_slider.h \
- src/gui/nc_dro.h src/gui/nc_indicators.h src/gui/nc_nav.h \
- src/gui/nc_viewer.h src/gui/nc_open_dialog.h src/linuxcnc.h \
- src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h src/config/handler.h \
- src/config/../lvgl/lv_hal/lv_hal.h src/config/../lvgl/lvgl.h \
- src/utils/terminal.h src/utils/../lvgl/lv_hal/lv_hal.h \
- src/utils/../lvgl/lvgl.h src/main.h
+ src/linuxcnc.h src/lvgl/lv_hal/lv_hal.h src/lvgl/lvgl.h \
+ src/config/handler.h src/config/../lvgl/lv_hal/lv_hal.h \
+ src/config/../lvgl/lvgl.h src/utils/terminal.h \
+ src/utils/../lvgl/lv_hal/lv_hal.h src/utils/../lvgl/lvgl.h \
+ src/utils/gcode_parser.h src/geometry/geometry.h src/main.h
 
-src/gui/elements.h:
-
-src/gui/nc_controls.h:
+src/gui/nc_open_dialog.h:
 
 src/gui/../lvgl/lv_hal/lv_hal.h:
 
@@ -261,16 +258,6 @@ src/gui/../lvgl/lv_objx/lv_sw.h:
 
 src/gui/../lvgl/lv_objx/lv_slider.h:
 
-src/gui/nc_dro.h:
-
-src/gui/nc_indicators.h:
-
-src/gui/nc_nav.h:
-
-src/gui/nc_viewer.h:
-
-src/gui/nc_open_dialog.h:
-
 src/linuxcnc.h:
 
 src/lvgl/lv_hal/lv_hal.h:
@@ -288,5 +275,9 @@ src/utils/terminal.h:
 src/utils/../lvgl/lv_hal/lv_hal.h:
 
 src/utils/../lvgl/lvgl.h:
+
+src/utils/gcode_parser.h:
+
+src/geometry/geometry.h:
 
 src/main.h:

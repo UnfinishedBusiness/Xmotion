@@ -24,6 +24,7 @@ extern "C" {
      const char* screen_color;
      const char* keyboard_device;
      const char* mouse_device;
+     const char* post_directory;
 
      //motion
      float max_jog_speed;

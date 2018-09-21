@@ -68,7 +68,8 @@ build/release/main.o: src/main.c src/lvgl/lvgl.h \
  src/utils/../lvgl/lvgl.h src/utils/duty_sim.h src/gui/elements.h \
  src/gui/nc_controls.h src/gui/../lvgl/lv_hal/lv_hal.h \
  src/gui/../lvgl/lvgl.h src/gui/nc_dro.h src/gui/nc_indicators.h \
- src/gui/nc_nav.h src/gui/nc_viewer.h src/gui/cnc_control.h src/main.h
+ src/gui/nc_nav.h src/gui/nc_viewer.h src/gui/nc_open_dialog.h \
+ src/gui/cnc_control.h src/main.h
 
 src/lvgl/lvgl.h:
 
@@ -303,6 +304,8 @@ src/gui/nc_indicators.h:
 src/gui/nc_nav.h:
 
 src/gui/nc_viewer.h:
+
+src/gui/nc_open_dialog.h:
 
 src/gui/cnc_control.h:
 
