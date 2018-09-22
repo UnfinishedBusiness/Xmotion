@@ -91,7 +91,10 @@ int main(void)
   registor_functions();
 
   source_file("js/hooks.js");
-  source_file("js/JetCad.js");
+  if (duk_peval(ctx) != 0) {
+      printf("Error: %s\n", duk_safe_to_string(ctx, -1));
+      return 0;
+  }
   source_file("js/main.js");
 
   if (duk_peval(ctx) != 0) {
