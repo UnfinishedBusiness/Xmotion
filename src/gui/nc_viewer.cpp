@@ -27,8 +27,9 @@
 #define VIEWER_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *viewer_container;
-int viewer_offset[] = {300, -1000}; //Offset from top Left of container
+int viewer_offset[] = {300, -800}; //Offset from top Left of container
 float viewer_zoom = 12;
+bool viewer_redraw = false;
 size_t y_hair_index, x_hair_index, machine_boundry;
 static lv_style_t style_line_feed;
 static lv_style_t style_line_rapid;
@@ -204,6 +205,7 @@ lv_obj_t *gui_elements_viewer(void)
 }
 size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *type)
 {
+  viewer_redraw = true;
   DEBUG_PRINT(("addEntitity!\n"));
   ViewerEntity e;
   for (int x = 0; x < count; x++)
@@ -255,8 +257,9 @@ size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *
 void gui_elements_viewer_tick(void)
 {
   //DEBUG_PRINT(("Viewer Tick!\n"));
-  if (viewer_container != NULL)
+  if (viewer_container != NULL && viewer_redraw == true)
   {
+    viewer_redraw = false;
     for (size_t x = 0; x < Entities.size(); x++)
     {
       if (x == x_hair_index || x == y_hair_index)
@@ -309,6 +312,7 @@ float gui_elements_viewer_get_zoom(void)
 }
 void gui_elements_viewer_zoom(int zoom_inc)
 {
+  viewer_redraw = true;
   bool direction = true; //true = zoom in, false = zoom out
   if (zoom_inc < 0)
   {
@@ -330,6 +334,7 @@ void gui_elements_viewer_zoom(int zoom_inc)
 }
 void gui_elements_viewer_pan_x(int pan)
 {
+  viewer_redraw = true;
   if (viewer_container != NULL)
   {
     viewer_offset[0] += pan;
@@ -338,6 +343,7 @@ void gui_elements_viewer_pan_x(int pan)
 }
 void gui_elements_viewer_pan_y(int pan)
 {
+  viewer_redraw = true;
   if (viewer_container != NULL)
   {
     viewer_offset[1] -= pan;
