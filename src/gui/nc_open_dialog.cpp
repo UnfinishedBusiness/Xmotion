@@ -118,6 +118,7 @@ lv_obj_t *gui_elements_open_dialog(void)
 
   static lv_style_t button_style;
   lv_style_copy(&button_style, &lv_style_transp);
+  memcpy(&lv_style_btn_pr, &lv_style_transp, sizeof(lv_style_t));
 
   open_dialog_container = lv_win_create(lv_scr_act(), NULL);
 
