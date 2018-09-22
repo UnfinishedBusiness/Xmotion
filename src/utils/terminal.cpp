@@ -186,6 +186,12 @@ void terminal_eval(char cmd[2048])
     }
     terminal_set_output_text(output);
   }
+  else if (!strcmp(cmd, "polar_test"))
+  {
+    geo_line_t polar = geoGetPolarLine({ 0, 0}, 180, 10);
+    viewer_point_t line[] = {{polar.start.x, polar.start.y}, {polar.end.x, polar.end.y}};
+    int id = gui_elements_viewer_addEntitity(line, 2, "feed");
+  }
   else if (!strcmp(cmd, "close"))
   {
     printf("Closing terminal!\n");

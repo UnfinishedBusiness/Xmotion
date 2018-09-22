@@ -81,7 +81,7 @@ void gui_elements_viewer_open_drawing(const char* drawing)
     }
     if (move.g == 2 )
     {
-      printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+      //printf("Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
       geo_arc_t arc;
       arc.center.x = current_position.x + move.i;
       arc.center.y = current_position.y + move.j;
@@ -104,7 +104,7 @@ void gui_elements_viewer_open_drawing(const char* drawing)
       if (arc.radius > 0 && good_arc == true)
       {
         arc.direction = ARC_CW;
-        printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
+        //printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
         std::vector<geo_point_t> vector_points = geoGetPointsOfArc(arc);
         viewer_point_t arc_points[2048];
         int num_p = 0;
@@ -121,7 +121,7 @@ void gui_elements_viewer_open_drawing(const char* drawing)
     }
     if (move.g == 3 )
     {
-      printf("Counter-Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
+      //printf("Counter-Clockwise arc move to X%0.4f Y%0.4f I%0.4f J%0.4f\n", move.x, move.y, move.i, move.j);
       geo_arc_t arc;
       arc.center.x = current_position.x + move.i;
       arc.center.y = current_position.y + move.j;
@@ -144,7 +144,7 @@ void gui_elements_viewer_open_drawing(const char* drawing)
       if (arc.radius > 0 && good_arc == true)
       {
         arc.direction = ARC_CCW;
-        printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
+        //printf("\tarc.radius=%0.4f arc.start=(%0.4f, %0.4f) arc.end=(%0.4f, %0.4f) arc.center=(%0.4f, %0.4f)\n", arc.radius, arc.start.x, arc.start.y, arc.end.x, arc.end.y, arc.center.x, arc.center.y);
         std::vector<geo_point_t> vector_points = geoGetPointsOfArc(arc);
         viewer_point_t arc_points[2048];
         int num_p = 0;

@@ -96,62 +96,9 @@ struct geo_arc_t{
   //Operation data
   int parentIndex;
 };
-
-bool geoInTolerance(geo_point_t, geo_point_t, float);
-bool geoInTolerance(float, float, float);
-std::string geoSupressZeros(float);
-std::string geoBoolToString(bool);
-
-geo_point_t geoGetIntersection(geo_line_t, geo_line_t);
-geo_point_t geoGetIntersection(geo_arc_t, geo_line_t);
-geo_point_t geoGetIntersection(geo_line_t, geo_arc_t);
-geo_point_t geoGetIntersection(geo_arc_t, geo_arc_t);
-
-bool geoDoLinesIntersect(geo_line_t, geo_line_t);
-geo_point_t geoGetLineIntersection(geo_line_t, geo_line_t);
-geo_point_t geoGetLineArcIntersection(geo_arc_t, geo_line_t);
-geo_point_t geoGetArcIntersection(geo_arc_t, geo_arc_t);
-
-std::vector<geo_point_t> geoGetPointsOfLine(geo_line_t, float);
-
-geo_line_t geoReplaceClosestEndpoint(geo_line_t, geo_point_t);
-
-float geoGetPerpendicularDistance(geo_line_t, geo_point_t);
-geo_line_t geoGetPerpendicularLine(geo_line_t, geo_point_t, float);
-geo_line_t geoGetParallelLine(geo_line_t, geo_point_t, float);
-float geoGetLineLength(geo_line_t);
-
-geo_point_t geoTranslatePointByVector(geo_point_t, geo_point_t);
-geo_point_t geoTranslateCalculateVector(geo_point_t, geo_point_t);
-
-geo_point_t geoRotatePointAroundPoint(geo_point_t, geo_point_t, float);
-geo_point_t geoRotatePointAroundPoint(geo_point_t, geo_point_t, float, bool);
-geo_line_t geoRotateLine(geo_line_t, geo_point_t, float ); //angle is in degrees!
-geo_line_t geoExtendLine(geo_line_t, float);
-geo_line_t geoExtendLineEndpoint(geo_line_t, float);
-geo_line_t geoExtendLineStartpoint(geo_line_t, float);
-geo_line_t geoExtendLineAngle(geo_point_t, float, float);
-geo_line_t geoFlipLine(geo_line_t);
-geo_arc_t geoFlipArc(geo_arc_t);
-geo_arc_t geoGetCircle(geo_point_t, float);
-geo_point_t geoGetLineMidpoint(geo_line_t);
-geo_point_t geoGetArcMidpoint(geo_arc_t); //Always returns the midpoint of the shortest arc between both endpoints
-float geoGetLineAngle(geo_line_t);
-float geoRadiansToDegrees(float);
-float geoDegreesToRadians(float);
-
-float geoGetArcLength(geo_arc_t a);
-geo_point_t geoGetArcEndpoint(geo_arc_t, float);
-float geoGetArcStartAngleAbs(geo_arc_t); //Returns degrees!
-float geoGetArcEndAngleAbs(geo_arc_t); //Returns degrees!
-float geoGetArcStartAngle(geo_arc_t);
-float geoGetArcEndAngle(geo_arc_t);
-geo_point_t geoGetArcPoint(geo_arc_t, float);
+geo_line_t geoGetPolarLine(geo_point_t, float , float);
 std::vector<geo_point_t> geoGetPointsOfArc(geo_arc_t);
-bool geoGetArcDirection(float, float); //Return direction given start and end angle
-float geoGetIncludedAngle(geo_arc_t); //Returns in degrees!
-float geoRound(float);
-
-
-geo_point_t geoScalePoint(geo_point_t, float);
+geo_point_t geoRotatePoint(geo_point_t, geo_point_t, float);
+geo_line_t geoGetPolarLine(geo_point_t, float, float);
+float geoGetLineLength(geo_line_t);
 #endif
