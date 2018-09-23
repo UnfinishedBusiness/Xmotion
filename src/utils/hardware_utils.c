@@ -23,13 +23,27 @@ void hardware_utils_set_graphics_mode(void)
     printf("Failed to set graphics mode on tty0\n");
   }
   close(tty);
+
+  tty = open("/dev/tty0", O_RDWR);
+  if(ioctl(tty, KDSKBMODE, K_OFF) == -1)
+  {
+    printf("Failed to set keyboard mute mode\n");
+  }
+  close(tty);
 }
 void hardware_utils_set_text_mode(void)
 {
-  int tty = open("/dev/tty0", O_RDWR);
+  tty = open("/dev/tty0", O_RDWR);
+  if(ioctl(tty, KDSKBMODE, K_UNICODE) == -1)
+  {
+    printf("Failed to un-mute keyboard\n");
+  }
+  close(tty);
+
+  tty = open("/dev/tty0", O_RDWR);
   if(ioctl(tty, KDSETMODE, KD_TEXT) == -1)
   {
-    printf("Failed to set graphics mode on tty0\n");
+    printf("Failed to set text mode on tty0\n");
   }
   close(tty);
 }

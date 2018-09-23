@@ -74,17 +74,13 @@ static lv_res_t btnm_close_action(lv_obj_t * btnm)
 }
 static lv_res_t btn_click_action(lv_obj_t * btn)
 {
-    uint8_t id = lv_obj_get_free_num(btn);
-
+    uint8_t id = lv_obj_get_free_num(btn);;
     //printf("Button %d is released\n", id);
-    lv_obj_set_style(Icon_Array[id].button, &lv_style_transp); //Keep the botton from going non-transparent
-    gui_elements_open_dialog_close();
     gui_elements_viewer_close_drawing();
-    /* The button is released.
-     * Make something here */
-     printf("Opening file: %s\n", Icon_Array[id].path.c_str());
+    lv_obj_set_style(Icon_Array[id].button, &lv_style_transp); //Keep the botton from going non-transparent
+    printf("Opening file: %s\n", Icon_Array[id].path.c_str());
     gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
-
+    gui_elements_open_dialog_close();
     return LV_RES_OK; /*Return OK if the button is not deleted*/
 }
 
@@ -149,6 +145,7 @@ lv_obj_t *gui_elements_open_dialog(void)
 
     icon.name = File_Array[x].name;
     icon.path = File_Array[x].path;
+    //printf("Path: %s, Name: %s\n",icon.path.c_str(), icon.name.c_str());
     Icon_Array.push_back(icon);
 
     lv_obj_set_style(Icon_Array[Icon_Array.size()-1].container, &icon_style);     /*Set the new style*/
