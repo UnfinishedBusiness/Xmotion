@@ -36,6 +36,14 @@ The final goal is to make all linuxcnc interaction via NML done via the native C
 want to beak backwards compatibility support by hardcoding NML messages that are different between 2.6 and 2.7 (like the jog interface for example). So we will continue to use the python interface until we figure
 out the best way to use the NML withouth breaking backwards compatibility. - Travis Gillin (9/24/18)
 */
+#ifdef SIM_MODE //Defined during "make sim"
+  #define _SIM 1
+#else
+  #define _SIM 0
+#endif
+
+
+#define SIM_BREAK if (_SIM == 1) return
 
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks
 
@@ -66,6 +74,7 @@ EMC_WAIT_TYPE emcWaitType;
 /* Private Functions */
 int emcCommandSend(RCS_CMD_MSG & cmd)
 {
+  SIM_BREAK 0;
     // write command
     if (emcCommandBuffer->write(&cmd)) {
         return -1;
@@ -76,6 +85,7 @@ int emcCommandSend(RCS_CMD_MSG & cmd)
 
 bool poll_error()
 {
+  SIM_BREAK false;
   NMLTYPE type;
 
   if (0 == emcErrorBuffer || !emcErrorBuffer->valid())
@@ -127,6 +137,7 @@ bool poll_error()
 }
 bool poll_status()
 {
+  SIM_BREAK false;
   if(emcStatusBuffer->valid())
   {
     if(emcStatusBuffer->peek() == EMC_STAT_TYPE)
@@ -139,6 +150,7 @@ bool poll_status()
 }
 int emcCommandWaitDone()
 {
+  SIM_BREAK 0;
   double end;
   for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
   {
@@ -166,6 +178,7 @@ int emcCommandWaitDone()
 }
 int emcCommandWaitReceived()
 {
+    SIM_BREAK 0;
     double end;
     for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
     {
@@ -184,6 +197,7 @@ int emcCommandWaitReceived()
 /* Private Command Functions */
 int sendMachineOn()
 {
+    SIM_BREAK 0;
     EMC_TASK_SET_STATE state_msg;
 
     state_msg.state = EMC_TASK_STATE_ON;
@@ -200,6 +214,7 @@ int sendMachineOn()
 }
 int sendMdiCmd(const char *mdi)
 {
+    SIM_BREAK 0;
     EMC_TASK_PLAN_EXECUTE emc_task_plan_execute_msg;
     strcpy(emc_task_plan_execute_msg.command, mdi);
     emcCommandSend(emc_task_plan_execute_msg);
@@ -217,6 +232,7 @@ int sendMdiCmd(const char *mdi)
 
 void linuxcnc_init(void)
 {
+  SIM_BREAK;
   emcStatusBuffer = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", emc_nmlfile);
   emcCommandBuffer = new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc", emc_nmlfile);
   emcErrorBuffer = new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
@@ -231,11 +247,13 @@ void linuxcnc_init(void)
 }
 void linuxcnc_close(void)
 {
+  SIM_BREAK;
   emcStatusBuffer = NULL;
   Py_Finalize();
 }
 void wait_complete()
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.wait_complete()\n");
   PyRun_SimpleString(cmd);
@@ -243,6 +261,7 @@ void wait_complete()
 }
 void jog_continous_plus(int axis)
 {
+  SIM_BREAK;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed);
@@ -250,6 +269,7 @@ void jog_continous_plus(int axis)
 }
 void jog_continous_minus(int axis)
 {
+  SIM_BREAK;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed * -1);
@@ -257,6 +277,7 @@ void jog_continous_minus(int axis)
 }
 void jog_stop(int axis)
 {
+  SIM_BREAK;
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_STOP, %d)\n", axis);
@@ -264,6 +285,7 @@ void jog_stop(int axis)
 }
 void linuxcnc_jog_x_plus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_plus(0);
@@ -275,6 +297,7 @@ void linuxcnc_jog_x_plus(bool jog)
 }
 void linuxcnc_jog_x_minus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_minus(0);
@@ -286,6 +309,7 @@ void linuxcnc_jog_x_minus(bool jog)
 }
 void linuxcnc_jog_y_plus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_plus(1);
@@ -297,6 +321,7 @@ void linuxcnc_jog_y_plus(bool jog)
 }
 void linuxcnc_jog_y_minus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_minus(1);
@@ -308,6 +333,7 @@ void linuxcnc_jog_y_minus(bool jog)
 }
 void linuxcnc_jog_z_plus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_plus(2);
@@ -319,6 +345,7 @@ void linuxcnc_jog_z_plus(bool jog)
 }
 void linuxcnc_jog_z_minus(bool jog)
 {
+  SIM_BREAK;
   if (jog == true)
   {
     jog_continous_minus(2);
@@ -330,11 +357,13 @@ void linuxcnc_jog_z_minus(bool jog)
 }
 void linuxcnc_set_jog_speed(float speed)
 {
+  SIM_BREAK;
   jog_speed = speed / 60;
   //printf("Jog Speed [in/sec] = %0.4f\n", jog_speed);
 }
 float linuxcnc_get_pin_state(char *pin)
 {
+  SIM_BREAK true;
   char cmd[1024];
   sprintf(cmd, "halcmd getp %s", pin);
   FILE *cmd_p = popen(cmd, "r");
@@ -360,6 +389,7 @@ float linuxcnc_get_pin_state(char *pin)
 }
 bool linuxcnc_is_axis_homed(int axis)
 {
+  SIM_BREAK false;
   usleep(5 * 100000); //Wait two seconds
   char cmd[1024];
   sprintf(cmd, "halcmd getp halui.joint.%d.is-homed", axis);
@@ -386,6 +416,7 @@ bool linuxcnc_is_axis_homed(int axis)
 }
 void linuxcnc_jog_mode()
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -393,6 +424,7 @@ void linuxcnc_jog_mode()
 }
 void linuxcnc_home_axis(int axis)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -403,6 +435,7 @@ void linuxcnc_home_axis(int axis)
 }
 void linuxcnc_unhome_axis(int axis)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -413,6 +446,7 @@ void linuxcnc_unhome_axis(int axis)
 }
 void linuxcnc_mdi(char *mdi)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
   PyRun_SimpleString(cmd);
@@ -424,12 +458,14 @@ void linuxcnc_mdi(char *mdi)
 }
 void linuxcnc_abort(void)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
 }
 void linuxcnc_program_open(const char *file)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
   PyRun_SimpleString(cmd);
@@ -443,6 +479,7 @@ void linuxcnc_program_open(const char *file)
 }
 void linuxcnc_cycle_start(int start_line)
 {
+  SIM_BREAK;
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
   PyRun_SimpleString(cmd);
@@ -451,6 +488,7 @@ void linuxcnc_cycle_start(int start_line)
 }
 void linuxcnc_tick()
 {
+  SIM_BREAK;
   if (poll_error())
   {
     printf("operator_text_string: %s\n", operator_text_string);

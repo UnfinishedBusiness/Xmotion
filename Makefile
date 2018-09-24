@@ -18,6 +18,8 @@ CC_COMPILE_FLAGS = -Wextra -g -std=gnu99
 RCOMPILE_FLAGS = -D NDEBUG
 # Additional debug-specific flags
 DCOMPILE_FLAGS = -D DEBUG
+# Additional debug-specific flags
+SIM_COMPILE_FLAGS = -D SIM_MODE
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
@@ -26,6 +28,8 @@ LINK_FLAGS = `python-config --libs` -lnml -llinuxcnc
 RLINK_FLAGS =
 # Additional debug-specific linker settings
 DLINK_FLAGS =
+# Additional debug-specific linker settings
+SIM_LINK_FLAGS =
 # Destination directory, like a jail or mounted system
 DESTDIR = /
 # Install path (bin/ is appended automatically)
@@ -76,12 +80,17 @@ release: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(RLINK_FLAGS)
 debug: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(DCOMPILE_FLAGS)
 debug: export CXXFLAGS := $(CXXFLAGS) $(CXX_COMPILE_FLAGS) $(DCOMPILE_FLAGS)
 debug: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(DLINK_FLAGS)
+sim: export CFLAGS := $(CFLAGS) $(CC_COMPILE_FLAGS) $(SIM_COMPILE_FLAGS)
+sim: export CXXFLAGS := $(CXXFLAGS) $(CXX_COMPILE_FLAGS) $(SIM_COMPILE_FLAGS)
+sim: export LDFLAGS := $(LDFLAGS) $(LINK_FLAGS) $(SIM_LINK_FLAGS)
 
 # Build and output paths
 release: export BUILD_PATH := build/release
 release: export BIN_PATH := bin/release
 debug: export BUILD_PATH := build/debug
 debug: export BIN_PATH := bin/debug
+sim: export BUILD_PATH := build/sim
+sim: export BIN_PATH := bin/sim
 install: export BIN_PATH := bin/release
 
 # Find all source files in the source directory, sorted by most
@@ -183,6 +192,19 @@ ifeq ($(USE_VERSION), true)
 	@echo "Beginning debug build v$(VERSION_STRING)"
 else
 	@echo "Beginning debug build"
+endif
+	@$(START_TIME)
+	@$(MAKE) all --no-print-directory
+	@echo -n "Total build time: "
+	@$(END_TIME)
+
+	# Debug build for gdb debugging
+.PHONY: debug
+sim: dirs
+ifeq ($(USE_VERSION), true)
+	@echo "Beginning sim build v$(VERSION_STRING)"
+else
+	@echo "Beginning sim build"
 endif
 	@$(START_TIME)
 	@$(MAKE) all --no-print-directory
