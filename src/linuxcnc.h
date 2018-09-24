@@ -60,7 +60,8 @@ void linuxcnc_unhome_axis(int);
 
 void linuxcnc_abort(void);
 
-void linuxcnc_program_open(char *file);
+void linuxcnc_program_open(const char *);
+void linuxcnc_cycle_start(int);
 
 void linuxcnc_tick();
 

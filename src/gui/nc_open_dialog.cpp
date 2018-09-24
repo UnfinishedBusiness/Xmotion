@@ -79,6 +79,7 @@ static lv_res_t btn_click_action(lv_obj_t * btn)
     gui_elements_viewer_close_drawing();
     lv_obj_set_style(Icon_Array[id].button, &lv_style_transp); //Keep the botton from going non-transparent
     printf("Opening file: %s\n", Icon_Array[id].path.c_str());
+    linuxcnc_program_open(Icon_Array[id].path.c_str());
     gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
     gui_elements_open_dialog_close();
     return LV_RES_OK; /*Return OK if the button is not deleted*/

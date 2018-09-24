@@ -83,6 +83,14 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   {
     gui_elements_open_dialog();
   }
+  else if (!strcmp("Cycle Start", txt))
+  {
+    linuxcnc_cycle_start(0);
+  }
+  else if (!strcmp("Stop", txt))
+  {
+    linuxcnc_abort();
+  }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
 lv_obj_t *gui_elements_controls(void)
