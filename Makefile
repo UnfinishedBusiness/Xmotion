@@ -23,9 +23,9 @@ SIM_COMPILE_FLAGS = -D SIM_MODE
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
-LINK_FLAGS = `python-config --libs` -lnml -llinuxcnc
+LINK_FLAGS = `python-config --libs`
 # Additional release-specific linker settings
-RLINK_FLAGS =
+RLINK_FLAGS = -lnml -llinuxcnc
 # Additional debug-specific linker settings
 DLINK_FLAGS =
 # Additional debug-specific linker settings

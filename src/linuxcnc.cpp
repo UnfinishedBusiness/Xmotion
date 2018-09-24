@@ -13,11 +13,13 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
-#include <linuxcnc/emc.hh>
-#include <linuxcnc/motion.h>
-#include <linuxcnc/emc_nml.hh>
-#include <linuxcnc/nml_oi.hh>
-#include <linuxcnc/timer.hh>
+#ifndef SIM_MODE
+  #include <linuxcnc/emc.hh>
+  #include <linuxcnc/motion.h>
+  #include <linuxcnc/emc_nml.hh>
+  #include <linuxcnc/nml_oi.hh>
+  #include <linuxcnc/timer.hh>
+#endif
 
 #include <iostream>
 #include <cstdlib>
@@ -48,44 +50,48 @@ out the best way to use the NML withouth breaking backwards compatibility. - Tra
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks
 
 linuxcnc_position_t linuxcnc_position;
-RCS_STAT_CHANNEL *emcStatusBuffer;
-RCS_CMD_CHANNEL *emcCommandBuffer;
-EMC_STAT *emcStatus;
-NML *emcErrorBuffer;
-char error_string[NML_ERROR_LEN];
-char operator_text_string[NML_TEXT_LEN];
-char operator_display_string[NML_DISPLAY_LEN];
-double emcTimeout;
-int emcCommandSerialNumber;
 float jog_speed;
 
-enum EMC_UPDATE_TYPE {
-    EMC_UPDATE_NONE = 1,
-    EMC_UPDATE_AUTO
-};
-extern EMC_UPDATE_TYPE emcUpdateType;
+#ifndef SIM_MODE
+  RCS_STAT_CHANNEL *emcStatusBuffer;
+  RCS_CMD_CHANNEL *emcCommandBuffer;
+  EMC_STAT *emcStatus;
+  NML *emcErrorBuffer;
+  char error_string[NML_ERROR_LEN];
+  char operator_text_string[NML_TEXT_LEN];
+  char operator_display_string[NML_DISPLAY_LEN];
+  double emcTimeout;
+  int emcCommandSerialNumber;
 
-enum EMC_WAIT_TYPE {
-    EMC_WAIT_RECEIVED = 2,
-    EMC_WAIT_DONE
-};
-EMC_WAIT_TYPE emcWaitType;
+  enum EMC_UPDATE_TYPE {
+      EMC_UPDATE_NONE = 1,
+      EMC_UPDATE_AUTO
+    };
+    extern EMC_UPDATE_TYPE emcUpdateType;
 
+    enum EMC_WAIT_TYPE {
+      EMC_WAIT_RECEIVED = 2,
+      EMC_WAIT_DONE
+    };
+    EMC_WAIT_TYPE emcWaitType;
+#endif
 /* Private Functions */
-int emcCommandSend(RCS_CMD_MSG & cmd)
-{
-  SIM_BREAK 0;
-    // write command
-    if (emcCommandBuffer->write(&cmd)) {
-        return -1;
-    }
-    emcCommandSerialNumber = cmd.serial_number;
-    return 0;
-}
+#ifndef SIM_MODE
+  int emcCommandSend(RCS_CMD_MSG & cmd)
+  {
+      // write command
+      if (emcCommandBuffer->write(&cmd)) {
+          return -1;
+      }
+      emcCommandSerialNumber = cmd.serial_number;
+      return 0;
 
+  }
+#endif
 bool poll_error()
 {
   SIM_BREAK false;
+  #ifndef SIM_MODE
   NMLTYPE type;
 
   if (0 == emcErrorBuffer || !emcErrorBuffer->valid())
@@ -134,10 +140,12 @@ bool poll_error()
      operator_display_string[NML_DISPLAY_LEN - 1] = 0;
      return true;
    }
+   #endif
 }
 bool poll_status()
 {
   SIM_BREAK false;
+  #ifndef SIM_MODE
   if(emcStatusBuffer->valid())
   {
     if(emcStatusBuffer->peek() == EMC_STAT_TYPE)
@@ -147,10 +155,12 @@ bool poll_status()
     }
   }
   return false;
+  #endif
 }
 int emcCommandWaitDone()
 {
   SIM_BREAK 0;
+  #ifndef SIM_MODE
   double end;
   for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
   {
@@ -175,10 +185,12 @@ int emcCommandWaitDone()
     }
     esleep(EMC_COMMAND_DELAY);
   }
+  #endif
 }
 int emcCommandWaitReceived()
 {
     SIM_BREAK 0;
+    #ifndef SIM_MODE
     double end;
     for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
     {
@@ -191,6 +203,7 @@ int emcCommandWaitReceived()
       esleep(EMC_COMMAND_DELAY);
     }
     return -1;
+    #endif
 }
 /* End Private Function */
 
@@ -198,6 +211,7 @@ int emcCommandWaitReceived()
 int sendMachineOn()
 {
     SIM_BREAK 0;
+    #ifndef SIM_MODE
     EMC_TASK_SET_STATE state_msg;
 
     state_msg.state = EMC_TASK_STATE_ON;
@@ -211,10 +225,12 @@ int sendMachineOn()
 	     return emcCommandWaitDone();
     }
     return 0;
+    #endif
 }
 int sendMdiCmd(const char *mdi)
 {
     SIM_BREAK 0;
+    #ifndef SIM_MODE
     EMC_TASK_PLAN_EXECUTE emc_task_plan_execute_msg;
     strcpy(emc_task_plan_execute_msg.command, mdi);
     emcCommandSend(emc_task_plan_execute_msg);
@@ -227,12 +243,14 @@ int sendMdiCmd(const char *mdi)
 	     return emcCommandWaitDone();
     }
     return 0;
+    #endif
 }
 /* End Private Command Functions */
 
 void linuxcnc_init(void)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   emcStatusBuffer = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", emc_nmlfile);
   emcCommandBuffer = new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc", emc_nmlfile);
   emcErrorBuffer = new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
@@ -244,48 +262,60 @@ void linuxcnc_init(void)
   jog_speed = config.default_jog_speed / 60;
   Py_Initialize();
   PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\nc.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)\ns = linuxcnc.stat()\ne = linuxcnc.error_channel()");
+  #endif
 }
 void linuxcnc_close(void)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   emcStatusBuffer = NULL;
   Py_Finalize();
+  #endif
 }
 void wait_complete()
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.wait_complete()\n");
   PyRun_SimpleString(cmd);
   //emcCommandWaitDone();
+  #endif
 }
 void jog_continous_plus(int axis)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed);
   PyRun_SimpleString(cmd);
+  #endif
 }
 void jog_continous_minus(int axis)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_CONTINUOUS, %d, %0.4f)\n", axis, jog_speed * -1);
   PyRun_SimpleString(cmd);
+  #endif
 }
 void jog_stop(int axis)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   linuxcnc_jog_mode();
   char cmd[1024];
   sprintf(cmd, "c.jog(linuxcnc.JOG_STOP, %d)\n", axis);
   PyRun_SimpleString(cmd);
+  #endif
 }
 void linuxcnc_jog_x_plus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_plus(0);
@@ -294,10 +324,12 @@ void linuxcnc_jog_x_plus(bool jog)
   {
     jog_stop(0);
   }
+  #endif
 }
 void linuxcnc_jog_x_minus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_minus(0);
@@ -306,10 +338,12 @@ void linuxcnc_jog_x_minus(bool jog)
   {
     jog_stop(0);
   }
+  #endif
 }
 void linuxcnc_jog_y_plus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_plus(1);
@@ -318,10 +352,12 @@ void linuxcnc_jog_y_plus(bool jog)
   {
     jog_stop(1);
   }
+  #endif
 }
 void linuxcnc_jog_y_minus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_minus(1);
@@ -330,10 +366,12 @@ void linuxcnc_jog_y_minus(bool jog)
   {
     jog_stop(1);
   }
+  #endif
 }
 void linuxcnc_jog_z_plus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_plus(2);
@@ -342,10 +380,12 @@ void linuxcnc_jog_z_plus(bool jog)
   {
     jog_stop(2);
   }
+  #endif
 }
 void linuxcnc_jog_z_minus(bool jog)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (jog == true)
   {
     jog_continous_minus(2);
@@ -354,6 +394,7 @@ void linuxcnc_jog_z_minus(bool jog)
   {
     jog_stop(2);
   }
+  #endif
 }
 void linuxcnc_set_jog_speed(float speed)
 {
@@ -364,6 +405,7 @@ void linuxcnc_set_jog_speed(float speed)
 float linuxcnc_get_pin_state(char *pin)
 {
   SIM_BREAK true;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "halcmd getp %s", pin);
   FILE *cmd_p = popen(cmd, "r");
@@ -386,10 +428,12 @@ float linuxcnc_get_pin_state(char *pin)
     //printf("\tReturn True!\n");
     return true;
   }
+  #endif
 }
 bool linuxcnc_is_axis_homed(int axis)
 {
   SIM_BREAK false;
+  #ifndef SIM_MODE
   usleep(5 * 100000); //Wait two seconds
   char cmd[1024];
   sprintf(cmd, "halcmd getp halui.joint.%d.is-homed", axis);
@@ -413,18 +457,22 @@ bool linuxcnc_is_axis_homed(int axis)
     //printf("\tReturn True!\n");
     return true;
   }
+  #endif
 }
 void linuxcnc_jog_mode()
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
   //wait_complete();
+  #endif
 }
 void linuxcnc_home_axis(int axis)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -432,10 +480,12 @@ void linuxcnc_home_axis(int axis)
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
+  #endif
 }
 void linuxcnc_unhome_axis(int axis)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
@@ -443,10 +493,12 @@ void linuxcnc_unhome_axis(int axis)
   sprintf(cmd, "c.unhome(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
+  #endif
 }
 void linuxcnc_mdi(char *mdi)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
   PyRun_SimpleString(cmd);
@@ -455,17 +507,21 @@ void linuxcnc_mdi(char *mdi)
   PyRun_SimpleString(cmd);
   //wait_complete();
   //sendMdiCmd(mdi);
+  #endif
 }
 void linuxcnc_abort(void)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
+  #endif
 }
 void linuxcnc_program_open(const char *file)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
   PyRun_SimpleString(cmd);
@@ -476,19 +532,23 @@ void linuxcnc_program_open(const char *file)
   sprintf(cmd, "c.program_open(\"%s\")\n", file);
   PyRun_SimpleString(cmd);
   wait_complete();
+  #endif
 }
 void linuxcnc_cycle_start(int start_line)
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   char cmd[1024];
   sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
   PyRun_SimpleString(cmd);
   sprintf(cmd, "c.auto(linuxcnc.AUTO_RUN, %d)\n", start_line);
   PyRun_SimpleString(cmd);
+  #endif
 }
 void linuxcnc_tick()
 {
   SIM_BREAK;
+  #ifndef SIM_MODE
   if (poll_error())
   {
     printf("operator_text_string: %s\n", operator_text_string);
@@ -518,5 +578,5 @@ void linuxcnc_tick()
     linuxcnc_position.dro.y = linuxcnc_position.mcs.y - linuxcnc_position.work_offset.y - linuxcnc_position.g92_offset.y - linuxcnc_position.tool_offset.y;
     linuxcnc_position.dro.z = linuxcnc_position.mcs.z - linuxcnc_position.work_offset.z - linuxcnc_position.g92_offset.z - linuxcnc_position.tool_offset.z;
   }
-
+  #endif
 }
