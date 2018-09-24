@@ -4,6 +4,7 @@
 #include "utils/terminal.h"
 #include "utils/gcode_parser.h"
 #include "geometry/geometry.h"
+#include "input_devices/mouse.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -24,9 +25,12 @@
 #include <vector>
 #include <cmath>
 
+#define VIEWER_WIDTH  1250
+#define VIEWER_HEIGHT 950
 #define VIEWER_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define VIEWER_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *viewer_container;
+float mouse_x_mcs, mouse_y_mcs;
 int viewer_offset[] = {300, -800}; //Offset from top Left of container
 float viewer_zoom = 12;
 bool viewer_redraw = false;
@@ -176,7 +180,7 @@ lv_obj_t *gui_elements_viewer(void)
   viewer_container = lv_cont_create(lv_scr_act(), NULL);
   lv_obj_set_style(viewer_container, &style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
-  lv_obj_set_size(viewer_container, 1250, 950);
+  lv_obj_set_size(viewer_container, VIEWER_WIDTH, VIEWER_HEIGHT);
   lv_obj_align(viewer_container, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
 
 
@@ -315,6 +319,11 @@ void gui_elements_viewer_tick(void)
       }
     }
     gui_elements_viewer_set_redraw_flag(); //We need to call this from linuxcnc module when the machine in motion
+
+    //printf("MouseX: %d, MouseY in MCS: %d\n", mouse_get_current_x(), (mouse_get_current_y() - LV_VER_RES) * -1);
+    mouse_x_mcs = (((float)mouse_get_current_x() - viewer_offset[0]) / viewer_zoom);
+    mouse_y_mcs = (((float)mouse_get_current_y() + viewer_offset[1] - (LV_VER_RES - VIEWER_HEIGHT)) / viewer_zoom) * -1;
+    //printf("MouseX in MCS: %0.4f, MouseY in MCS: %0.4f\n", mouse_x_mcs, mouse_y_mcs);
   }
 }
 float fround(float var)
@@ -333,6 +342,9 @@ float gui_elements_viewer_get_zoom(void)
 void gui_elements_viewer_zoom(int zoom_inc)
 {
   viewer_redraw = true;
+
+  float old_zoom = viewer_zoom;
+
   bool direction = true; //true = zoom in, false = zoom out
   if (zoom_inc < 0)
   {
@@ -343,14 +355,20 @@ void gui_elements_viewer_zoom(int zoom_inc)
   if (direction)
   {
     viewer_zoom += zoom_small;
-    if (viewer_zoom > 200) viewer_zoom = 200;
+    if (viewer_zoom > 600) viewer_zoom = 600;
   }
   else
   {
     viewer_zoom -= zoom_small;
     if (viewer_zoom < 1) viewer_zoom = 1;
-
   }
+  float scalechange = viewer_zoom - old_zoom;
+  //printf("Scale change: %0.4f\n", scalechange);
+  float pan_x = (mouse_x_mcs * scalechange) * -1;
+  float pan_y = (mouse_y_mcs * scalechange);
+  //printf("PanX: %0.4f, PanY: %0.4f\n", pan_x, pan_y);
+  gui_elements_viewer_pan_x(pan_x);
+  gui_elements_viewer_pan_y(pan_y);
 }
 void gui_elements_viewer_pan_x(int pan)
 {
