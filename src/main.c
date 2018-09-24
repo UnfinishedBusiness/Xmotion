@@ -93,6 +93,7 @@ int main(void)
         if (linuxcnc_poll_timing > 200)
         {
           linuxcnc_poll_timing = 0;
+          linuxcnc_tick();
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
         }

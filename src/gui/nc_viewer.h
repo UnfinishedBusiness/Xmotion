@@ -50,7 +50,7 @@ float gui_elements_viewer_get_zoom(void);
 size_t gui_elements_viewer_addEntitity(viewer_point_t[2048], int, char*);
 void gui_elements_viewer_open_drawing(const char*);
 void gui_elements_viewer_close_drawing();
-
+void gui_elements_viewer_set_redraw_flag();
 void gui_elements_viewer_close();
 
 /**********************

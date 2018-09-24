@@ -36,10 +36,7 @@ void gui_elements_dro_tick(void)
 {
   if (dro_container != NULL)
   {
-    float x_rel = linuxcnc_get_x_rel_position();
-    float y_rel = linuxcnc_get_y_rel_position();
-    float z_rel = linuxcnc_get_z_rel_position();
-    gui_elements_dro_update_wcs(x_rel, y_rel, z_rel);
+    gui_elements_dro_update_wcs(linuxcnc_position.dro.x, linuxcnc_position.dro.y, linuxcnc_position.dro.z);
   }
 }
 void gui_elements_dro_close()

@@ -21,7 +21,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Add additional include paths
 INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
-LINK_FLAGS = `python-config --libs`
+LINK_FLAGS = `python-config --libs` -lnml -llinuxcnc
 # Additional release-specific linker settings
 RLINK_FLAGS =
 # Additional debug-specific linker settings

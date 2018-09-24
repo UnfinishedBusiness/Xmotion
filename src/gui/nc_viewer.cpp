@@ -257,6 +257,7 @@ size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *
 void gui_elements_viewer_tick(void)
 {
   //DEBUG_PRINT(("Viewer Tick!\n"));
+  //printf("x_hair_index: %d, y_hair_index: %d\n", x_hair_index, y_hair_index);
   if (viewer_container != NULL && viewer_redraw == true)
   {
     viewer_redraw = false;
@@ -264,11 +265,11 @@ void gui_elements_viewer_tick(void)
     {
       if (x == x_hair_index || x == y_hair_index)
       {
-        //DEBUG_PRINT(("\tIndex Hair translation!"));
+        //printf("linuxcnc_x_dro = %0.4f, linuxcnc_y_dro = %0.4f\n", linuxcnc_x_dro, linuxcnc_y_dro);
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
-          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x) + viewer_offset[0] + (linuxcnc_x_dro * viewer_zoom);
-          Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) + ((viewer_offset[1] + (linuxcnc_y_dro * viewer_zoom)) * -1));
+          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x) + viewer_offset[0] + (linuxcnc_position.mcs.x * viewer_zoom);
+          Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) + ((viewer_offset[1] + (linuxcnc_position.mcs.y * viewer_zoom)) * -1));
 
           Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
           Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
@@ -278,13 +279,31 @@ void gui_elements_viewer_tick(void)
         lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
         //DEBUG_PRINT(("\t\tOK\n"));
       }
+      else if (x == machine_boundry)
+      {
+          //DEBUG_PRINT(("\tStatic Entity translation!"));
+          for (int i = 0; i < Entities[x].number_of_points; i++)
+          {
+            //Offset matrix_point for scaling and pan
+            Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x * viewer_zoom) + viewer_offset[0];
+            Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) * viewer_zoom + (viewer_offset[1] * -1));
+
+            Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
+            Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
+          }
+          //DEBUG_PRINT(("\t\tOK\n"));
+          //DEBUG_PRINT(("\t\tSet Points!"));
+          lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
+          //DEBUG_PRINT(("\t\tOK\n"));
+      }
       else
       {
         //DEBUG_PRINT(("\tStatic Entity translation!"));
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
-          Entities[x].matrix_points[i].x = (Entities[x].mcs_points[i].x * viewer_zoom) + viewer_offset[0];
-          Entities[x].matrix_points[i].y = ((Entities[x].mcs_points[i].y * -1) * viewer_zoom + (viewer_offset[1] * -1));
+          //Offset matrix_point for scaling and pan
+          Entities[x].matrix_points[i].x = ((Entities[x].mcs_points[i].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
+          Entities[x].matrix_points[i].y = (((Entities[x].mcs_points[i].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
 
           Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
           Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
@@ -295,6 +314,7 @@ void gui_elements_viewer_tick(void)
         //DEBUG_PRINT(("\t\tOK\n"));
       }
     }
+    gui_elements_viewer_set_redraw_flag(); //We need to call this from linuxcnc module when the machine in motion
   }
 }
 float fround(float var)
@@ -349,6 +369,10 @@ void gui_elements_viewer_pan_y(int pan)
     viewer_offset[1] -= pan;
     //lv_obj_align(boundry, NULL, LV_ALIGN_IN_BOTTOM_LEFT, viewer_offset[0], viewer_offset[1] * -1);
   }
+}
+void gui_elements_viewer_set_redraw_flag()
+{
+  viewer_redraw = true;
 }
 void gui_elements_viewer_close()
 {

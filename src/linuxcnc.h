@@ -17,13 +17,25 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
-
+ typedef struct
+ {
+     float x;
+     float y;
+     float z;
+ }linuxcnc_coordinate_t;
+ typedef struct
+ {
+     linuxcnc_coordinate_t dro;
+     linuxcnc_coordinate_t mcs;
+     linuxcnc_coordinate_t work_offset;
+     linuxcnc_coordinate_t g92_offset;
+     linuxcnc_coordinate_t tool_offset;
+ }linuxcnc_position_t;
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
 
-extern float linuxcnc_x_dro;
-extern float linuxcnc_y_dro;
+extern linuxcnc_position_t linuxcnc_position;
 
 void linuxcnc_init(void);
 void linuxcnc_close(void);
@@ -37,10 +49,6 @@ void linuxcnc_jog_z_minus(bool);
 
 void linuxcnc_set_jog_speed(float);
 
-float linuxcnc_get_x_rel_position(void);
-float linuxcnc_get_y_rel_position(void);
-float linuxcnc_get_z_rel_position(void);
-
 float linuxcnc_get_pin_state(char *);
 
 void linuxcnc_mdi(char *);
@@ -53,6 +61,9 @@ void linuxcnc_unhome_axis(int);
 void linuxcnc_abort(void);
 
 void linuxcnc_program_open(char *file);
+
+void linuxcnc_tick();
+
 
 
 /**********************
