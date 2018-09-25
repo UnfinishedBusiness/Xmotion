@@ -133,12 +133,14 @@ void terminal_eval(char cmd[2048])
   {
     char output[1024];
     sprintf(output, "");
+    int home_count = 0;
     for (int x = 0; x < 3; x++)
     {
       if (!linuxcnc_is_axis_homed(x)) linuxcnc_home_axis(x);
       if (linuxcnc_is_axis_homed(x))
       {
         sprintf(output, "%s Axis %d homed ok\n", output, x);
+        home_count++;
       }
       else
       {
@@ -146,7 +148,11 @@ void terminal_eval(char cmd[2048])
       }
     }
     terminal_set_output_text(output);
-
+    if (home_count == 3)
+    {
+      sprintf(output, "%s Settings DRO to Green!\n", output);
+      gui_elements_dro_homed();
+    }
     linuxcnc_mdi("G55");
     usleep(5000);
     linuxcnc_mdi("G54");
@@ -168,6 +174,8 @@ void terminal_eval(char cmd[2048])
       }
     }
     terminal_set_output_text(output);
+    gui_elements_dro_unhomed();
+
   }
   else if (!strcmp(cmd, "ishomed"))
   {

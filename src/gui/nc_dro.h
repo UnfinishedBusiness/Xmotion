@@ -28,9 +28,11 @@ extern "C" {
  **********************/
 lv_obj_t *gui_elements_dro(void);
 void gui_elements_dro_update_wcs(float, float, float);
-//void gui_elements_dro_update_abs(float, float, float);
+void gui_elements_dro_update_abs(float, float, float);
 void gui_elements_dro_tick(void);
 void gui_elements_dro_close();
+void gui_elements_dro_homed(void);
+void gui_elements_dro_unhomed(void);
 
 /**********************
  *      MACROS
