@@ -1,4 +1,5 @@
 #include "duty_sim.h"
+#include "linuxcnc.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -40,46 +41,49 @@ void duty_sim_tick(void)
 {
   if (SIM)
   {
-    a += 1.1;
-    b += 1.2;
-    c += 1.3;
-    d += 1.4;
-    e += 1.5;
-    f += 1.6;
-    if (a > 1000)
+    a += 0.01;
+    b += 0.02;
+    c += 0.03;
+    d += 0.04;
+    e += 0.05;
+    f += 0.06;
+    if (a > 100)
     {
       a = 0;
       one = !one;
       gui_elements_indicators_set_floating_head_led(one);
     }
-    if (b > 1000)
+    if (b > 100)
     {
       b = 0;
       two = !two;
       gui_elements_indicators_set_torch_on_led(two);
     }
-    if (c > 1000)
+    if (c > 100)
     {
       c = 0;
       three = !three;
       gui_elements_indicators_set_arc_ok_led(three);
     }
-    if (d > 1000)
+    if (d > 100)
     {
       d = 0;
       four = !four;
       gui_elements_indicators_set_torch_up_led(four);
     }
-    if (e > 1000)
+    if (e > 100)
     {
       e = 0;
       five = !five;
       gui_elements_indicators_set_torch_down_led(five);
     }
-    if (f > 1000)
+    if (f > 100)
     {
       f = 0;
     }
+    linuxcnc_position.mcs.x = a;
+    linuxcnc_position.mcs.y = b;
+    linuxcnc_position.mcs.z = c;
     gui_elements_dro_update_wcs(a, b, c);
     //gui_elements_dro_update_abs(d, e, f);
   }
