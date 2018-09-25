@@ -20,6 +20,8 @@ int current_x;
 int current_y;
 bool left_button_down;
 
+void (*mouse_scroll_callback)(int) = NULL;
+
 void mouse_init_(const char *mouse_device)
 {
   current_x = 0;
@@ -31,8 +33,17 @@ void mouse_init_(const char *mouse_device)
       printf ("Could not open mouse device\n");
   }
 }
+void mouse_disable_scroll_callback(void)
+{
+  mouse_scroll_callback = NULL;
+}
+void mouse_set_scroll_callback(void (*f)(int))
+{
+  mouse_scroll_callback = f;
+}
 void mouse_close(void)
 {
+  mouse_scroll_callback = NULL;
   close(mouse);
 }
 void mouse_tick(void)
@@ -45,11 +56,25 @@ void mouse_tick(void)
     //printf("event.type = %d, event.code = %d, event.value = %d\n", event.type, event.code, event.value);
     if (event.type == 2 && event.code == 8 && event.value == -1) //Scroll down
     {
-      gui_elements_viewer_zoom(-1 * gui_elements_viewer_get_zoom());
+      if (mouse_scroll_callback != NULL)
+      {
+        mouse_scroll_callback(-1);
+      }
+      else
+      {
+        gui_elements_viewer_zoom(-1 * gui_elements_viewer_get_zoom());
+      }
     }
     else if (event.type == 2 && event.code == 8 && event.value == 1)
     {
-      gui_elements_viewer_zoom(gui_elements_viewer_get_zoom());
+      if (mouse_scroll_callback != NULL)
+      {
+        mouse_scroll_callback(1);
+      }
+      else
+      {
+        gui_elements_viewer_zoom(gui_elements_viewer_get_zoom());
+      }
     }
     else if (event.type == 1 && event.code == 272) //left button up/down
     {

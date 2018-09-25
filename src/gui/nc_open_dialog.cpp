@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "input_devices/mouse.h"
 #include "utils/gcode_parser.h"
 #include "geometry/geometry.h"
 #include "main.h"
@@ -13,6 +14,8 @@
 #include <linux/fb.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <linux/input.h>
@@ -59,6 +62,7 @@ typedef struct
   float y_offset;
   std::string name;
   std::string path;
+  bool is_folder;
 }icon_struct_t;
 
 std::vector<gcode_file_t> File_Array;
@@ -67,27 +71,121 @@ std::vector<icon_struct_t> Icon_Array;
 #define OPEN_DIALOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define OPEN_DIALOG_TEXT_COLOR LV_COLOR_MAKE(255, 255, 255);
 lv_obj_t *open_dialog_container = NULL;
+int current_focus;
 
+/* Private Functions */
+vector<string> split(const string& str, const string& delim)
+{
+    vector<string> tokens;
+    size_t prev = 0, pos = 0;
+    do
+    {
+        pos = str.find(delim, prev);
+        if (pos == string::npos) pos = str.length();
+        string token = str.substr(prev, pos-prev);
+        if (!token.empty()) tokens.push_back(token);
+        prev = pos + delim.length();
+    }
+    while (pos < str.length() && prev < str.length());
+    return tokens;
+}
+bool is_path_a_dir(const char* path) //This is a vague check, does not check if a device node or something...
+{
+  struct stat s;
+  if( stat(path,&s) == 0 )
+  {
+      if( s.st_mode & S_IFDIR )
+      {
+          return true;
+      }
+      else if( s.st_mode & S_IFREG )
+      {
+          return false;
+      }
+  }
+}
+/* End Private Functions */
+static void scroll_action(int direction)
+{
+  //printf("Scrolling: %d\n", direction);
+  if (Icon_Array.size() < 1) return;
+  current_focus += (direction * -1) + (6 * direction) * -1;
+  if (current_focus < 0) current_focus = 0;
+  if (current_focus > Icon_Array.size() -1) current_focus = Icon_Array.size() -1;
+  //printf("current_focus: %d\n", current_focus);
+  lv_win_focus(open_dialog_container, Icon_Array[current_focus].container, 0);
+}
+static lv_res_t btnm_back_action(lv_obj_t * btnm)
+{
+  gui_elements_open_dialog_close();
+  vector<string> current_path = split(string(config.post_directory), "/");
+  string new_path = "";
+  if (current_path.size() > 1)
+  {
+    for (size_t x = 0; x < current_path.size() -1; x++)
+    {
+      new_path = new_path + "/" + current_path[x];
+    }
+    static char static_path[2048];
+    sprintf(static_path, "%s", new_path.c_str());
+    config.post_directory = static_path;
+    printf("New Path: %s\n", config.post_directory);
+  }
+  else
+  {
+    static char static_path[2048];
+    sprintf(static_path, "/");
+    config.post_directory = static_path;
+    printf("Root Path: %s\n", config.post_directory);
+  }
+  gui_elements_open_dialog();
+}
+static lv_res_t btnm_refresh_action(lv_obj_t * btnm)
+{
+  gui_elements_open_dialog_close();
+  gui_elements_open_dialog();
+}
 static lv_res_t btnm_close_action(lv_obj_t * btnm)
 {
   gui_elements_open_dialog_close();
 }
 static lv_res_t btn_click_action(lv_obj_t * btn)
 {
-    uint8_t id = lv_obj_get_free_num(btn);;
-    //printf("Button %d is released\n", id);
-    gui_elements_viewer_close_drawing();
+    uint8_t id = lv_obj_get_free_num(btn);
     lv_obj_set_style(Icon_Array[id].button, &lv_style_transp); //Keep the botton from going non-transparent
-    printf("Opening file: %s\n", Icon_Array[id].path.c_str());
-    linuxcnc_program_open(Icon_Array[id].path.c_str());
-    gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
-    gui_elements_open_dialog_close();
+    //printf("Button %d is released\n", id);
+    if (Icon_Array[id].is_folder)
+    {
+      gui_elements_open_dialog_close();
+      static char static_path[2048];
+      if (!strcmp(config.post_directory, "/")) //Don't append another forward slash!
+      {
+        sprintf(static_path, "/%s", Icon_Array[id].name.c_str());
+        config.post_directory = static_path;
+      }
+      else
+      {
+        sprintf(static_path, "%s/%s", config.post_directory, Icon_Array[id].name.c_str());
+        config.post_directory = static_path;
+      }
+
+      gui_elements_open_dialog();
+    }
+    else
+    {
+      gui_elements_viewer_close_drawing();
+      printf("Opening file: %s\n", Icon_Array[id].path.c_str());
+      linuxcnc_program_open(Icon_Array[id].path.c_str());
+      gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
+      gui_elements_open_dialog_close();
+    }
     return LV_RES_OK; /*Return OK if the button is not deleted*/
 }
 
 lv_obj_t *gui_elements_open_dialog(void)
 {
   if (open_dialog_container != NULL) return NULL;
+  current_focus = 0;
   static lv_style_t style;
   lv_style_copy(&style, &lv_style_plain);
   style.body.shadow.width = 3;
@@ -118,12 +216,15 @@ lv_obj_t *gui_elements_open_dialog(void)
   memcpy(&lv_style_btn_pr, &lv_style_transp, sizeof(lv_style_t));
 
   open_dialog_container = lv_win_create(lv_scr_act(), NULL);
-
-  lv_win_set_title(open_dialog_container, "Open Program");
+  std::string window_title = "Open Program - " + string(config.post_directory);
+  lv_win_set_title(open_dialog_container, window_title.c_str());
   lv_obj_set_style(open_dialog_container, &style);     /*Set the new style*/
   lv_obj_set_size(open_dialog_container, LV_HOR_RES /2, (LV_VER_RES /2) + 200);
   lv_obj_align(open_dialog_container, NULL, LV_ALIGN_IN_TOP_LEFT, 100, 200);
+
   lv_win_add_btn(open_dialog_container, SYMBOL_CLOSE, btnm_close_action);
+  lv_win_add_btn(open_dialog_container, SYMBOL_REFRESH, btnm_refresh_action);
+  lv_win_add_btn(open_dialog_container, SYMBOL_LEFT, btnm_back_action);
 
   gui_elements_read_directories();
 
@@ -159,13 +260,16 @@ lv_obj_t *gui_elements_open_dialog(void)
     lv_obj_set_style(Icon_Array[Icon_Array.size()-1].button, &button_style);
     lv_obj_align(Icon_Array[Icon_Array.size()-1].button, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-    if (File_Array[x].name.find(".") != std::string::npos)
+    //if (File_Array[x].name.find(".") != std::string::npos)
+    if (is_path_a_dir(File_Array[x].path.c_str()))
     {
-      lv_img_set_src(Icon_Array[Icon_Array.size()-1].image, &file_icon);
+      lv_img_set_src(Icon_Array[Icon_Array.size()-1].image, &folder_icon);
+      Icon_Array[Icon_Array.size()-1].is_folder = true;
     }
     else
     {
-      lv_img_set_src(Icon_Array[Icon_Array.size()-1].image, &folder_icon);
+      lv_img_set_src(Icon_Array[Icon_Array.size()-1].image, &file_icon);
+      Icon_Array[Icon_Array.size()-1].is_folder = false;
     }
     lv_obj_align(Icon_Array[Icon_Array.size()-1].image, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
 
@@ -182,6 +286,7 @@ lv_obj_t *gui_elements_open_dialog(void)
       y_offset += 130;
     }
   }
+  mouse_set_scroll_callback(&scroll_action);
   return open_dialog_container;
 }
 void gui_elements_read_directories(void)
@@ -197,7 +302,7 @@ void gui_elements_read_directories(void)
      {
         file_struct.path = string(config.post_directory) + "/" + string(epdf->d_name);
         file_struct.name = string(epdf->d_name);
-        if (file_struct.name != "." && file_struct.name != "..")
+        if (file_struct.name != "." && file_struct.name != ".." && file_struct.name[0] != '.')
         {
           //printf("Path: %s, Name: %s\n",file_struct.path.c_str(), file_struct.name.c_str());
           File_Array.push_back(file_struct);
@@ -214,5 +319,6 @@ void gui_elements_open_dialog_close()
     open_dialog_container = NULL;
     File_Array.clear();
     Icon_Array.clear();
+    mouse_disable_scroll_callback();
   }
 }

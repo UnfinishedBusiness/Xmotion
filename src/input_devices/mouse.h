@@ -37,6 +37,10 @@ int mouse_get_current_y(void);
 void mouse_init_(const char*);
 void mouse_tick(void);
 void mouse_close(void);
+
+void mouse_set_scroll_callback(void (*f)(int));
+void mouse_disable_scroll_callback(void);
+
 /**********************
  *      MACROS
  **********************/
