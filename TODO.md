@@ -1,3 +1,50 @@
-* Design INI configuration for Screen Color, Screen Size, Plasma/Router GUI, Keyboard Input Device, Mouse Input Device, etc
-* Figure out LinuxCNC hal interface
-* Viewer plot
+# Open File Dialog
+	- Add Right Click menu implementation
+		* Add right click menu item for file editing (Switch back to text mode and do a system call to nano (or text editor specified by config file)
+		* Add right click menu item for deleting file
+		* Add right click menu item for renaming file
+		* Add right click menu item for copying file
+		* Add right click menu item for pasting file
+		* Add right click menu item for pasting file
+	- Add toolbar button for mounting USB drive
+	- Add toolbar button for unmounting USB drive
+# Viewer Element
+	- Rendering gets slow when zoomed in really far. I believe this is due to rendering lines that become very large even though they are out of view. Solution is to only render what is in view
+		* Do an extents check during the rendering loop. Item needs to be rendered if at least one endpoint or control point is within view
+# LinuxCNC/MachineKit
+	- Figure out how to deal with NML Message differences between 2.6 and 2.7
+		* Should be able to use a VERSION define shared includes
+
+# CNC Control Interface
+	- All Interfaces
+		* Add Current Time & Date
+		* Add Cycle Timer
+		* Add Progam State Indicator
+		* Add Feedrate Overide under Jog Speed
+		* Modal Control buttons need to stay "clicked" when toggled (like Torch On for Ex)
+		* Message Box for Status messages that the user needs to see (Like for Gcode MSG())
+# Navifation Bar
+	- Message Log
+		* Log all messages that the user probably doesn't care about
+	- Remove "Config" button. All configuration will be done in the INI for now
+	- CNC Nav Button
+		* There should be a general config option in the ini that will specify a section for the CNC Nav to be created from.
+		* nav_cnc = plasma_ui | plasma_ui is a config section that will define all the elements and their individual options that create that "UI". This way users can easily customize the UI without
+		having to hard code.
+		* CAD & CAM Nav options are hard coded other than an config option to hide them.
+	- CAD
+		* Implement JetCad. JetCad's core engine will need to be heavily modified and current SVG rendering (for browser) calls will need to be switched to native application calls. JetCad Tools will be the same Javascript
+		file that is being served on the cloud-based system so as to not have to maintain multiple released. The idea is to have the GUI pull for updates periodically... Current Class implementation that is being used in the cloud 
+		needs to be changed to RequireJS module export style because the DukTape VM does not seem to work with Javascript Classes.
+	- CAM
+		* The only reason JetCad's CAM cababilities are not finished is because client-side Javascript just doesn't seem to have the muscle to deal with complicated toolpaths quickly
+		with the current geometry api, most of this is becuase Maker.js's offsetting algorythm is really slow.
+		 I believe the fix for this is to use the Clipper Library, create Javascript Binding interface to clipper.
+		* I want the CAM to work pretty close to the same way as sheetcam but simpler. When a DXF drawing is opened, itterate all the entities and create an array with every closed contour's points. Ideally
+		this will all be done in C/C++ code but will fallback to exporting it off to MakerJS in javascript code if I can't seem to get an efficient chaining algorythm working (Struggled on this
+		3 years ago while developing ProfileCAD).
+		* After All the closed contours are in an array, single click a contour chain and click "i" on keyboard for inside offset, "o" for outside offset, and "n" for no-cut, "c" for cut on center
+		* Click New Operation, window opens. Specify inside, outside, center offset, feedrate, and tool diameter (Tool Library will be down the road, for now we will start simple)
+		* Post Gcode. Post Processor will be a Javascript file and the output will be posted to the "post_directory" ini setting
+ 		
+		
