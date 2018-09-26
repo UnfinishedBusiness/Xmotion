@@ -35,6 +35,9 @@ lv_obj_t *z_abs_dro;
 lv_obj_t *x_static;
 lv_obj_t *y_static;
 lv_obj_t *z_static;
+lv_obj_t *x_abs_static;
+lv_obj_t *y_abs_static;
+lv_obj_t *z_abs_static;
 
 lv_style_t text_style; //DRO Work Coordinates
 lv_style_t small_text_style; //DRO Machine Coordinates
@@ -68,6 +71,9 @@ void gui_elements_dro_homed(void)
   lv_obj_refresh_style(x_static);
   lv_obj_refresh_style(y_static);
   lv_obj_refresh_style(z_static);
+  lv_obj_refresh_style(x_abs_static);
+  lv_obj_refresh_style(y_abs_static);
+  lv_obj_refresh_style(z_abs_static);
 }
 void gui_elements_dro_unhomed(void)
 {
@@ -82,6 +88,9 @@ void gui_elements_dro_unhomed(void)
   lv_obj_refresh_style(x_static);
   lv_obj_refresh_style(y_static);
   lv_obj_refresh_style(z_static);
+  lv_obj_refresh_style(x_abs_static);
+  lv_obj_refresh_style(y_abs_static);
+  lv_obj_refresh_style(z_abs_static);
 }
 void gui_elements_dro_update_wcs(float x, float y, float z)
 {
@@ -151,6 +160,23 @@ lv_obj_t *gui_elements_dro(void)
   lv_obj_set_style(z_static, &text_style);
   lv_label_set_text(z_static, "Z");
   lv_obj_align(z_static, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 230);
+
+  x_abs_static = lv_label_create(dro_container, NULL);
+  lv_obj_set_style(x_abs_static, &small_text_style);
+  lv_label_set_text(x_abs_static, "ABS");
+  lv_obj_align(x_abs_static, NULL, LV_ALIGN_IN_TOP_LEFT, 65, 20);
+
+  y_abs_static = lv_label_create(dro_container, NULL);
+  lv_obj_set_style(y_abs_static, &small_text_style);
+  lv_label_set_text(y_abs_static, "ABS");
+  lv_obj_align(y_abs_static, NULL, LV_ALIGN_IN_TOP_LEFT, 65, 130);
+
+  z_abs_static = lv_label_create(dro_container, NULL);
+  lv_obj_set_style(z_abs_static, &small_text_style);
+  lv_label_set_text(z_abs_static, "ABS");
+  lv_obj_align(z_abs_static, NULL, LV_ALIGN_IN_TOP_LEFT, 65, 240);
+
+
   //Right side, wcs
   x_wcs_dro = lv_label_create(dro_container, NULL);
   lv_obj_set_style(x_wcs_dro, &text_style);
