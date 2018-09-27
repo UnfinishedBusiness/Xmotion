@@ -355,7 +355,7 @@ void gui_elements_viewer_tick(void)
       }
     }
 
-    gui_elements_viewer_set_redraw_flag(); //We need to call this from linuxcnc module when the machine in motion
+     //We need to call this from linuxcnc module when the machine in motion
 
     //printf("MouseX: %d, MouseY in MCS: %d\n", mouse_get_current_x(), (mouse_get_current_y() - LV_VER_RES) * -1);
     mouse_x_mcs = (((float)mouse_get_current_x() - viewer_offset[0]) / viewer_zoom);

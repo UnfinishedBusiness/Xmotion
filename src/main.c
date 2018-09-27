@@ -33,7 +33,10 @@ void kill_main(void)
 {
   kill_main_flag = true;
 }
-
+void delay(int millis)
+{
+  usleep(millis * 1000);
+}
 
 
 int main(void)
@@ -85,24 +88,24 @@ int main(void)
     int linuxcnc_poll_timing = 0;
     int viewer_tick_timing = 0;
     while(kill_main_flag == false) {
-        lv_tick_inc(100);
-        lv_task_handler();
+        lv_tick_inc(1);
+        lv_task_handler(); //Should be called about every 5ms
         keyboard_tick();
         mouse_tick();
         duty_sim_tick();
-        if (linuxcnc_poll_timing > 200)
+        if (linuxcnc_poll_timing > 50)
         {
           linuxcnc_poll_timing = 0;
           linuxcnc_tick();
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
         }
-        if (viewer_tick_timing > 30)
+        if (viewer_tick_timing > 0)
         {
           viewer_tick_timing = 0;
           gui_elements_viewer_tick();
         }
-        usleep(500);
+        delay(1);
         linuxcnc_poll_timing++;
         viewer_tick_timing++;
     }
