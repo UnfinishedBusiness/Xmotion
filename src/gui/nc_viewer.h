@@ -35,10 +35,13 @@ typedef struct
 
 typedef struct {
   lv_obj_t *obj; //address of lv_obj_t
-  viewer_point_t mcs_points[2048];
-  viewer_point_t matrix_points[2048]; //gets rounded down to lv_point_t in viewer_tick
-  lv_point_t coord_points[2048]; //these points are int, non-floating point
+  viewer_point_t mcs_points[1024];
+  viewer_point_t matrix_points[1024]; //gets rounded down to lv_point_t in viewer_tick
+  lv_point_t coord_points[1024]; //these points are int, non-floating point
   int number_of_points;
+
+  lv_point_t clipped_coord_points[1024]; //these points are int, non-floating point
+  int clipped_number_of_points;
 } ViewerEntity;
 
 lv_obj_t *gui_elements_viewer(void);

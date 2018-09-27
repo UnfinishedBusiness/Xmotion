@@ -42,7 +42,6 @@ static lv_style_t style_line_boundry;
 static lv_style_t style_cross_hair;
 std::vector<ViewerEntity> Entities;
 
-
 void prime_viewer_stack()
 {
   viewer_point_t boundry[] = { {0,0}, {0,45}, {45,45}, {45, 0}, {0, 0} };
@@ -217,6 +216,12 @@ size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *
   {
     e.mcs_points[x].x = points[x].x;
     e.mcs_points[x].y = points[x].y;
+
+    e.matrix_points[x].x = ((e.mcs_points[x].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
+    e.matrix_points[x].y = (((e.mcs_points[x].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
+
+    e.coord_points[x].x = (lv_coord_t)round(e.matrix_points[x].x);
+    e.coord_points[x].y = (lv_coord_t)round(e.matrix_points[x].y);
   }
   e.number_of_points = count;
   e.obj = lv_line_create(viewer_container, NULL);
@@ -251,14 +256,6 @@ size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *
     Entities.push_back(e);
     //gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults. Don't call tick, big time waster!
     int a = Entities.size()-1;
-    for (int i = 0; i < e.number_of_points; i++)
-    {
-      e.matrix_points[i].x = ((e.mcs_points[i].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
-      e.matrix_points[i].y = (((e.mcs_points[i].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
-
-      e.coord_points[i].x = (lv_coord_t)round(e.matrix_points[i].x);
-      e.coord_points[i].y = (lv_coord_t)round(e.matrix_points[i].y);
-    }
 
     lv_line_set_points(e.obj, e.coord_points, e.number_of_points);
     DEBUG_PRINT(("\tLine pushed back ok!\n"));
@@ -274,6 +271,7 @@ void gui_elements_viewer_tick(void)
 {
   //DEBUG_PRINT(("Viewer Tick!\n"));
   //printf("x_hair_index: %d, y_hair_index: %d\n", x_hair_index, y_hair_index);
+
   if (viewer_container != NULL && viewer_redraw == true)
   {
     viewer_redraw = false;
@@ -298,6 +296,7 @@ void gui_elements_viewer_tick(void)
       else if (x == machine_boundry)
       {
           //DEBUG_PRINT(("\tStatic Entity translation!"));
+          int points_out_of_bounds = 0;
           for (int i = 0; i < Entities[x].number_of_points; i++)
           {
             //Offset matrix_point for scaling and pan
@@ -306,6 +305,19 @@ void gui_elements_viewer_tick(void)
 
             Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
             Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
+            if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
+            {
+              points_out_of_bounds++;
+            }
+          }
+          if (points_out_of_bounds == Entities[x].number_of_points)
+          {
+            //printf("Entity %d is out of sight!\n");
+            for (int i = 0; i < Entities[x].number_of_points; i++)
+            {
+              Entities[x].coord_points[i].x = 0;
+              Entities[x].coord_points[i].y = 0;
+            }
           }
           //DEBUG_PRINT(("\t\tOK\n"));
           //DEBUG_PRINT(("\t\tSet Points!"));
@@ -315,6 +327,7 @@ void gui_elements_viewer_tick(void)
       else
       {
         //DEBUG_PRINT(("\tStatic Entity translation!"));
+        Entities[x].clipped_number_of_points = 0;
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
           //Offset matrix_point for scaling and pan
@@ -323,13 +336,25 @@ void gui_elements_viewer_tick(void)
 
           Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
           Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
+
+          if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
+          {
+            //Out of bounds!
+          }
+          else
+          {
+            Entities[x].clipped_coord_points[i].x = Entities[x].coord_points[i].x;
+            Entities[x].clipped_coord_points[i].y = Entities[x].coord_points[i].y;
+            Entities[x].clipped_number_of_points++;
+          }
         }
         //DEBUG_PRINT(("\t\tOK\n"));
         //DEBUG_PRINT(("\t\tSet Points!"));
-        lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
+        lv_line_set_points(Entities[x].obj, Entities[x].clipped_coord_points, Entities[x].clipped_number_of_points); //We do this after we use clipper to clip the paths around the view box
         //DEBUG_PRINT(("\t\tOK\n"));
       }
     }
+
     gui_elements_viewer_set_redraw_flag(); //We need to call this from linuxcnc module when the machine in motion
 
     //printf("MouseX: %d, MouseY in MCS: %d\n", mouse_get_current_x(), (mouse_get_current_y() - LV_VER_RES) * -1);
