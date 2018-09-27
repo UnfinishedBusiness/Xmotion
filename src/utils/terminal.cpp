@@ -36,8 +36,11 @@ void terminal_backspace(void)
 {
   if (terminal_container != NULL)
   {
-    cmd_string[strlen(cmd_string) - 1] = '\0';
-    lv_label_set_text(cmd_line, cmd_string);
+    if (strlen(cmd_string) > 0)
+    {
+      cmd_string[strlen(cmd_string) - 1] = '\0';
+      lv_label_set_text(cmd_line, cmd_string);
+    }
   }
 }
 void terminal_enter(void)
@@ -46,6 +49,10 @@ void terminal_enter(void)
 }
 void terminal_open(void)
 {
+  if (terminal_container != NULL)
+  {
+    return; //Don't open another terminal!
+  }
   static lv_style_t style_text_input;
   lv_style_copy(&style_text_input, &lv_style_pretty);
   style_text_input.body.shadow.width = 8;

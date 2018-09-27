@@ -84,7 +84,7 @@ void mouse_tick(void)
     {
       if (left_button_down == 1 && current_x < 1262 && current_y > 87) //Click Dragging
       {
-        gui_elements_viewer_pan_x(event.value);
+        //gui_elements_viewer_pan_x(event.value);
       }
       current_x += event.value;
     }
@@ -92,7 +92,7 @@ void mouse_tick(void)
     {
       if (left_button_down == 1 && current_x < 1262 && current_y > 87)  //Click Dragging
       {
-        gui_elements_viewer_pan_y(event.value);
+        //gui_elements_viewer_pan_y(event.value);
       }
       current_y += event.value;
     }

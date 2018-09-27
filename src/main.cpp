@@ -62,7 +62,7 @@ void task1(void)
       if (viewer_tick_timing > 0)
       {
         viewer_tick_timing = 0;
-        gui_elements_viewer_tick();
+        //gui_elements_viewer_tick();
       }
       delay(1);
       linuxcnc_poll_timing++;
@@ -122,7 +122,8 @@ int main(void)
     while(kill_main_flag == false) {
         lv_tick_inc(1);
         lv_task_handler(); //Should be called about every 5ms
-
+        gui_elements_viewer_tick(); //Must be in the master thread! (Not sure why segfaults occur otherwise)
+        //delay(1);
     }
     t1.join();
     linuxcnc_close();

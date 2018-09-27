@@ -355,8 +355,6 @@ void gui_elements_viewer_tick(void)
       }
     }
 
-     //We need to call this from linuxcnc module when the machine in motion
-
     //printf("MouseX: %d, MouseY in MCS: %d\n", mouse_get_current_x(), (mouse_get_current_y() - LV_VER_RES) * -1);
     mouse_x_mcs = (((float)mouse_get_current_x() - viewer_offset[0]) / viewer_zoom);
     mouse_y_mcs = (((float)mouse_get_current_y() + viewer_offset[1] - (LV_VER_RES - VIEWER_HEIGHT)) / viewer_zoom) * -1;
