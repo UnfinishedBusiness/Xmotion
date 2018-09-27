@@ -4,6 +4,7 @@
 #include "utils/terminal.h"
 #include "utils/gcode_parser.h"
 #include "geometry/geometry.h"
+#include "geometry/clipper.h"
 #include "input_devices/mouse.h"
 #include "main.h"
 
@@ -248,7 +249,18 @@ size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *
     lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
     DEBUG_PRINT(("\tLine obj aligned ok!\n"));
     Entities.push_back(e);
-    gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults
+    //gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults. Don't call tick, big time waster!
+    int a = Entities.size()-1;
+    for (int i = 0; i < e.number_of_points; i++)
+    {
+      e.matrix_points[i].x = ((e.mcs_points[i].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
+      e.matrix_points[i].y = (((e.mcs_points[i].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
+
+      e.coord_points[i].x = (lv_coord_t)round(e.matrix_points[i].x);
+      e.coord_points[i].y = (lv_coord_t)round(e.matrix_points[i].y);
+    }
+
+    lv_line_set_points(e.obj, e.coord_points, e.number_of_points);
     DEBUG_PRINT(("\tLine pushed back ok!\n"));
     return Entities.size() -1;
   }
