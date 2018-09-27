@@ -296,7 +296,7 @@ void gui_elements_viewer_tick(void)
       else if (x == machine_boundry)
       {
           //DEBUG_PRINT(("\tStatic Entity translation!"));
-          int points_out_of_bounds = 0;
+          //int points_out_of_bounds = 0;
           for (int i = 0; i < Entities[x].number_of_points; i++)
           {
             //Offset matrix_point for scaling and pan
@@ -305,12 +305,12 @@ void gui_elements_viewer_tick(void)
 
             Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
             Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
-            if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
+            /*if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
             {
               points_out_of_bounds++;
-            }
+            }*/
           }
-          if (points_out_of_bounds == Entities[x].number_of_points)
+          /*if (points_out_of_bounds == Entities[x].number_of_points)
           {
             //printf("Entity %d is out of sight!\n");
             for (int i = 0; i < Entities[x].number_of_points; i++)
@@ -318,7 +318,7 @@ void gui_elements_viewer_tick(void)
               Entities[x].coord_points[i].x = 0;
               Entities[x].coord_points[i].y = 0;
             }
-          }
+          }*/
           //DEBUG_PRINT(("\t\tOK\n"));
           //DEBUG_PRINT(("\t\tSet Points!"));
           lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points);
@@ -327,7 +327,7 @@ void gui_elements_viewer_tick(void)
       else
       {
         //DEBUG_PRINT(("\tStatic Entity translation!"));
-        Entities[x].clipped_number_of_points = 0;
+        //Entities[x].clipped_number_of_points = 0;
         for (int i = 0; i < Entities[x].number_of_points; i++)
         {
           //Offset matrix_point for scaling and pan
@@ -337,7 +337,7 @@ void gui_elements_viewer_tick(void)
           Entities[x].coord_points[i].x = (lv_coord_t)round(Entities[x].matrix_points[i].x);
           Entities[x].coord_points[i].y = (lv_coord_t)round(Entities[x].matrix_points[i].y);
 
-          if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
+          /*if ((Entities[x].coord_points[i].x > VIEWER_WIDTH || Entities[x].coord_points[i].x < 0) && (Entities[x].coord_points[i].y < VIEWER_HEIGHT || Entities[x].coord_points[i].y > 0))
           {
             //Out of bounds!
           }
@@ -346,11 +346,11 @@ void gui_elements_viewer_tick(void)
             Entities[x].clipped_coord_points[i].x = Entities[x].coord_points[i].x;
             Entities[x].clipped_coord_points[i].y = Entities[x].coord_points[i].y;
             Entities[x].clipped_number_of_points++;
-          }
+          }*/
         }
         //DEBUG_PRINT(("\t\tOK\n"));
         //DEBUG_PRINT(("\t\tSet Points!"));
-        lv_line_set_points(Entities[x].obj, Entities[x].clipped_coord_points, Entities[x].clipped_number_of_points); //We do this after we use clipper to clip the paths around the view box
+        lv_line_set_points(Entities[x].obj, Entities[x].coord_points, Entities[x].number_of_points); //We do this after we use clipper to clip the paths around the view box
         //DEBUG_PRINT(("\t\tOK\n"));
       }
     }
