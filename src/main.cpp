@@ -46,27 +46,20 @@ void delay(int millis)
 void task1(void)
 {
     int linuxcnc_poll_timing = 0;
-    int viewer_tick_timing = 0;
     while(kill_main_flag == false)
     {
       keyboard_tick();
       mouse_tick();
       duty_sim_tick();
-      if (linuxcnc_poll_timing > 50)
+      if (linuxcnc_poll_timing > 100)
       {
         linuxcnc_poll_timing = 0;
         linuxcnc_tick();
         gui_elements_dro_tick();
         gui_elements_indicators_tick();
       }
-      if (viewer_tick_timing > 0)
-      {
-        viewer_tick_timing = 0;
-        //gui_elements_viewer_tick();
-      }
       delay(1);
       linuxcnc_poll_timing++;
-      viewer_tick_timing++;
     }
 }
 

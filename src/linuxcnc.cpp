@@ -1,5 +1,6 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
+#include "gui/nc_viewer.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -557,6 +558,10 @@ void linuxcnc_tick()
   }
   if (poll_status())
   {
+    if (linuxcnc_position.mcs.x != emcStatus->motion.traj.actualPosition.tran.x || linuxcnc_position.mcs.y != emcStatus->motion.traj.actualPosition.tran.y || linuxcnc_position.mcs.z != emcStatus->motion.traj.actualPosition.tran.z)
+    {
+      gui_elements_viewer_set_redraw_flag();
+    }
     linuxcnc_position.mcs.x = emcStatus->motion.traj.actualPosition.tran.x;
     linuxcnc_position.mcs.y = emcStatus->motion.traj.actualPosition.tran.y;
     linuxcnc_position.mcs.z = emcStatus->motion.traj.actualPosition.tran.z;
