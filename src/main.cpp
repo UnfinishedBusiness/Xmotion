@@ -28,6 +28,12 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
+#include <string>
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
 bool kill_main_flag = false;
 void kill_main(void)
 {
@@ -36,6 +42,32 @@ void kill_main(void)
 void delay(int millis)
 {
   usleep(millis * 1000);
+}
+void task1(void)
+{
+    int linuxcnc_poll_timing = 0;
+    int viewer_tick_timing = 0;
+    while(kill_main_flag == false)
+    {
+      keyboard_tick();
+      mouse_tick();
+      duty_sim_tick();
+      if (linuxcnc_poll_timing > 50)
+      {
+        linuxcnc_poll_timing = 0;
+        linuxcnc_tick();
+        gui_elements_dro_tick();
+        gui_elements_indicators_tick();
+      }
+      if (viewer_tick_timing > 0)
+      {
+        viewer_tick_timing = 0;
+        gui_elements_viewer_tick();
+      }
+      delay(1);
+      linuxcnc_poll_timing++;
+      viewer_tick_timing++;
+    }
 }
 
 
@@ -85,30 +117,14 @@ int main(void)
 
     gui_cnc_control_create();
 
-    int linuxcnc_poll_timing = 0;
-    int viewer_tick_timing = 0;
+    thread t1(task1);
+
     while(kill_main_flag == false) {
         lv_tick_inc(1);
         lv_task_handler(); //Should be called about every 5ms
-        keyboard_tick();
-        mouse_tick();
-        duty_sim_tick();
-        if (linuxcnc_poll_timing > 50)
-        {
-          linuxcnc_poll_timing = 0;
-          linuxcnc_tick();
-          gui_elements_dro_tick();
-          gui_elements_indicators_tick();
-        }
-        if (viewer_tick_timing > 0)
-        {
-          viewer_tick_timing = 0;
-          gui_elements_viewer_tick();
-        }
-        delay(1);
-        linuxcnc_poll_timing++;
-        viewer_tick_timing++;
+
     }
+    t1.join();
     linuxcnc_close();
     gui_cnc_control_close();
     hardware_utils_set_text_mode();
