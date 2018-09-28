@@ -27,6 +27,7 @@ extern "C" {
  * NAV PROTOTYPES
  **********************/
 lv_obj_t *gui_elements_nav(void);
+void gui_elements_nav_tick();
 void gui_elements_nav_close();
 
 

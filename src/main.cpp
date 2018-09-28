@@ -112,11 +112,18 @@ int main(void)
     gui_cnc_control_create();
 
     thread t1(task1);
-    int linuxcnc_poll_timing = 0;
-    while(kill_main_flag == false) {
+    int nav_tick_timing = 0;
+    while(kill_main_flag == false)
+    {
         lv_tick_inc(1);
         lv_task_handler(); //Should be called about every 5ms
+        if (nav_tick_timing > 1000)
+        {
+          nav_tick_timing = 0;
+          gui_elements_nav_tick();
+        }
         gui_elements_viewer_tick(); //Must be in the master thread! (Not sure why segfaults occur otherwise)
+        nav_tick_timing++;
         //delay(1);
     }
     t1.join();
