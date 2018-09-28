@@ -1,7 +1,3 @@
-# CNC Control Interface
-	- All Interfaces
-		* Message Box for Status messages that the user needs to see (Like for Gcode MSG()) (New Element)
-
 # Backend
 	- Automatically Determine Keyboard and Mouse event files so they don't have to be set in ini
 	- Handle Ctr-Alt-Fx inputs to switch to virtual terminals
@@ -21,6 +17,7 @@
 	- Figure out how to deal with NML Message differences between 2.6 and 2.7
 		* Should be able to use a VERSION define shared includes
 	- Integrate BeagleG motion controller so Xmotion on the Xmotion Main Board (1Ghz ARM + 2 PRU units) is a fully integrated motion controller (LinuxCNC/MachineKit not needed)
+	- Jog Step Controls need to be implemented
 
 # Navifation Bar
 	- Message Log

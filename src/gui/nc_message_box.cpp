@@ -35,20 +35,18 @@ bool message_box_timer_enabled;
 
 using namespace std;
 
-message_t message;
 
 void gui_elements_message_box_push(int width, int height, const char *msg, int posx, int posy, int timeout)
 {
-  message.width = width;
-  message.height = height;
-  message.msg = msg;
-  message.posx = posx;
-  message.posy = posy;
-  message.timeout = timeout;
-  message.active = true;
+  gui_elements_message_box(width, height, msg, posx, posy);
+  gui_elements_message_box_timeout(timeout);
 }
-lv_obj_t *gui_elements_message_box(int width, int height, const char *msg, int posx, int posy)
+void gui_elements_message_box(int width, int height, const char *msg, int posx, int posy)
 {
+  if (message_box_container != NULL)
+  {
+    return; //only one message box open at a time!
+  }
   message_box_timer_enabled = false;
   message_box_timer_timeout = 0;
   lv_style_copy(&message_text_style, &lv_style_plain);
@@ -69,9 +67,9 @@ lv_obj_t *gui_elements_message_box(int width, int height, const char *msg, int p
   lv_obj_set_size(message_box_container, width, height);
   lv_obj_align(message_box_container, NULL, LV_ALIGN_IN_TOP_LEFT, posx, posy);
   //Left Side
-  static lv_obj_t *msg_label = lv_label_create(message_box_container, NULL);
+  lv_obj_t *msg_label = lv_label_create(message_box_container, NULL);
   lv_obj_set_style(msg_label, &message_text_style);
-  lv_label_set_text(msg_label, message.msg);
+  lv_label_set_text(msg_label, msg);
   lv_obj_align(msg_label, NULL, LV_ALIGN_IN_LEFT_MID, 10, 0);
 }
 void gui_elements_message_box_close()
@@ -98,13 +96,6 @@ void gui_elements_message_box_tick(void)
 {
   if (message_box_container != NULL)
   {
-    if (message.active == true)
-    {
-      printf("Opening message box!\n");
-      message.active = false;
-      gui_elements_message_box(message.width, message.height, message.msg, message.posx, message.posy);
-      gui_elements_message_box_timeout(message.timeout);
-    }
     if (message_box_timer_enabled == true)
     {
       if (current_seconds_timestamp() > message_box_timer_timeout)

@@ -110,8 +110,9 @@ int main(void)
 
     gui_cnc_control_create();
 
-    thread t1(task1);
+    //thread t1(task1);
     int nav_tick_timing = 0;
+    int linuxcnc_poll_timing = 0;
     while(kill_main_flag == false)
     {
         lv_tick_inc(1);
@@ -123,11 +124,22 @@ int main(void)
           gui_elements_message_box_tick();
         }
         keyboard_tick();
-        gui_elements_viewer_tick(); //Must be in the master thread! (Not sure why segfaults occur otherwise)
+        gui_elements_viewer_tick();
+        mouse_tick();
+        duty_sim_tick();
+        if (linuxcnc_poll_timing > 100)
+        {
+          linuxcnc_poll_timing = 0;
+          linuxcnc_tick();
+          gui_elements_dro_tick();
+          gui_elements_indicators_tick();
+        }
+        //delay(1);
+        linuxcnc_poll_timing++;
         nav_tick_timing++;
         //delay(1);
     }
-    t1.join();
+    //t1.join();
     linuxcnc_close();
     gui_cnc_control_close();
     hardware_utils_set_text_mode();

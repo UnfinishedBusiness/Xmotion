@@ -578,7 +578,7 @@ void linuxcnc_tick()
     printf("error_string: %s\n", error_string);
     if (strlen(error_string) > 1)
     {
-      gui_elements_message_box_push(800, 60, error_string, 10, 10, 5);
+      gui_elements_message_box_push(800, 60, error_string, 10, 10, 1);
     }
 
   }

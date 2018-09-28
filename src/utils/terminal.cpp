@@ -129,7 +129,7 @@ void terminal_eval(char cmd[2048])
   }
   else if (!strcmp(cmd, "msgtest"))
   {
-    gui_elements_message_box_push(800, 60, "Test Message!", 10, 10, 5);
+    gui_elements_message_box_push(800, 60, "Test Message!", 10, 10, 1);
   }
   else if (!strcmp(cmd, "dro=true"))
   {

@@ -89,6 +89,6 @@ void duty_sim_tick(void)
     linuxcnc_position.dro.y = b;
     linuxcnc_position.dro.z = c;
     gui_elements_viewer_set_redraw_flag();
-    usleep(1000);
+    //usleep(1000);
   }
 }
