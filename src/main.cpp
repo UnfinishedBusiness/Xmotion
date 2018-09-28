@@ -48,7 +48,6 @@ void task1(void)
     int linuxcnc_poll_timing = 0;
     while(kill_main_flag == false)
     {
-      keyboard_tick();
       mouse_tick();
       duty_sim_tick();
       if (linuxcnc_poll_timing > 100)
@@ -121,7 +120,9 @@ int main(void)
         {
           nav_tick_timing = 0;
           gui_elements_nav_tick();
+          gui_elements_message_box_tick();
         }
+        keyboard_tick();
         gui_elements_viewer_tick(); //Must be in the master thread! (Not sure why segfaults occur otherwise)
         nav_tick_timing++;
         //delay(1);

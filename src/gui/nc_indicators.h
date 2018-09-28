@@ -1,5 +1,5 @@
 #ifndef NC_INDICATORS_H
-#define NCINDICATORSS_H
+#define NC_INDICATORS_H
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,6 +2,7 @@
 #include "config/handler.h"
 #include "gui/nc_viewer.h"
 #include "gui/nc_dro.h"
+#include "gui/nc_message_box.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -575,6 +576,11 @@ void linuxcnc_tick()
     printf("operator_text_string: %s\n", operator_text_string);
     printf("operator_display_string: %s\n", operator_display_string);
     printf("error_string: %s\n", error_string);
+    if (strlen(error_string) > 1)
+    {
+      gui_elements_message_box_push(800, 60, error_string, 10, 10, 5);
+    }
+
   }
   if (poll_status())
   {

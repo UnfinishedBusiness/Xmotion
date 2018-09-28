@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "utils/hardware_utils.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -39,38 +40,7 @@ lv_obj_t *nav_timer_label;
 lv_style_t nav_text_style;
 size_t nav_timer_ms;
 long long nav_timer_stamp;
-const std::string currentDateTime()
-{
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
-    // for more information about date/time format
-    strftime(buf, sizeof(buf), "%r", &tstruct);
 
-    return string(buf);
-}
-const std::string millisToHuman(size_t milliseconds)
-{
-  int seconds = milliseconds / 1000;
-  milliseconds %= 1000;
-  int minutes = seconds / 60;
-  seconds %= 60;
-  int hours = minutes / 60;
-  minutes %= 60;
-  char human_string[100];
-  sprintf(human_string, "%d:%d:%d", hours, minutes, seconds);
-  return string(human_string);
-}
-long long current_timestamp()
-{
-    struct timeval te;
-    gettimeofday(&te, NULL); // get current time
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
-    // printf("milliseconds: %lld\n", milliseconds);
-    return milliseconds;
-}
 static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
 {
   printf("Button: %s released\n", txt);

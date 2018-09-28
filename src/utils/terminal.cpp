@@ -116,6 +116,7 @@ void terminal_set_output_text(char* text)
 }
 void terminal_eval(char cmd[2048])
 {
+
   if (!strcmp(cmd, "sim=true"))
   {
     duty_sim_dro(true);
@@ -125,6 +126,10 @@ void terminal_eval(char cmd[2048])
   {
     duty_sim_dro(false);
     terminal_set_output_text("SIM off!");
+  }
+  else if (!strcmp(cmd, "msgtest"))
+  {
+    gui_elements_message_box_push(800, 60, "Test Message!", 10, 10, 5);
   }
   else if (!strcmp(cmd, "dro=true"))
   {

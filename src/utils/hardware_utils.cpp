@@ -12,6 +12,14 @@
 #include <linux/input.h>
 #include <linux/kd.h>
 
+
+#include <iostream>
+#include <cstdlib>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
 int tty;
 
 void hardware_utils_set_graphics_mode(void)
@@ -75,4 +83,45 @@ void hardware_utils_print_screensize(void)
   screensize = vinfo.yres_virtual * finfo.line_length;
   //printf("screensize: %d\n",screensize);
   close(fbfd);
+}
+
+const std::string currentDateTime()
+{
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%r", &tstruct);
+
+    return string(buf);
+}
+const std::string millisToHuman(size_t milliseconds)
+{
+  int seconds = milliseconds / 1000;
+  milliseconds %= 1000;
+  int minutes = seconds / 60;
+  seconds %= 60;
+  int hours = minutes / 60;
+  minutes %= 60;
+  char human_string[100];
+  sprintf(human_string, "%d:%d:%d", hours, minutes, seconds);
+  return string(human_string);
+}
+long long current_timestamp()
+{
+    struct timeval te;
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds;
+}
+long long current_seconds_timestamp()
+{
+    struct timeval te;
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
+    // printf("milliseconds: %lld\n", milliseconds);
+    return milliseconds / 1000;
 }

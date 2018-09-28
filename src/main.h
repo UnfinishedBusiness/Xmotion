@@ -1,8 +1,3 @@
-/**
- * @file keyboard.h
- *
- */
-
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -15,6 +10,11 @@ extern "C" {
 #else
 # define DEBUG_PRINT(x) do {} while (0)
 #endif
+
+/*********************
+ *      INCLUDES
+ *********************/
+
 /*********************
  *      DEFINES
  *********************/
@@ -31,6 +31,7 @@ extern "C" {
  * Create a keyboard application
  */
 void kill_main(void);
+void delay(int);
 /**********************
  *      MACROS
  **********************/
