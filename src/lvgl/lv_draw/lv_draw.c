@@ -1,6 +1,6 @@
 /**
  * @file lv_draw.c
- * 
+ *
  */
 
 /*********************
@@ -111,7 +111,7 @@ static void (*map_fp)(const lv_area_t * cords_p, const lv_area_t * mask_p,
  **********************/
 
 /**
- * Draw a rectangle 
+ * Draw a rectangle
  * @param coords the coordinates of the rectangle
  * @param mask the rectangle will be drawn only in this mask
  * @param style pointer to a style
@@ -131,8 +131,8 @@ void lv_draw_rect(const lv_area_t * coords, const lv_area_t * mask, const lv_sty
         if(style->body.radius != 0) {
             lv_draw_rect_main_corner(coords, mask, style);
         }
-    } 
-    
+    }
+
     if(style->body.border.width != 0 && style->body.border.part != LV_BORDER_NONE) {
         lv_draw_rect_border_straight(coords, mask, style);
 
@@ -263,7 +263,6 @@ void lv_draw_triangle(const lv_point_t * points, const lv_area_t * mask, lv_colo
 void lv_draw_label(const lv_area_t * coords,const lv_area_t * mask, const lv_style_t * style,
                     const char * txt, lv_txt_flag_t flag, lv_point_t * offset)
 {
-
     const lv_font_t * font = style->text.font;
     lv_coord_t w;
     if((flag & LV_TXT_FLAG_EXPAND) == 0) {

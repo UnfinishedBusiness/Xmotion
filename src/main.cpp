@@ -41,7 +41,7 @@ void kill_main(void)
 }
 void delay(int millis)
 {
-  usleep(millis * 1000);
+  usleep(millis * 300);
 }
 void task1(void)
 {
@@ -58,8 +58,9 @@ void task1(void)
         gui_elements_dro_tick();
         gui_elements_indicators_tick();
       }
-      delay(1);
+      //delay(1);
       linuxcnc_poll_timing++;
+      delay(1);
     }
 }
 
@@ -111,7 +112,7 @@ int main(void)
     gui_cnc_control_create();
 
     thread t1(task1);
-
+    int linuxcnc_poll_timing = 0;
     while(kill_main_flag == false) {
         lv_tick_inc(1);
         lv_task_handler(); //Should be called about every 5ms

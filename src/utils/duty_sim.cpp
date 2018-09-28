@@ -1,4 +1,5 @@
 #include "duty_sim.h"
+#include "gui/nc_viewer.h"
 #include "linuxcnc.h"
 
 #include <stdlib.h>
@@ -84,7 +85,10 @@ void duty_sim_tick(void)
     linuxcnc_position.mcs.x = a;
     linuxcnc_position.mcs.y = b;
     linuxcnc_position.mcs.z = c;
-    gui_elements_dro_update_wcs(a, b, c);
-    //gui_elements_dro_update_abs(d, e, f);
+    linuxcnc_position.dro.x = a;
+    linuxcnc_position.dro.y = b;
+    linuxcnc_position.dro.z = c;
+    gui_elements_viewer_set_redraw_flag();
+    usleep(1000);
   }
 }
