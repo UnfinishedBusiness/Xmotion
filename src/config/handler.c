@@ -45,7 +45,7 @@ static int config_handler(void* conf, const char* section, const char* name, con
     {
         pconfig->max_jog_speed = atof(value);
     }
-    else if (MATCH("motion", "max_jog_speed"))
+    else if (MATCH("motion", "default_jog_speed"))
     {
         pconfig->default_jog_speed = atof(value);
     }

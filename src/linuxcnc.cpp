@@ -1,6 +1,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "gui/nc_viewer.h"
+#include "gui/nc_dro.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -468,15 +469,36 @@ void linuxcnc_jog_mode()
   sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
   PyRun_SimpleString(cmd);
   //wait_complete();
+  gui_elements_dro_set_machine_state_indicator(DRO_JOG_MODE);
+  #endif
+}
+void linuxcnc_auto_mode()
+{
+  SIM_BREAK;
+  #ifndef SIM_MODE
+  char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
+  PyRun_SimpleString(cmd);
+  //wait_complete();
+  gui_elements_dro_set_machine_state_indicator(DRO_AUTO_MODE);
+  #endif
+}
+void linuxcnc_mdi_mode()
+{
+  SIM_BREAK;
+  #ifndef SIM_MODE
+  char cmd[1024];
+  sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
+  PyRun_SimpleString(cmd);
+  //wait_complete();
+  gui_elements_dro_set_machine_state_indicator(DRO_MDI_MODE);
   #endif
 }
 void linuxcnc_home_axis(int axis)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  char cmd[1024];
-  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
-  PyRun_SimpleString(cmd);
+  linuxcnc_jog_mode();
   wait_complete();
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
@@ -487,9 +509,7 @@ void linuxcnc_unhome_axis(int axis)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  char cmd[1024];
-  sprintf(cmd, "c.mode(linuxcnc.MODE_MANUAL)\n");
-  PyRun_SimpleString(cmd);
+  linuxcnc_jog_mode();
   wait_complete();
   sprintf(cmd, "c.unhome(%d)\n", axis);
   PyRun_SimpleString(cmd);
@@ -500,9 +520,7 @@ void linuxcnc_mdi(char *mdi)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  char cmd[1024];
-  sprintf(cmd, "c.mode(linuxcnc.MODE_MDI)\n");
-  PyRun_SimpleString(cmd);
+  linuxcnc_mdi_mode();
   wait_complete();
   sprintf(cmd, "c.mdi(\"%s\")\n", mdi);
   PyRun_SimpleString(cmd);
@@ -517,15 +535,14 @@ void linuxcnc_abort(void)
   char cmd[1024];
   sprintf(cmd, "c.abort()\n");
   PyRun_SimpleString(cmd);
+  gui_elements_dro_set_machine_state_indicator(DRO_ABORT_MODE);
   #endif
 }
 void linuxcnc_program_open(const char *file)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  char cmd[1024];
-  sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
-  PyRun_SimpleString(cmd);
+  linuxcnc_auto_mode();
   wait_complete();
   sprintf(cmd, "c.reset_interpreter()\n");
   PyRun_SimpleString(cmd);
@@ -539,9 +556,7 @@ void linuxcnc_cycle_start(int start_line)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  char cmd[1024];
-  sprintf(cmd, "c.mode(linuxcnc.MODE_AUTO)\n");
-  PyRun_SimpleString(cmd);
+  linuxcnc_auto_mode();
   sprintf(cmd, "c.auto(linuxcnc.AUTO_RUN, %d)\n", start_line);
   PyRun_SimpleString(cmd);
   #endif

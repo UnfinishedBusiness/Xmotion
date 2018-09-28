@@ -25,6 +25,8 @@
 #define DRO_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define DRO_UNHOMED_TEXT_COLOR LV_COLOR_MAKE(255, 0, 0);
 #define DRO_HOMED_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
+#define DRO_MODE_TEXT_COLOR LV_COLOR_MAKE(255, 255, 255);
+
 lv_obj_t *dro_container;
 lv_obj_t *x_wcs_dro;
 lv_obj_t *y_wcs_dro;
@@ -39,9 +41,24 @@ lv_obj_t *x_abs_static;
 lv_obj_t *y_abs_static;
 lv_obj_t *z_abs_static;
 
+lv_obj_t *dro_mode_static;
+lv_obj_t *dro_mode;
+
+
 lv_style_t text_style; //DRO Work Coordinates
 lv_style_t small_text_style; //DRO Machine Coordinates
+lv_style_t mode_text_style; //DRO Machine Coordinates
 
+void gui_elements_dro_set_machine_state_indicator(int mode)
+{
+  if (dro_container != NULL)
+  {
+    if (mode == DRO_JOG_MODE) lv_label_set_text(dro_mode, "Manual");
+    if (mode == DRO_AUTO_MODE) lv_label_set_text(dro_mode, "Auto");
+    if (mode == DRO_MDI_MODE) lv_label_set_text(dro_mode, "MDI");
+    if (mode == DRO_ABORT_MODE) lv_label_set_text(dro_mode, "Aborted");
+  }
+}
 void gui_elements_dro_tick(void)
 {
   if (dro_container != NULL)
@@ -128,6 +145,10 @@ lv_obj_t *gui_elements_dro(void)
   small_text_style.text.color = DRO_UNHOMED_TEXT_COLOR;
   small_text_style.text.font = &lv_font_dejavu_10;
 
+  lv_style_copy(&mode_text_style, &lv_style_plain);
+  mode_text_style.text.color = DRO_MODE_TEXT_COLOR;
+  mode_text_style.text.font = &lv_font_dejavu_20;
+
   lv_style_copy(&text_style, &lv_style_plain);
   text_style.text.color = DRO_UNHOMED_TEXT_COLOR;
   text_style.text.font = &lv_font_dejavu_40;
@@ -209,6 +230,16 @@ lv_obj_t *gui_elements_dro(void)
   lv_label_set_text(z_abs_dro, "0.0000");
   lv_obj_align(z_abs_dro, NULL, LV_ALIGN_IN_TOP_LEFT, 60, 250);
 
+
+  dro_mode_static = lv_label_create(dro_container, NULL);
+  lv_obj_set_style(dro_mode_static, &mode_text_style);
+  lv_label_set_text(dro_mode_static, "Mode");
+  lv_obj_align(dro_mode_static, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 10, -5);
+
+  dro_mode = lv_label_create(dro_container, NULL);
+  lv_obj_set_style(dro_mode, &mode_text_style);
+  lv_label_set_text(dro_mode, "Manual");
+  lv_obj_align(dro_mode, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -5);
 
   return dro_container;
 }

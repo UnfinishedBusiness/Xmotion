@@ -29,11 +29,27 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 #define JOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define JOG_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *controls_container;
-static lv_res_t slider_action(lv_obj_t * slider)
+lv_obj_t *jog_speed_label;
+char jog_speed_label_text[100];
+lv_obj_t *feed_rate_label;
+char feed_rate_label_text[100];
+
+static lv_res_t jog_slider_action(lv_obj_t * slider)
 {
     //printf("New slider value: %d\n", lv_slider_get_value(slider));
     float jog_speed = mapfloat((float)lv_slider_get_value(slider), 0, 100, 0, config.max_jog_speed);
+    sprintf(jog_speed_label_text, "Jog Speed - %d IPM", (int)round(jog_speed));
     linuxcnc_set_jog_speed(jog_speed);
+    lv_label_set_text(jog_speed_label, jog_speed_label_text);
+    return LV_RES_OK;
+}
+static lv_res_t feed_slider_action(lv_obj_t * slider)
+{
+    //printf("New slider value: %d\n", lv_slider_get_value(slider));
+    float feed_rate = (float)lv_slider_get_value(slider);
+    sprintf(feed_rate_label_text, "Feed Rate - %d%%", (int)round(feed_rate));
+    //linuxcnc_set_feed_rate_overide(feed_rate);
+    lv_label_set_text(feed_rate_label, feed_rate_label_text);
     return LV_RES_OK;
 }
 /*Called when a button is released or long pressed*/
@@ -103,11 +119,6 @@ lv_obj_t *gui_elements_controls(void)
   jog_slider_style.body.grad_color = JOG_BACKGROUND_COLOR;
   jog_slider_style.body.radius = LV_RADIUS_CIRCLE;
 
-  lv_obj_t *jog_slider_container = lv_cont_create(lv_scr_act(), NULL);
-  lv_obj_set_style(jog_slider_container, &jog_slider_style);     /*Set the new style*/
-  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
-  lv_obj_set_size(jog_slider_container, 400, 100);
-  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 330);
   /*Create a bar, an indicator and a knob style*/
   static lv_style_t style_bg;
   static lv_style_t style_indic;
@@ -133,20 +144,51 @@ lv_obj_t *gui_elements_controls(void)
   style_knob.body.opa = LV_OPA_70;
   style_knob.body.padding.ver = 10 ;
 
+  static lv_obj_t *jog_slider_container = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(jog_slider_container, &jog_slider_style);     /*Set the new style*/
+  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
+  lv_obj_set_size(jog_slider_container, 400, 75);
+  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 560);
   /*Create a slider*/
-  lv_obj_t * slider2 = lv_slider_create(lv_scr_act(), NULL);
-  lv_slider_set_style(slider2, LV_SLIDER_STYLE_BG, &style_bg);
-  lv_slider_set_style(slider2, LV_SLIDER_STYLE_INDIC,&style_indic);
-  lv_slider_set_style(slider2, LV_SLIDER_STYLE_KNOB, &style_knob);
-  lv_slider_set_action(slider2, slider_action);
-  lv_obj_align(slider2, NULL, LV_ALIGN_IN_TOP_RIGHT, -100, 370);
-  float jog_speed = mapfloat(config.default_jog_speed, 0, config.max_jog_speed, 0, 100);
-  lv_slider_set_value (slider2, (int)jog_speed);
+  lv_obj_t *jog_speed_slider = lv_slider_create(jog_slider_container, NULL);
+  lv_slider_set_style(jog_speed_slider, LV_SLIDER_STYLE_BG, &style_bg);
+  lv_slider_set_style(jog_speed_slider, LV_SLIDER_STYLE_INDIC,&style_indic);
+  lv_slider_set_style(jog_speed_slider, LV_SLIDER_STYLE_KNOB, &style_knob);
+  lv_slider_set_action(jog_speed_slider, jog_slider_action);
+  lv_obj_align(jog_speed_slider, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  float jog_speed = config.default_jog_speed;
+  lv_slider_set_value (jog_speed_slider, (int)mapfloat((float)jog_speed, 0, config.max_jog_speed, 0, 100));
 
   /*Create a label*/
-  lv_obj_t * slider2_label = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text(slider2_label, "Jog Speed");
-  lv_obj_align(slider2_label, slider2, LV_ALIGN_IN_TOP_MID, 0, -25);
+  jog_speed_label = lv_label_create(jog_slider_container, NULL);
+  sprintf(jog_speed_label_text, "Jog Speed - %d IPM", (int)round(jog_speed));
+  lv_label_set_text(jog_speed_label, jog_speed_label_text);
+  lv_obj_align(jog_speed_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
+
+
+
+
+
+  static lv_obj_t *feed_rate_container = lv_cont_create(lv_scr_act(), NULL);
+  lv_obj_set_style(feed_rate_container, &jog_slider_style);     /*Set the new style*/
+  //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
+  lv_obj_set_size(feed_rate_container, 400, 75);
+  lv_obj_align(feed_rate_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 465);
+  /*Create a slider*/
+  lv_obj_t *feed_rate_slider = lv_slider_create(feed_rate_container, NULL);
+  lv_slider_set_style(feed_rate_slider, LV_SLIDER_STYLE_BG, &style_bg);
+  lv_slider_set_style(feed_rate_slider, LV_SLIDER_STYLE_INDIC,&style_indic);
+  lv_slider_set_style(feed_rate_slider, LV_SLIDER_STYLE_KNOB, &style_knob);
+  lv_slider_set_action(feed_rate_slider, feed_slider_action);
+  lv_obj_align(feed_rate_slider, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  float feed_rate = 100; //100% Percent default!
+  lv_slider_set_value (feed_rate_slider, (int)feed_rate);
+
+  /*Create a label*/
+  feed_rate_label = lv_label_create(feed_rate_container, NULL);
+  sprintf(feed_rate_label_text, "Feed Rate - %d%%", (int)round(feed_rate));
+  lv_label_set_text(feed_rate_label, feed_rate_label_text);
+  lv_obj_align(feed_rate_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
 
   /*Create a button descriptor string array*/
   static const char * btnm_map[] = {"\224Continuous", "\2220.1", "\2220.01", "\2220.001", "\n",
@@ -187,7 +229,7 @@ lv_obj_t *gui_elements_controls(void)
   lv_btnm_set_style(btnm2, LV_BTNM_STYLE_BTN_PR, &style_btn_pr);
   lv_btnm_set_map(btnm2, btnm_map);
   lv_btnm_set_action(btnm2, btnm_action);
-  lv_obj_set_size(btnm2, 400, 490);
+  lv_obj_set_size(btnm2, 400, 380);
   lv_obj_align(btnm2, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
 
   return controls_container;

@@ -14,7 +14,10 @@ extern "C" {
 /*********************
  *      DEFINES
  *********************/
-
+#define DRO_JOG_MODE 0
+#define DRO_AUTO_MODE 1
+#define DRO_MDI_MODE 2
+#define DRO_ABORT_MODE 3
 /**********************
  *      TYPEDEFS
  **********************/
@@ -29,6 +32,7 @@ extern "C" {
 lv_obj_t *gui_elements_dro(void);
 void gui_elements_dro_update_wcs(float, float, float);
 void gui_elements_dro_update_abs(float, float, float);
+void gui_elements_dro_set_machine_state_indicator(int);
 void gui_elements_dro_tick(void);
 void gui_elements_dro_close();
 void gui_elements_dro_homed(void);

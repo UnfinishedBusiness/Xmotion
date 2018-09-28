@@ -1,7 +1,5 @@
 # CNC Control Interface
 	- All Interfaces
-		* Add Progam State Indicator (DRO Element)
-		* Add Feedrate Overide under Jog Speed (Controls Element)
 		* Modal Control buttons need to stay "clicked" when toggled (like Torch On for Ex) (Controls Element)
 		* Message Box for Status messages that the user needs to see (Like for Gcode MSG()) (New Element)
 

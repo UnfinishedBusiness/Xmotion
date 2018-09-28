@@ -121,8 +121,8 @@ lv_obj_t *gui_elements_indicators(void)
   indicators_container = lv_cont_create(lv_scr_act(), NULL);
   lv_obj_set_style(indicators_container, &style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
-  lv_obj_set_size(indicators_container, 360, 80);
-  lv_obj_align(indicators_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -30, 450);
+  lv_obj_set_size(indicators_container, 400, 80);
+  lv_obj_align(indicators_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 320);
 
   /*Create a style for the LEDs*/
   static lv_style_t style_led;
