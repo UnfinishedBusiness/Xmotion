@@ -500,6 +500,7 @@ void linuxcnc_home_axis(int axis)
   #ifndef SIM_MODE
   linuxcnc_jog_mode();
   wait_complete();
+  char cmd[1024];
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
@@ -511,6 +512,7 @@ void linuxcnc_unhome_axis(int axis)
   #ifndef SIM_MODE
   linuxcnc_jog_mode();
   wait_complete();
+  char cmd[1024];
   sprintf(cmd, "c.unhome(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
@@ -522,6 +524,7 @@ void linuxcnc_mdi(char *mdi)
   #ifndef SIM_MODE
   linuxcnc_mdi_mode();
   wait_complete();
+  char cmd[1024];
   sprintf(cmd, "c.mdi(\"%s\")\n", mdi);
   PyRun_SimpleString(cmd);
   //wait_complete();
@@ -544,6 +547,7 @@ void linuxcnc_program_open(const char *file)
   #ifndef SIM_MODE
   linuxcnc_auto_mode();
   wait_complete();
+  char cmd[1024];
   sprintf(cmd, "c.reset_interpreter()\n");
   PyRun_SimpleString(cmd);
   printf("linuxcnc_program_open: %s\n", file);
@@ -557,6 +561,7 @@ void linuxcnc_cycle_start(int start_line)
   SIM_BREAK;
   #ifndef SIM_MODE
   linuxcnc_auto_mode();
+  char cmd[1024];
   sprintf(cmd, "c.auto(linuxcnc.AUTO_RUN, %d)\n", start_line);
   PyRun_SimpleString(cmd);
   #endif

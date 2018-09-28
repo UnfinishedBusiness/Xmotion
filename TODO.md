@@ -1,6 +1,5 @@
 # CNC Control Interface
 	- All Interfaces
-		* Modal Control buttons need to stay "clicked" when toggled (like Torch On for Ex) (Controls Element)
 		* Message Box for Status messages that the user needs to see (Like for Gcode MSG()) (New Element)
 
 # Backend

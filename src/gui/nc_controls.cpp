@@ -22,6 +22,8 @@
 #include <vector>
 #include <cmath>
 
+using namespace std;
+
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
 {
  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -33,6 +35,10 @@ lv_obj_t *jog_speed_label;
 char jog_speed_label_text[100];
 lv_obj_t *feed_rate_label;
 char feed_rate_label_text[100];
+
+int matrix_count;
+static lv_obj_t *matrix[3]; //Allocate button matrix slots on the stack
+
 
 static lv_res_t jog_slider_action(lv_obj_t * slider)
 {
@@ -64,6 +70,10 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   if (!strcmp("Home", txt))
   {
     terminal_eval((char*)"home");
+  }
+  else if (!strcmp("Continuous", txt))
+  {
+
   }
   else if (!strcmp("Torch On", txt))
   {
@@ -109,8 +119,48 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
+lv_obj_t *nc_controls_button_group(const char **btnm_map, bool is_toggle, int default_id, int width, int height, int xpos, int ypos)
+{
+  /*Create a new style for the button matrix back ground*/
+  static lv_style_t matrix_style_bg;
+  lv_style_copy(&matrix_style_bg, &lv_style_plain);
+  matrix_style_bg.body.main_color = LV_COLOR_SILVER;
+  matrix_style_bg.body.grad_color = LV_COLOR_SILVER;
+  matrix_style_bg.body.padding.hor = 0;
+  matrix_style_bg.body.padding.ver = 0;
+  matrix_style_bg.body.padding.inner = 0;
+
+  /*Create 2 button styles*/
+  static lv_style_t style_btn_rel;
+  static lv_style_t style_btn_pr;
+  lv_style_copy(&style_btn_rel, &lv_style_btn_rel);
+  style_btn_rel.body.main_color = LV_COLOR_MAKE(0x30, 0x30, 0x30);
+  style_btn_rel.body.grad_color = LV_COLOR_BLACK;
+  style_btn_rel.body.border.color = LV_COLOR_SILVER;
+  style_btn_rel.body.border.width = 1;
+  style_btn_rel.body.border.opa = LV_OPA_50;
+  style_btn_rel.body.radius = 0;
+
+  lv_style_copy(&style_btn_pr, &style_btn_rel);
+  style_btn_pr.body.main_color = LV_COLOR_MAKE(0x55, 0x96, 0xd8);
+  style_btn_pr.body.grad_color = LV_COLOR_MAKE(0x37, 0x62, 0x90);
+  style_btn_pr.text.color = LV_COLOR_MAKE(0xbb, 0xd5, 0xf1);
+
+  matrix[matrix_count] = lv_btnm_create(lv_scr_act(), NULL);
+  lv_btnm_set_style(matrix[matrix_count], LV_BTNM_STYLE_BG, &matrix_style_bg);
+  lv_btnm_set_style(matrix[matrix_count], LV_BTNM_STYLE_BTN_REL, &style_btn_rel);
+  lv_btnm_set_style(matrix[matrix_count], LV_BTNM_STYLE_BTN_PR, &style_btn_pr);
+  lv_btnm_set_map(matrix[matrix_count], btnm_map);
+  lv_btnm_set_action(matrix[matrix_count], btnm_action);
+  lv_obj_set_size(matrix[matrix_count], width, height);
+  lv_obj_align(matrix[matrix_count], NULL, LV_ALIGN_IN_BOTTOM_RIGHT, xpos, ypos);
+  if (is_toggle) lv_btnm_set_toggle(matrix[matrix_count], true, default_id);
+  matrix_count++;
+  return matrix[matrix_count];
+}
 lv_obj_t *gui_elements_controls(void)
 {
+  matrix_count = 0;
   static lv_style_t jog_slider_style;
   lv_style_copy(&jog_slider_style, &lv_style_plain);
   jog_slider_style.body.shadow.width = 6;
@@ -148,7 +198,7 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_set_style(jog_slider_container, &jog_slider_style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
   lv_obj_set_size(jog_slider_container, 400, 75);
-  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 560);
+  lv_obj_align(jog_slider_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 425);
   /*Create a slider*/
   lv_obj_t *jog_speed_slider = lv_slider_create(jog_slider_container, NULL);
   lv_slider_set_style(jog_speed_slider, LV_SLIDER_STYLE_BG, &style_bg);
@@ -173,7 +223,7 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_set_style(feed_rate_container, &jog_slider_style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
   lv_obj_set_size(feed_rate_container, 400, 75);
-  lv_obj_align(feed_rate_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 465);
+  lv_obj_align(feed_rate_container, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 515);
   /*Create a slider*/
   lv_obj_t *feed_rate_slider = lv_slider_create(feed_rate_container, NULL);
   lv_slider_set_style(feed_rate_slider, LV_SLIDER_STYLE_BG, &style_bg);
@@ -191,47 +241,17 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_align(feed_rate_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
 
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"\224Continuous", "\2220.1", "\2220.01", "\2220.001", "\n",
-                             "\222X=0", "\222Y=0", "\222Z=0", "\n",
+  static const char * btnm_map[] = {"\222X=0", "\222Y=0", "\222Z=0", "\n",
                              "\224Probe Z", "\222Go Home", "\222Home", "\n",
-                             "\222Torch On", "\222Torch Off", "\n",
                              "\224Cycle Start", "\222Pause", "\222Stop", "\222Open", ""};
 
-  /*Create a new style for the button matrix back ground*/
-  static lv_style_t matrix_style_bg;
-  lv_style_copy(&matrix_style_bg, &lv_style_plain);
-  matrix_style_bg.body.main_color = LV_COLOR_SILVER;
-  matrix_style_bg.body.grad_color = LV_COLOR_SILVER;
-  matrix_style_bg.body.padding.hor = 0;
-  matrix_style_bg.body.padding.ver = 0;
-  matrix_style_bg.body.padding.inner = 0;
+   static const char* jog_map[] = {"\224Continuous", "\2220.1", "\2220.01", "\2220.001", ""};
 
-  /*Create 2 button styles*/
-  static lv_style_t style_btn_rel;
-  static lv_style_t style_btn_pr;
-  lv_style_copy(&style_btn_rel, &lv_style_btn_rel);
-  style_btn_rel.body.main_color = LV_COLOR_MAKE(0x30, 0x30, 0x30);
-  style_btn_rel.body.grad_color = LV_COLOR_BLACK;
-  style_btn_rel.body.border.color = LV_COLOR_SILVER;
-  style_btn_rel.body.border.width = 1;
-  style_btn_rel.body.border.opa = LV_OPA_50;
-  style_btn_rel.body.radius = 0;
+   static const char* misc_map[] = {"\222Torch On", "\222Torch Off", ""};
 
-  lv_style_copy(&style_btn_pr, &style_btn_rel);
-  style_btn_pr.body.main_color = LV_COLOR_MAKE(0x55, 0x96, 0xd8);
-  style_btn_pr.body.grad_color = LV_COLOR_MAKE(0x37, 0x62, 0x90);
-  style_btn_pr.text.color = LV_COLOR_MAKE(0xbb, 0xd5, 0xf1);
-
-  /*Create a second button matrix with the new styles*/
-  lv_obj_t * btnm2 = lv_btnm_create(lv_scr_act(), NULL);
-  lv_btnm_set_style(btnm2, LV_BTNM_STYLE_BG, &matrix_style_bg);
-  lv_btnm_set_style(btnm2, LV_BTNM_STYLE_BTN_REL, &style_btn_rel);
-  lv_btnm_set_style(btnm2, LV_BTNM_STYLE_BTN_PR, &style_btn_pr);
-  lv_btnm_set_map(btnm2, btnm_map);
-  lv_btnm_set_action(btnm2, btnm_action);
-  lv_obj_set_size(btnm2, 400, 380);
-  lv_obj_align(btnm2, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -10);
-
+  nc_controls_button_group(jog_map, true, 0,400, 75, -10, -360);
+  nc_controls_button_group(misc_map, true, 1, 400, 75, -10, -290);
+  nc_controls_button_group(btnm_map, false, 0, 400, 280, -10, -10);
   return controls_container;
 }
 void gui_elements_controls_close()
