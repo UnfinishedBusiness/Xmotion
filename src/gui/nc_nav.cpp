@@ -62,7 +62,7 @@ lv_obj_t *gui_elements_nav(void)
   nav_timer_ms = 0;
   nav_timer_stamp = current_timestamp();
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"CNC", "CAD", "CAM", "CONFIG", ""};
+  static const char * btnm_map[] = {"CNC", "CAD", "CAM", ""};
 
   lv_style_copy(&nav_text_style, &lv_style_plain);
   nav_text_style.text.color = NAV_WHITE_TEXT_COLOR;

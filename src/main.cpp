@@ -9,7 +9,7 @@
 #include "utils/hardware_utils.h"
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
-#include "gui/cnc_control.h"
+#include "gui/plasma_control_ui.h"
 #include "main.h"
 
 
@@ -108,7 +108,7 @@ int main(void)
 
     hardware_utils_set_graphics_mode();
 
-    gui_cnc_control_create();
+    gui_plasma_control_ui_create();
 
     //thread t1(task1);
     int nav_tick_timing = 0;
@@ -141,7 +141,7 @@ int main(void)
     }
     //t1.join();
     linuxcnc_close();
-    gui_cnc_control_close();
+    gui_plasma_control_ui_close();
     hardware_utils_set_text_mode();
     mouse_close();
     keyboard_close();

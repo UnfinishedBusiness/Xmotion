@@ -1,4 +1,4 @@
-#include "cnc_control.h"
+#include "plasma_control_ui.h"
 #include "main.h"
 #include "elements.h"
 
@@ -32,7 +32,7 @@ void set_background()
   //lv_obj_set_height(box2, 55);        /*Set a fix height*/
   lv_obj_set_size(box1, 1680, 1050);
 }
-void gui_cnc_control_create()
+void gui_plasma_control_ui_create()
 {
   set_background();
   gui_elements_dro();
@@ -41,7 +41,7 @@ void gui_cnc_control_create()
   gui_elements_nav();
   gui_elements_viewer();
 }
-void gui_cnc_control_close()
+void gui_plasma_control_ui_close()
 {
   gui_elements_dro_close();
   gui_elements_controls_close();

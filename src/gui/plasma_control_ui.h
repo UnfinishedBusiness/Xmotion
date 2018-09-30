@@ -1,5 +1,5 @@
-#ifndef CNC_CONTROL_H
-#define CNC_CONTROL_H
+#ifndef PLASMA_CONTROL_UI_H
+#define PLASMA_CONTROL_UI_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,8 +26,8 @@ extern "C" {
 /**
  * Create a keyboard application
  */
-void gui_cnc_control_create(void);
-void gui_cnc_control_close(void);
+void gui_plasma_control_ui_create(void);
+void gui_plasma_control_ui_close(void);
 /**********************
  *      MACROS
  **********************/
@@ -36,4 +36,4 @@ void gui_cnc_control_close(void);
 } /* extern "C" */
 #endif
 
-#endif /*CNC_CONTROL_H*/
+#endif /*PLASMA_CONTROL_UI_H*/
