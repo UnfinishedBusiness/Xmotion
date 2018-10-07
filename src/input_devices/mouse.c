@@ -24,6 +24,8 @@ int current_y;
 bool left_button_down;
 
 void (*mouse_scroll_callback)(int) = NULL;
+void (*mouse_right_click_callback)(int) = NULL;
+void (*mouse_left_click_callback)(int) = NULL;
 
 void mouse_init_()
 {
@@ -67,6 +69,22 @@ void mouse_set_scroll_callback(void (*f)(int))
 {
   mouse_scroll_callback = f;
 }
+void mouse_disable_right_click_callback(void)
+{
+  mouse_right_click_callback = NULL;
+}
+void mouse_set_right_click_callback(void (*f)(int))
+{
+  mouse_right_click_callback = f;
+}
+void mouse_disable_left_click_callback(void)
+{
+  mouse_left_click_callback = NULL;
+}
+void mouse_set_left_click_callback(void (*f)(int))
+{
+  mouse_left_click_callback = f;
+}
 void mouse_close(void)
 {
   mouse_scroll_callback = NULL;
@@ -109,7 +127,21 @@ void mouse_tick(void)
       }
       else if (event.type == 1 && event.code == 272) //left button up/down
       {
-        left_button_down = event.value;
+        if (mouse_left_click_callback != NULL)
+        {
+          mouse_left_click_callback(event.value);
+        }
+        else
+        {
+          left_button_down = event.value;
+        }
+      }
+      else if (event.type == 1 && event.code == 273) //right button up/down
+      {
+        if (mouse_right_click_callback != NULL)
+        {
+          mouse_right_click_callback(event.value);
+        }
       }
       else if (event.type == 2 && event.code == 0) //X inc
       {

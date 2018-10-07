@@ -39,7 +39,11 @@ void mouse_tick(void);
 void mouse_close(void);
 
 void mouse_set_scroll_callback(void (*f)(int));
+void mouse_set_right_click_callback(void (*f)(int));
+void mouse_set_left_click_callback(void (*f)(int));
 void mouse_disable_scroll_callback(void);
+void mouse_disable_right_click_callback(void);
+void mouse_disable_left_click_callback(void);
 
 /**********************
  *      MACROS

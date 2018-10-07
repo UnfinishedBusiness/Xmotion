@@ -5,6 +5,8 @@
 #include "input_devices/mouse.h"
 #include "utils/gcode_parser.h"
 #include "geometry/geometry.h"
+#include "utils/hardware_utils.h"
+#include "gui/plasma_control_ui.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -29,22 +31,6 @@
 #include <cmath>
 
 using namespace std;
-
-/*vector<string> split(const string& str, const string& delim)
-{
-    vector<string> tokens;
-    size_t prev = 0, pos = 0;
-    do
-    {
-        pos = str.find(delim, prev);
-        if (pos == string::npos) pos = str.length();
-        string token = str.substr(prev, pos-prev);
-        if (!token.empty()) tokens.push_back(token);
-        prev = pos + delim.length();
-    }
-    while (pos < str.length() && prev < str.length());
-    return tokens;
-}*/
 
 typedef struct
 {
@@ -71,7 +57,10 @@ std::vector<icon_struct_t> Icon_Array;
 #define OPEN_DIALOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define OPEN_DIALOG_TEXT_COLOR LV_COLOR_MAKE(255, 255, 255);
 lv_obj_t *open_dialog_container = NULL;
+lv_obj_t *open_dialog_menu_container = NULL;
+lv_obj_t *are_you_sure_box = NULL;
 int current_focus;
+string current_file;
 
 /* Private Functions */
 vector<string> split(const string& str, const string& delim)
@@ -105,15 +94,100 @@ bool is_path_a_dir(const char* path) //This is a vague check, does not check if 
   }
 }
 /* End Private Functions */
+void close_dialog_menu_container()
+{
+  if (open_dialog_menu_container != NULL)
+  {
+    lv_obj_del(open_dialog_menu_container);
+    open_dialog_menu_container = NULL;
+  }
+}
 static void scroll_action(int direction)
 {
   //printf("Scrolling: %d\n", direction);
   if (Icon_Array.size() < 1) return;
   current_focus += (direction * -1) + (6 * direction) * -1;
   if (current_focus < 0) current_focus = 0;
-  if (current_focus > Icon_Array.size() -1) current_focus = Icon_Array.size() -1;
+  if (current_focus > (int)Icon_Array.size() -1) current_focus = (int)Icon_Array.size() -1;
   //printf("current_focus: %d\n", current_focus);
   lv_win_focus(open_dialog_container, Icon_Array[current_focus].container, 0);
+}
+static lv_res_t mbox_apply_action(lv_obj_t * mbox, const char * txt)
+{
+    //printf("Mbox button: %s\n", txt);
+    string button_clicked = string(txt);
+    if (button_clicked == "Yes")
+    {
+      char cmd[1024];
+      sprintf(cmd, "rm %s", current_file.c_str());
+      system(cmd);
+      gui_elements_open_dialog_close();
+      gui_elements_open_dialog();
+    }
+    if (are_you_sure_box != NULL)
+    {
+      lv_obj_del(are_you_sure_box);
+      are_you_sure_box = NULL;
+    }
+    return LV_RES_OK; /*Return OK if the message box is not deleted*/
+}
+static lv_res_t list_release_action(lv_obj_t * list_btn)
+{
+    //printf("List element click:%s\n", lv_list_get_btn_text(list_btn));
+    string button_string = string(lv_list_get_btn_text(list_btn));
+    //printf("List element click:%s\n", button_string.c_str());
+    if (button_string == "Open")
+    {
+      gui_elements_viewer_close_drawing();
+      //printf("Opening file: %s\n", Icon_Array[id].path.c_str());
+      linuxcnc_program_open(current_file.c_str());
+      gui_elements_viewer_open_drawing(current_file.c_str());
+      gui_elements_open_dialog_close();
+    }
+    else if (button_string == "Edit")
+    {
+      hardware_utils_set_text_mode();
+      char cmd[1024];
+      sprintf(cmd, "nano %s", current_file.c_str());
+      system(cmd);
+      hardware_utils_set_graphics_mode();
+      //This will need to be updated to a master ui_create function that consults with the ini...
+      gui_elements_open_dialog_close();
+      gui_plasma_control_ui_close();
+      gui_plasma_control_ui_create();
+      gui_elements_open_dialog();
+    }
+    else if (button_string == "Delete")
+    {
+      close_dialog_menu_container();
+      are_you_sure_box = lv_mbox_create(lv_scr_act(), NULL);
+      lv_mbox_set_text(are_you_sure_box, "Are you sure?");                    /*Set the text*/
+      /*Add two buttons*/
+      static const char * btns[] ={"\221Yes", "\221No", ""}; /*Button description. '\221' lv_btnm like control char*/
+      lv_mbox_add_btns(are_you_sure_box, btns, mbox_apply_action);
+      lv_obj_set_width(are_you_sure_box, 250);
+      lv_obj_align(are_you_sure_box, NULL, LV_ALIGN_IN_TOP_LEFT, LV_HOR_RES/2, LV_VER_RES/2); /*Align to the corner*/
+
+    }
+    return LV_RES_OK; /*Return OK because the list is not deleted*/
+}
+static void file_click_action(const char *file)
+{
+  if (open_dialog_menu_container == NULL)
+  {
+    current_file = string(file);
+    int mouse_pos_x = mouse_get_current_x();
+    int mouse_pos_y = mouse_get_current_y();
+    /*Create the list*/
+    open_dialog_menu_container = lv_list_create(lv_scr_act(), NULL);
+    lv_obj_set_size(open_dialog_menu_container, 200, 190);
+    lv_obj_align(open_dialog_menu_container, NULL, LV_ALIGN_IN_TOP_LEFT, mouse_pos_x, mouse_pos_y);
+      /*Add list elements*/
+    lv_list_add(open_dialog_menu_container, SYMBOL_DIRECTORY, "Open", list_release_action);
+    lv_list_add(open_dialog_menu_container, SYMBOL_CLOSE, "Delete", list_release_action);
+    lv_list_add(open_dialog_menu_container, SYMBOL_EDIT, "Edit", list_release_action);
+
+  }
 }
 static lv_res_t btnm_back_action(lv_obj_t * btnm)
 {
@@ -173,11 +247,7 @@ static lv_res_t btn_click_action(lv_obj_t * btn)
     }
     else
     {
-      gui_elements_viewer_close_drawing();
-      printf("Opening file: %s\n", Icon_Array[id].path.c_str());
-      linuxcnc_program_open(Icon_Array[id].path.c_str());
-      gui_elements_viewer_open_drawing(Icon_Array[id].path.c_str());
-      gui_elements_open_dialog_close();
+      file_click_action(Icon_Array[id].path.c_str());
     }
     return LV_RES_OK; /*Return OK if the button is not deleted*/
 }
@@ -320,5 +390,7 @@ void gui_elements_open_dialog_close()
     File_Array.clear();
     Icon_Array.clear();
     mouse_disable_scroll_callback();
+    mouse_disable_right_click_callback();
   }
+  close_dialog_menu_container();
 }

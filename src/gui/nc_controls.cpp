@@ -31,6 +31,9 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 #define JOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define JOG_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *controls_container;
+lv_obj_t *jog_slider_container;
+lv_obj_t *feed_rate_container;
+
 lv_obj_t *jog_speed_label;
 char jog_speed_label_text[100];
 lv_obj_t *feed_rate_label;
@@ -194,7 +197,7 @@ lv_obj_t *gui_elements_controls(void)
   style_knob.body.opa = LV_OPA_70;
   style_knob.body.padding.ver = 10 ;
 
-  static lv_obj_t *jog_slider_container = lv_cont_create(lv_scr_act(), NULL);
+  jog_slider_container = lv_cont_create(lv_scr_act(), NULL);
   lv_obj_set_style(jog_slider_container, &jog_slider_style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
   lv_obj_set_size(jog_slider_container, 400, 75);
@@ -208,7 +211,6 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_align(jog_speed_slider, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
   float jog_speed = config.default_jog_speed;
   lv_slider_set_value (jog_speed_slider, (int)mapfloat((float)jog_speed, 0, config.max_jog_speed, 0, 100));
-
   /*Create a label*/
   jog_speed_label = lv_label_create(jog_slider_container, NULL);
   sprintf(jog_speed_label_text, "Jog Speed - %d IPM", (int)round(jog_speed));
@@ -219,7 +221,7 @@ lv_obj_t *gui_elements_controls(void)
 
 
 
-  static lv_obj_t *feed_rate_container = lv_cont_create(lv_scr_act(), NULL);
+  feed_rate_container = lv_cont_create(lv_scr_act(), NULL);
   lv_obj_set_style(feed_rate_container, &jog_slider_style);     /*Set the new style*/
   //lv_cont_set_fit(dro_container, true, false); /*Do not enable the vertical fit */
   lv_obj_set_size(feed_rate_container, 400, 75);
@@ -233,12 +235,13 @@ lv_obj_t *gui_elements_controls(void)
   lv_obj_align(feed_rate_slider, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
   float feed_rate = 100; //100% Percent default!
   lv_slider_set_value (feed_rate_slider, (int)feed_rate);
-
   /*Create a label*/
   feed_rate_label = lv_label_create(feed_rate_container, NULL);
   sprintf(feed_rate_label_text, "Feed Rate - %d%%", (int)round(feed_rate));
   lv_label_set_text(feed_rate_label, feed_rate_label_text);
   lv_obj_align(feed_rate_label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
+
+
 
   /*Create a button descriptor string array*/
   static const char * btnm_map[] = {"\222X=0", "\222Y=0", "\222Z=0", "\n",
@@ -260,5 +263,15 @@ void gui_elements_controls_close()
   {
     lv_obj_del(controls_container);
     controls_container = NULL;
+  }
+  if (jog_slider_container != NULL)
+  {
+    lv_obj_del(jog_slider_container);
+    jog_slider_container = NULL;
+  }
+  if (feed_rate_container != NULL)
+  {
+    lv_obj_del(feed_rate_container);
+    feed_rate_container = NULL;
   }
 }

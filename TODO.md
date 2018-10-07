@@ -23,13 +23,6 @@
 	- Handle Ctr-Alt-Fx inputs to switch to virtual terminals
 
 # Open File Dialog
-	- Add Right Click menu implementation
-		* Add right click menu item for file editing (Switch back to text mode and do a system call to nano (or text editor specified by config file)
-		* Add right click menu item for deleting file
-		* Add right click menu item for renaming file
-		* Add right click menu item for copying file
-		* Add right click menu item for pasting file
-		* Add right click menu item for pasting file
 	- Add toolbar button for mounting USB drive
 	- Add toolbar button for unmounting USB drive
 
