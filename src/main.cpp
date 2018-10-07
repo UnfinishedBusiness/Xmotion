@@ -74,7 +74,7 @@ int main(void)
     /*LittlevGL init*/
     lv_init();
 
-    mouse_init_(config.mouse_device);
+    mouse_init_();
     lv_indev_drv_t mouse_indev_drv;
     lv_indev_drv_init(&mouse_indev_drv);          /*Basic initialization*/
     mouse_indev_drv.type = LV_INDEV_TYPE_POINTER;

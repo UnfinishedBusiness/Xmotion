@@ -22,8 +22,6 @@ extern "C" {
       //System
      const char* screen_size;
      const char* screen_color;
-     const char* keyboard_device;
-     const char* mouse_device;
      const char* post_directory;
 
      //motion

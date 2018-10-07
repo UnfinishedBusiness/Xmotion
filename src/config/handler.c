@@ -29,14 +29,6 @@ static int config_handler(void* conf, const char* section, const char* name, con
     {
         pconfig->screen_color = strdup(value);
     }
-    /*else if (MATCH("system", "keyboard_device")) //Keyboard detection is now automatic!
-    {
-        pconfig->keyboard_device = strdup(value);
-    }*/
-    else if (MATCH("system", "mouse_device"))
-    {
-        pconfig->mouse_device = strdup(value);
-    }
     else if (MATCH("system", "post_directory"))
     {
         pconfig->post_directory = strdup(value);
@@ -57,10 +49,6 @@ static int config_handler(void* conf, const char* section, const char* name, con
 }
 void config_handler_set_defaults()
 {
-  char *kb = "/dev/input/event0";
-  char *ms = "/dev/input/mice";
-  config.keyboard_device = kb;
-  config.mouse_device = ms;
   config.post_directory = "/";
 
   config.max_jog_speed = 600;

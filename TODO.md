@@ -20,7 +20,6 @@
 		* Post Gcode. Post Processor will be a Javascript file and the output will be posted to the "post_directory" ini setting
 
 # Backend
-	- Automatically Determine Keyboard and Mouse event files so they don't have to be set in ini
 	- Handle Ctr-Alt-Fx inputs to switch to virtual terminals
 
 # Open File Dialog
@@ -39,4 +38,3 @@
 		* Should be able to use a VERSION define shared includes
 	- Integrate BeagleG motion controller so Xmotion on the Xmotion Main Board (1Ghz ARM + 2 PRU units) is a fully integrated motion controller (LinuxCNC/MachineKit not needed)
 	- Jog Step Controls need to be implemented
-			
