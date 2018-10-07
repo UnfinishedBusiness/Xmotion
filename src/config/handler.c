@@ -29,10 +29,10 @@ static int config_handler(void* conf, const char* section, const char* name, con
     {
         pconfig->screen_color = strdup(value);
     }
-    else if (MATCH("system", "keyboard_device"))
+    /*else if (MATCH("system", "keyboard_device")) //Keyboard detection is now automatic!
     {
         pconfig->keyboard_device = strdup(value);
-    }
+    }*/
     else if (MATCH("system", "mouse_device"))
     {
         pconfig->mouse_device = strdup(value);

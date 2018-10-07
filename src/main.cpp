@@ -81,7 +81,7 @@ int main(void)
     mouse_indev_drv.read = mouse_read;         /*This function will be called periodically (by the library) to get the mouse position and state*/
     lv_indev_t * mouse_indev = lv_indev_drv_register(&mouse_indev_drv);
 
-    keyboard_init(config.keyboard_device);
+    keyboard_init();
     lv_indev_drv_t keyboard_indev_drv;
     lv_indev_drv_init(&keyboard_indev_drv);          /*Basic initialization*/
     keyboard_indev_drv.type = LV_INDEV_TYPE_POINTER;

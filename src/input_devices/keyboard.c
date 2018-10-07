@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include <linux/input.h>
 #include <linux/kd.h>
+#include <dirent.h>
 
 #include "utils/terminal.h"
 
@@ -80,25 +81,52 @@ struct keymap_t keymap[] = {
     {'\0', 0, 0, 0, ""}, //End Marker
 };
 
-int keyboard;
+#define MAX_KB_DEVICES 5
+int keyboard[MAX_KB_DEVICES]; //Support up to 5 keyboard inputs
+int kb_count;
 int last_state;
 int last_key;
 int shift_mod;
 int alt_mod;
 
-void keyboard_init(const char* keyboard_device)
+void keyboard_init()
 {
+  kb_count = 0;
+  char device[1024];
   shift_mod = 0;
   alt_mod = 0;
-  if ((keyboard = open (keyboard_device, O_RDONLY|O_NONBLOCK)) == -1)
+
+  DIR *dpdf;
+  struct dirent *epdf;
+  dpdf = opendir("/dev/input/by-id/");
+  if (dpdf != NULL)
   {
-      printf ("Could not open keyboard device\n");
+    printf("Finding Keyboard devices!\n");
+     while (epdf = readdir(dpdf))
+     {
+        //printf("Scanning keyboard inputs! %s\n", epdf->d_name);
+        if (strstr(epdf->d_name, "kbd") != NULL)
+        {
+          sprintf(device, "/dev/input/by-id/%s", epdf->d_name);
+          printf("\tFound Device: %s\n", device);
+          if ((keyboard[kb_count] = open (device, O_RDONLY|O_NONBLOCK)) == -1)
+          {
+              printf ("\t\tCould not open keyboard device\n");
+          }
+          printf("\t\tOpened device!\n");
+          kb_count++;
+          if (kb_count == MAX_KB_DEVICES) break;
+        }
+     }
   }
-  printf("Opened Keyboard: %s\n", keyboard_device);
+  closedir(dpdf);
 }
 void keyboard_close(void)
 {
-  close(keyboard);
+  for(int x = 0; x < kb_count; x++)
+  {
+    close(keyboard[x]);
+  }
 }
 void keyboard_tick(void)
 {
@@ -107,9 +135,12 @@ void keyboard_tick(void)
   int size = sizeof (struct input_event);
   int key = 0;
   struct input_event ev[1];
-  rd = read(keyboard, ev, size * 1);
-  value = ev[0].value;
-  key = ev[0].code;
+  for(int x = 0; x < kb_count; x++)
+  {
+    rd = read(keyboard[x], ev, size * 1);
+    value = ev[0].value;
+    key = ev[0].code;
+  }
   if (key != 0 && value < 100)
   {
     keyboard_event(ev[0].code, ev[0].value);
