@@ -8,14 +8,17 @@ python
 # Building
 ## LinuxCNC machine
 make clean
+
 make release
 
 ## Build as "Simulator", can execute binary without LinuxCNC RTAPI Running
 make clean
+
 make sim
 
 ## Build with debuging output, requires linuxcnc to be running
 make clean
+
 make debug
 
 # Configuring (This will eventually be added to make install)
