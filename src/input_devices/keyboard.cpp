@@ -16,7 +16,8 @@
 #include <dirent.h>
 
 #include "utils/terminal.h"
-
+#include "utils/hardware_utils.h"
+#include "gui/plasma_control_ui.h"
 
 struct keymap_t keymap[] = {
     {'a', 30, 0, 0, ""},
@@ -88,9 +89,13 @@ int last_state;
 int last_key;
 int shift_mod;
 int alt_mod;
+int ctrl_mod;
+
+bool block_keypresses;
 
 void keyboard_init()
 {
+  block_keypresses = false;
   kb_count = 0;
   char device[1024];
   shift_mod = 0;
@@ -176,42 +181,58 @@ void keyboard_event(int keycode, int state)
   {
     //printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
   }
-  if (keycode == 42 && state == down)
+  if (keycode == 29 && (state == up || state == down))
+  {
+    ctrl_mod = state;
+  }
+  if (keycode == 42 && (state == up || state == down))
   {
     shift_mod = state;
   }
-  if (keycode == 42 && state == up)
-  {
-    shift_mod = state;
-  }
-  if (keycode == 56 && state == down)
+  if (keycode == 56 && (state == up || state == down))
   {
     alt_mod = state;
   }
-  if (keycode == 56 && state == up)
+  //59-65 is F1 - F7
+  if (keycode == 59 && ctrl_mod == 1 && alt_mod == 1 && state == down) //Ctrl-Alt-F1
   {
-    alt_mod = state;
+    printf("Switching back to Graphics mode!\n");
+    hardware_utils_set_graphics_mode();
+    gui_plasma_control_ui_close();
+    gui_plasma_control_ui_create();
+    block_keypresses = false;
   }
-  if (keycode == 1 && state == down) //Escape
+  else if (keycode == 60 && ctrl_mod == 1 && alt_mod == 1 && state == down) //Ctrl-Alt-F2
+  {
+    printf("Switching to VTT2!\n");
+    hardware_utils_set_text_mode();
+    system("chvt 2");
+    block_keypresses = true;
+  }
+  else if (block_keypresses)
+  {
+    return;
+  }
+  else if (keycode == 1 && state == down) //Escape
   {
     linuxcnc_abort();
     //printf("Bye!\n");
     //kill_main();
     //return;
   }
-  if (keycode == 59 && alt_mod == down && state == down) //Alt-F1
+  else if (keycode == 59 && alt_mod == down && state == down) //Alt-F1
   {
     terminal_open();
   }
-  if (keycode == 28 && alt_mod == up && shift_mod == up && state == down) //Enter
+  else if (keycode == 28 && alt_mod == up && shift_mod == up && state == down) //Enter
   {
     terminal_enter();
   }
-  if (keycode == 14 && (state == down || state == repeat))
+  else if (keycode == 14 && (state == down || state == repeat))
   {
     terminal_backspace();
   }
-  if (keycode == 106) //Right Arrow
+  else if (keycode == 106) //Right Arrow
   {
     if  (state == down)
     {
@@ -222,7 +243,7 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_x_plus(false);
     }
   }
-  if (keycode == 105) //Left Arrow
+  else if (keycode == 105) //Left Arrow
   {
     if  (state == down)
     {
@@ -233,7 +254,7 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_x_minus(false);
     }
   }
-  if (keycode == 103) //Up Arrow
+  else if (keycode == 103) //Up Arrow
   {
     if  (state == down)
     {
@@ -244,7 +265,7 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_y_plus(false);
     }
   }
-  if (keycode == 108) //Down Arrow
+  else if (keycode == 108) //Down Arrow
   {
     if  (state == down)
     {
@@ -255,7 +276,7 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_y_minus(false);
     }
   }
-  if (keycode == 104) //Page Up
+  else if (keycode == 104) //Page Up
   {
     if  (state == down)
     {
@@ -266,7 +287,7 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_z_plus(false);
     }
   }
-  if (keycode == 109) //Page Down
+  else if (keycode == 109) //Page Down
   {
     if  (state == down)
     {
