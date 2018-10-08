@@ -30,7 +30,6 @@
 
 #include <string>
 #include <iostream>
-#include <thread>
 
 using namespace std;
 
@@ -43,27 +42,6 @@ void delay(int millis)
 {
   usleep(millis * 300);
 }
-void task1(void)
-{
-    int linuxcnc_poll_timing = 0;
-    while(kill_main_flag == false)
-    {
-      mouse_tick();
-      duty_sim_tick();
-      if (linuxcnc_poll_timing > 100)
-      {
-        linuxcnc_poll_timing = 0;
-        linuxcnc_tick();
-        gui_elements_dro_tick();
-        gui_elements_indicators_tick();
-      }
-      //delay(1);
-      linuxcnc_poll_timing++;
-      delay(1);
-    }
-}
-
-
 int main(void)
 {
     //gcode_parse("test/gcode_parser/3.ngc");
@@ -110,7 +88,6 @@ int main(void)
 
     gui_plasma_control_ui_create();
 
-    //thread t1(task1);
     int nav_tick_timing = 0;
     int linuxcnc_poll_timing = 0;
     while(kill_main_flag == false)
@@ -134,12 +111,9 @@ int main(void)
           gui_elements_dro_tick();
           gui_elements_indicators_tick();
         }
-        //delay(1);
         linuxcnc_poll_timing++;
         nav_tick_timing++;
-        //delay(1);
     }
-    //t1.join();
     linuxcnc_close();
     gui_plasma_control_ui_close();
     hardware_utils_set_text_mode();

@@ -25,7 +25,7 @@ INCLUDES = -I $(SRC_PATH) `python-config --includes`
 # General linker settings
 LINK_FLAGS = `python-config --libs`
 # Additional release-specific linker settings
-RLINK_FLAGS = -lnml -llinuxcnc -pthread
+RLINK_FLAGS = -lnml -llinuxcnc
 # Additional debug-specific linker settings
 DLINK_FLAGS =
 # Additional debug-specific linker settings
