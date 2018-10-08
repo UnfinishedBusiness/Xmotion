@@ -41,12 +41,26 @@ lv_style_t nav_text_style;
 size_t nav_timer_ms;
 long long nav_timer_stamp;
 
+typedef struct
+{
+    char name[100];
+    char javascript_eval[1024];
+}elements_nav_t;
+
+vector<elements_nav_t> nav_items;
+
 static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
 {
   printf("Button: %s released\n", txt);
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
-
+void gui_elements_nav_add_item(const char* name, const char* javascript_eval)
+{
+  elements_nav_t n;
+  sprintf(n.name, "%s", name);
+  sprintf(n.javascript_eval, "%s", javascript_eval);
+  nav_items.push_back(n);
+}
 void gui_elements_nav_tick()
 {
   if (nav_container != NULL)

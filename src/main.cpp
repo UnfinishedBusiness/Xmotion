@@ -10,6 +10,7 @@
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
 #include "gui/plasma_control_ui.h"
+#include "javascript_vm/javascript.h"
 #include "main.h"
 
 
@@ -86,6 +87,7 @@ int main(void)
 
     hardware_utils_set_graphics_mode();
 
+    javascript_modules_init();
     gui_plasma_control_ui_create();
 
     int nav_tick_timing = 0;
@@ -114,6 +116,7 @@ int main(void)
         linuxcnc_poll_timing++;
         nav_tick_timing++;
     }
+    javascript_modules_close();
     linuxcnc_close();
     gui_plasma_control_ui_close();
     hardware_utils_set_text_mode();

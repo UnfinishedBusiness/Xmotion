@@ -21,7 +21,7 @@
 
 # Open File Dialog
 	- Add toolbar button for mounting USB drive
-	- Add toolbar button for unmounting USB drive
+	- Add toolbar button for un-mounting USB drive
 
 # LinuxCNC/MachineKit/Motion Control
 	- Figure out how to deal with NML Message differences between 2.6 and 2.7

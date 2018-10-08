@@ -82,7 +82,7 @@ static void source_file(const char * file)
 {
   push_file_as_string(ctx, file);
 }
-int main(void)
+void javascript_modules_init(void)
 {
   std::string cmd;
   ctx = duk_create_heap_default();
@@ -103,4 +103,8 @@ int main(void)
   }
 
   return 0;
+}
+void javascript_modules_close(void)
+{
+
 }
