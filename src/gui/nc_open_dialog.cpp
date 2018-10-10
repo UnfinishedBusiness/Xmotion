@@ -6,7 +6,6 @@
 #include "utils/gcode_parser.h"
 #include "geometry/geometry.h"
 #include "utils/hardware_utils.h"
-#include "gui/plasma_control_ui.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -153,8 +152,8 @@ static lv_res_t list_release_action(lv_obj_t * list_btn)
       hardware_utils_set_graphics_mode();
       //This will need to be updated to a master ui_create function that consults with the ini...
       gui_elements_open_dialog_close();
-      gui_plasma_control_ui_close();
-      gui_plasma_control_ui_create();
+      //gui_plasma_control_ui_close();
+      //gui_plasma_control_ui_create();
       gui_elements_open_dialog();
     }
     else if (button_string == "Delete")

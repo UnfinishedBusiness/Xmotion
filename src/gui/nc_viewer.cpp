@@ -205,7 +205,7 @@ lv_obj_t *gui_elements_viewer(void)
   gui_elements_viewer_zoom(0);
 
 
-  return viewer_container;
+  return NULL;
 }
 size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *type)
 {
@@ -435,4 +435,18 @@ void gui_elements_viewer_close()
     viewer_container = NULL;
     Entities.clear();
   }
+}
+duk_ret_t javascript_gui_elements_viewer(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_viewer();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_viewer_close(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_viewer_close();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
 }

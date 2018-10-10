@@ -9,7 +9,6 @@
 #include "utils/hardware_utils.h"
 #include "utils/duty_sim.h"
 #include "gui/elements.h"
-#include "gui/plasma_control_ui.h"
 #include "javascript_vm/javascript.h"
 #include "main.h"
 
@@ -121,7 +120,7 @@ int main(void)
     }
     javascript_modules_close();
     linuxcnc_close();
-    gui_plasma_control_ui_close();
+    //gui_plasma_control_ui_close(); //Need to call the last close item on the nav to free used memory
     hardware_utils_set_text_mode();
     mouse_close();
     keyboard_close();

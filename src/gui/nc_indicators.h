@@ -10,7 +10,7 @@ extern "C" {
  *********************/
 #include "../lvgl/lv_hal/lv_hal.h"
 #include "../lvgl/lvgl.h"
-
+#include "javascript_vm/duktape.h"
 /*********************
  *      DEFINES
  *********************/
@@ -34,6 +34,8 @@ void gui_elements_indicators_set_arc_ok_led(bool);
 void gui_elements_indicators_set_torch_up_led(bool);
 void gui_elements_indicators_set_torch_down_led(bool);
 void gui_elements_indicators_tick(void);
+duk_ret_t javascript_gui_elements_indicators(duk_context *);
+duk_ret_t javascript_gui_elements_indicators_close(duk_context *);
 
 /**********************
  *      MACROS

@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "javascript_vm/duktape.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -30,7 +31,6 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 #define JOG_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define JOG_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
-lv_obj_t *controls_container;
 lv_obj_t *jog_slider_container;
 lv_obj_t *feed_rate_container;
 
@@ -255,14 +255,17 @@ lv_obj_t *gui_elements_controls(void)
   nc_controls_button_group(jog_map, true, 0,400, 75, -10, -360);
   nc_controls_button_group(misc_map, true, 1, 400, 75, -10, -290);
   nc_controls_button_group(btnm_map, false, 0, 400, 280, -10, -10);
-  return controls_container;
+  return NULL;
 }
 void gui_elements_controls_close()
 {
-  if (controls_container != NULL)
+  for (int x = 0; x < matrix_count; x++)
   {
-    lv_obj_del(controls_container);
-    controls_container = NULL;
+    if (matrix[x] != NULL)
+    {
+      lv_obj_del(matrix[x]);
+      matrix[x] = NULL;
+    }
   }
   if (jog_slider_container != NULL)
   {
@@ -274,4 +277,18 @@ void gui_elements_controls_close()
     lv_obj_del(feed_rate_container);
     feed_rate_container = NULL;
   }
+}
+duk_ret_t javascript_gui_elements_controls(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_controls();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_controls_close(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_controls_close();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
 }

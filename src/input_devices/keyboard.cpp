@@ -17,7 +17,6 @@
 
 #include "utils/terminal.h"
 #include "utils/hardware_utils.h"
-#include "gui/plasma_control_ui.h"
 
 struct keymap_t keymap[] = {
     {'a', 30, 0, 0, ""},
@@ -197,9 +196,9 @@ void keyboard_event(int keycode, int state)
   if (keycode == 59 && ctrl_mod == 1 && alt_mod == 1 && state == down) //Ctrl-Alt-F1
   {
     printf("Switching back to Graphics mode!\n");
-    hardware_utils_set_graphics_mode();
-    gui_plasma_control_ui_close();
-    gui_plasma_control_ui_create();
+    //hardware_utils_set_graphics_mode();
+    //gui_plasma_control_ui_close();
+    //gui_plasma_control_ui_create();
     block_keypresses = false;
   }
   else if (keycode == 60 && ctrl_mod == 1 && alt_mod == 1 && state == down) //Ctrl-Alt-F2

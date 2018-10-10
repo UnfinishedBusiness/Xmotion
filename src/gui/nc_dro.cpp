@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "javascript_vm/duktape.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -242,4 +243,18 @@ lv_obj_t *gui_elements_dro(void)
   lv_obj_align(dro_mode, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -5);
 
   return dro_container;
+}
+duk_ret_t javascript_gui_elements_dro(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_dro();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_dro_close(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_dro_close();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
 }

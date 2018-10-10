@@ -2,6 +2,7 @@
 #include "linuxcnc.h"
 #include "config/handler.h"
 #include "utils/terminal.h"
+#include "javascript_vm/duktape.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -201,4 +202,18 @@ void gui_elements_indicators_close()
     lv_obj_del(indicators_container);
     indicators_container = NULL;
   }
+}
+duk_ret_t javascript_gui_elements_indicators(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_indicators();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_indicators_close(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_indicators_close();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
 }

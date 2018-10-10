@@ -5,3 +5,4 @@
 #include "nc_viewer.h"
 #include "nc_open_dialog.h"
 #include "nc_message_box.h"
+#include "background.h"

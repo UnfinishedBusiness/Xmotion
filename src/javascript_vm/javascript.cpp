@@ -1,10 +1,10 @@
 #include "javascript.h"
-#include "gui/plasma_control_ui.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <dirent.h>
 
+#include "gui/elements.h" //All GUI elements should be included here
 
 #include "duktape.h"
 #include "duk_config.h"
@@ -17,6 +17,15 @@
 #include <cmath>
 #include <fstream>
 #include <algorithm>
+
+#define KNRM  "\x1B[0m"
+#define KRED  "\x1B[31m"
+#define KGRN  "\x1B[32m"
+#define KYEL  "\x1B[33m"
+#define KBLU  "\x1B[34m"
+#define KMAG  "\x1B[35m"
+#define KCYN  "\x1B[36m"
+#define KWHT  "\x1B[37m"
 
 using namespace std;
 
@@ -33,7 +42,9 @@ static duk_ret_t print(duk_context *ctx)
 {
 	duk_get_top(ctx);  /* #args */
   string p = duk_to_string(ctx, 0);
+  printf("%s", KBLU);
   printf("%s\n", p.c_str());
+  printf("%s", KWHT);
 	duk_push_number(ctx, 0);
 	return 0;  /* one return value */
 }
@@ -58,6 +69,26 @@ javascript_function_t javascript_functions[] = {
   {"print", print},
   {"alert", print},
   {"get_file", get_file},
+
+  {"gui_set_background", javascript_gui_set_background},
+
+  {"gui_elements_controls", javascript_gui_elements_controls},
+  {"gui_elements_controls_close", javascript_gui_elements_controls_close},
+
+  {"gui_elements_dro", javascript_gui_elements_dro},
+  {"gui_elements_dro_close", javascript_gui_elements_dro_close},
+
+  {"gui_elements_indicators", javascript_gui_elements_indicators},
+  {"gui_elements_indicators_close", javascript_gui_elements_indicators_close},
+
+  {"gui_elements_nav", javascript_gui_elements_nav},
+  {"gui_elements_nav_first_close_item", javascript_gui_elements_nav_first_close_item},
+  {"gui_elements_nav_register_item", javascript_gui_elements_nav_register_item},
+  {"gui_elements_nav_close", javascript_gui_elements_nav_close},
+
+  {"gui_elements_viewer", javascript_gui_elements_viewer},
+  {"gui_elements_viewer_close", javascript_gui_elements_viewer_close},
+
   {" ", NULL}
 };
 
@@ -124,6 +155,10 @@ void javascript_modules_init(void)
      }
   }
   closedir(dpdf);
+  source_file("javascript/main.js");
+  if (duk_peval(ctx) != 0) {
+      printf("\t\t\tError: %s\n", duk_safe_to_string(ctx, -1));
+  }
 }
 void javascript_modules_close(void)
 {

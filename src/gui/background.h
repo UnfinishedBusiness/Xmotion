@@ -1,5 +1,5 @@
-#ifndef PLASMA_CONTROL_UI_H
-#define PLASMA_CONTROL_UI_H
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,7 +10,7 @@ extern "C" {
  *********************/
 #include "../lvgl/lv_hal/lv_hal.h"
 #include "../lvgl/lvgl.h"
-
+#include "javascript_vm/duktape.h"
 /*********************
  *      DEFINES
  *********************/
@@ -26,8 +26,9 @@ extern "C" {
 /**
  * Create a keyboard application
  */
-void gui_plasma_control_ui_create(void);
-void gui_plasma_control_ui_close(void);
+void gui_set_background(int, int, int);
+duk_ret_t javascript_gui_set_background(duk_context *);
+
 /**********************
  *      MACROS
  **********************/
@@ -36,4 +37,4 @@ void gui_plasma_control_ui_close(void);
 } /* extern "C" */
 #endif
 
-#endif /*PLASMA_CONTROL_UI_H*/
+#endif /*BACKGROUND_H*/

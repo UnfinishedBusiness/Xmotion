@@ -57,13 +57,19 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   printf("Button: %s released\n", txt);
   for (size_t x = 0; x < nav_items.size(); x++)
   {
-    if (strcmp(nav_items[x].name, txt) != 0)
+    if (strstr(nav_items[x].name, txt) != NULL)
     {
-      printf("\tClosing %s\n", next_close_eval);
+      //Get the function evals before the closing routing clears the stack!
+      printf("Found Item: %s\n", nav_items[x].name);
+      string open_eval = nav_items[x].javascript_open_eval;
+      string close_eval = nav_items[x].javascript_close_eval;
+
+      printf("\tClosing routine: %s\n", next_close_eval.c_str());
       javascript_modules_eval(next_close_eval.c_str());
-      printf("\tEvaling: %s\n", nav_items[x].javascript_open_eval);
-      javascript_modules_eval(nav_items[x].javascript_open_eval);
-      next_close_eval = string(nav_items[x].javascript_close_eval);
+      printf("\tOpening routine: %s\n", open_eval.c_str());
+      javascript_modules_eval(open_eval.c_str());
+      next_close_eval = string(close_eval.c_str());
+      break;
     }
   }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
@@ -185,5 +191,40 @@ void gui_elements_nav_close()
   {
     lv_obj_del(nav_container);
     nav_container = NULL;
+    nav_items.clear();
   }
+}
+//gui_elements_nav_register_item(const char* name, const char* javascript_open_eval, const char* javascript_close_eval)
+duk_ret_t javascript_gui_elements_nav_register_item(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  string name = duk_to_string(ctx, 0);
+  string open_eval = duk_to_string(ctx, 1);
+  string close_eval = duk_to_string(ctx, 2);
+  gui_elements_nav_register_item(name.c_str(), open_eval.c_str(), close_eval.c_str());
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_nav_first_close_item(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  string eval = duk_to_string(ctx, 0);
+  next_close_eval = eval;
+  printf("Set first close item to %s\n", next_close_eval.c_str());
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_nav(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_nav();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
+}
+duk_ret_t javascript_gui_elements_nav_close(duk_context *ctx)
+{
+	duk_get_top(ctx);  /* #args */
+  gui_elements_nav_close();
+	duk_push_number(ctx, 0);
+	return 0;  /* one return value */
 }

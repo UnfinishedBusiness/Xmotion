@@ -10,7 +10,7 @@ extern "C" {
  *********************/
 #include "../lvgl/lv_hal/lv_hal.h"
 #include "../lvgl/lvgl.h"
-
+#include "javascript_vm/duktape.h" //For duk_ret_t and duk_context
 /*********************
  *      DEFINES
  *********************/
@@ -37,7 +37,8 @@ void gui_elements_dro_tick(void);
 void gui_elements_dro_close();
 void gui_elements_dro_homed(void);
 void gui_elements_dro_unhomed(void);
-
+duk_ret_t javascript_gui_elements_dro(duk_context *);
+duk_ret_t javascript_gui_elements_dro_close(duk_context *);
 /**********************
  *      MACROS
  **********************/
