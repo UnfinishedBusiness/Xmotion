@@ -29,7 +29,7 @@ extern "C" {
 lv_obj_t *gui_elements_nav(void);
 void gui_elements_nav_tick();
 void gui_elements_nav_close();
-void gui_elements_nav_add_item(const char*, const char*);
+void gui_elements_nav_register_item(const char*, const char*, const char*);
 
 
 /**********************

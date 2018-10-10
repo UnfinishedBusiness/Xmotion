@@ -3,6 +3,7 @@
 #include "config/handler.h"
 #include "utils/terminal.h"
 #include "utils/hardware_utils.h"
+#include "javascript_vm/javascript.h"
 #include "main.h"
 
 #include <stdlib.h>
@@ -44,21 +45,35 @@ long long nav_timer_stamp;
 typedef struct
 {
     char name[100];
-    char javascript_eval[1024];
+    char javascript_open_eval[1024];
+    char javascript_close_eval[1024];
 }elements_nav_t;
 
 vector<elements_nav_t> nav_items;
+string next_close_eval;
 
 static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
 {
   printf("Button: %s released\n", txt);
+  for (size_t x = 0; x < nav_items.size(); x++)
+  {
+    if (strcmp(nav_items[x].name, txt) != 0)
+    {
+      printf("\tClosing %s\n", next_close_eval);
+      javascript_modules_eval(next_close_eval.c_str());
+      printf("\tEvaling: %s\n", nav_items[x].javascript_open_eval);
+      javascript_modules_eval(nav_items[x].javascript_open_eval);
+      next_close_eval = string(nav_items[x].javascript_close_eval);
+    }
+  }
   return LV_RES_OK; /*Return OK because the button matrix is not deleted*/
 }
-void gui_elements_nav_add_item(const char* name, const char* javascript_eval)
+void gui_elements_nav_register_item(const char* name, const char* javascript_open_eval, const char* javascript_close_eval)
 {
   elements_nav_t n;
-  sprintf(n.name, "%s", name);
-  sprintf(n.javascript_eval, "%s", javascript_eval);
+  sprintf(n.name, "\222%s", name);
+  sprintf(n.javascript_open_eval, "%s", javascript_open_eval);
+  sprintf(n.javascript_close_eval, "%s", javascript_close_eval);
   nav_items.push_back(n);
 }
 void gui_elements_nav_tick()
@@ -76,7 +91,19 @@ lv_obj_t *gui_elements_nav(void)
   nav_timer_ms = 0;
   nav_timer_stamp = current_timestamp();
   /*Create a button descriptor string array*/
-  static const char * btnm_map[] = {"CNC", "CAD", "CAM", ""};
+  #define MAX_NAV_ITEMS 10
+  static const char *btnm_map[MAX_NAV_ITEMS + 1]; //Allow up to 10 nav items + ""
+  int number_of_items = (int)nav_items.size();
+  if (number_of_items >= MAX_NAV_ITEMS)
+  {
+    number_of_items = MAX_NAV_ITEMS;
+  }
+  for (int x = 0; x < number_of_items; x++)
+  {
+    btnm_map[x] = nav_items[x].name;
+    //printf("Constructing %s\n", btnm_map[x]);
+  }
+  btnm_map[number_of_items] = "";
 
   lv_style_copy(&nav_text_style, &lv_style_plain);
   nav_text_style.text.color = NAV_WHITE_TEXT_COLOR;

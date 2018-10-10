@@ -148,7 +148,7 @@ static lv_res_t list_release_action(lv_obj_t * list_btn)
     {
       hardware_utils_set_text_mode();
       char cmd[1024];
-      sprintf(cmd, "nano %s", current_file.c_str());
+      sprintf(cmd, "nano \"%s\"", current_file.c_str());
       system(cmd);
       hardware_utils_set_graphics_mode();
       //This will need to be updated to a master ui_create function that consults with the ini...

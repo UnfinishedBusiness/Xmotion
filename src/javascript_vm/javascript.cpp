@@ -1,4 +1,5 @@
 #include "javascript.h"
+#include "gui/plasma_control_ui.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -86,6 +87,13 @@ static void push_file_as_string(duk_context *ctx, const char *filename)
 static void source_file(const char * file)
 {
   push_file_as_string(ctx, file);
+}
+void javascript_modules_eval(const char* eval_string)
+{
+  duk_push_string(ctx, (const char *) eval_string);
+  if (duk_peval(ctx) != 0) {
+      printf("Error: %s\n", duk_safe_to_string(ctx, -1));
+  }
 }
 void javascript_modules_init(void)
 {

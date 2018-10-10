@@ -88,7 +88,10 @@ int main(void)
     hardware_utils_set_graphics_mode();
 
     javascript_modules_init();
-    gui_plasma_control_ui_create();
+
+    //gui_elements_nav_register_item("CNC", "plasma_ui();");
+
+    //gui_plasma_control_ui_create();
 
     int nav_tick_timing = 0;
     int linuxcnc_poll_timing = 0;
