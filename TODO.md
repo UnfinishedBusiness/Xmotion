@@ -19,6 +19,9 @@
 		* Click New Operation, window opens. Specify inside, outside, center offset, feedrate, and tool diameter (Tool Library will be down the road, for now we will start simple)
 		* Post Gcode. Post Processor will be a Javascript file and the output will be posted to the "post_directory" ini setting
 
+# Backend
+	- Add F3 hotkey to edit TODO.md
+	- Add F4 hottkeyy to edit BUGS.md
 # Open File Dialog
 	- Add toolbar button for mounting USB drive
 	- Add toolbar button for un-mounting USB drive
