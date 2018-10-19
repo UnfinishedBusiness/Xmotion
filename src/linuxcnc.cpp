@@ -17,15 +17,7 @@
 #include <linux/kd.h>
 
 #ifndef SIM_MODE
-  #define ULAPI
-  #include "linuxcnc/config.h"
-  #include "linuxcnc/hal.h"
-  #include "linuxcnc/hal_types.h"
-  #include "linuxcnc/emc.hh"
-  #include "linuxcnc/motion.h"
-  #include "linuxcnc/emc_nml.hh"
-  #include "linuxcnc/nml_oi.hh"
-  #include "linuxcnc/timer.hh"
+
 #endif
 
 #include <iostream>
@@ -59,200 +51,17 @@ out the best way to use the NML withouth breaking backwards compatibility. - Tra
 linuxcnc_position_t linuxcnc_position;
 float jog_speed;
 
-#ifndef SIM_MODE
-  RCS_STAT_CHANNEL *emcStatusBuffer;
-  RCS_CMD_CHANNEL *emcCommandBuffer;
-  EMC_STAT *emcStatus;
-  NML *emcErrorBuffer;
-  char error_string[NML_ERROR_LEN];
-  char operator_text_string[NML_TEXT_LEN];
-  char operator_display_string[NML_DISPLAY_LEN];
-  double emcTimeout;
-  int emcCommandSerialNumber;
-
-  enum EMC_UPDATE_TYPE {
-      EMC_UPDATE_NONE = 1,
-      EMC_UPDATE_AUTO
-    };
-    extern EMC_UPDATE_TYPE emcUpdateType;
-
-    enum EMC_WAIT_TYPE {
-      EMC_WAIT_RECEIVED = 2,
-      EMC_WAIT_DONE
-    };
-    EMC_WAIT_TYPE emcWaitType;
-#endif
 /* Private Functions */
-#ifndef SIM_MODE
-  int emcCommandSend(RCS_CMD_MSG & cmd)
-  {
-      // write command
-      if (emcCommandBuffer->write(&cmd)) {
-          return -1;
-      }
-      emcCommandSerialNumber = cmd.serial_number;
-      return 0;
 
-  }
-#endif
 bool poll_error()
 {
-  SIM_BREAK false;
-  #ifndef SIM_MODE
-  NMLTYPE type;
-
-  if (0 == emcErrorBuffer || !emcErrorBuffer->valid())
-  {
-	   return false; //No new data!
-   }
-   type = emcErrorBuffer->read();
-   if (type == -1)
-   {
-     printf("Can't read nml error channel!\n");
-     return false;
-   }
-   else if (type == EMC_OPERATOR_ERROR_TYPE)
-   {
-     strncpy(error_string, ((EMC_OPERATOR_ERROR *) (emcErrorBuffer->get_address()))->error, LINELEN - 1);
-     error_string[NML_ERROR_LEN - 1] = 0;
-     return true;
-   }
-   else if (type == EMC_OPERATOR_TEXT_TYPE)
-   {
-     strncpy(operator_text_string, ((EMC_OPERATOR_TEXT *) (emcErrorBuffer->get_address()))->text, LINELEN - 1);
-     operator_text_string[NML_TEXT_LEN - 1] = 0;
-     return true;
-   }
-   else if (type == EMC_OPERATOR_DISPLAY_TYPE)
-   {
-     strncpy(operator_display_string,((EMC_OPERATOR_DISPLAY *) (emcErrorBuffer->get_address()))->display, LINELEN - 1);
-     operator_display_string[NML_DISPLAY_LEN - 1] = 0;
-     return true;
-   }
-   else if (type == NML_ERROR_TYPE)
-   {
-     strncpy(error_string, ((NML_ERROR *) (emcErrorBuffer->get_address()))->error, NML_ERROR_LEN - 1);
-     error_string[NML_ERROR_LEN - 1] = 0;
-     return true;
-   }
-   else if (type == NML_TEXT_TYPE)
-   {
-     strncpy(operator_text_string, ((NML_TEXT *) (emcErrorBuffer->get_address()))->text, NML_TEXT_LEN - 1);
-     operator_text_string[NML_TEXT_LEN - 1] = 0;
-     return true;
-   }
-   else if (type == NML_DISPLAY_TYPE)
-   {
-     strncpy(operator_display_string, ((NML_DISPLAY *) (emcErrorBuffer->get_address()))->display, NML_DISPLAY_LEN - 1);
-     operator_display_string[NML_DISPLAY_LEN - 1] = 0;
-     return true;
-   }
-   #endif
+  return false;
 }
 bool poll_status()
 {
-  SIM_BREAK false;
-  #ifndef SIM_MODE
-  if(emcStatusBuffer->valid())
-  {
-    if(emcStatusBuffer->peek() == EMC_STAT_TYPE)
-    {
-      emcStatus = static_cast<EMC_STAT*>(emcStatusBuffer->get_address());
-      return true;
-    }
-  }
-  return false;
-  #endif
-}
-int emcCommandWaitDone()
-{
-  SIM_BREAK 0;
-  #ifndef SIM_MODE
-  double end;
-  for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
-  {
-    poll_status();
-    int serial_diff = emcStatus->echo_serial_number - emcCommandSerialNumber;
-    if (serial_diff < 0)
-    {
-        continue;
-    }
-    if (serial_diff > 0)
-    {
-        return 0;
-    }
-    if (emcStatus->status == RCS_DONE)
-    {
-        return 0;
-    }
-
-    if (emcStatus->status == RCS_ERROR)
-    {
-        return -1;
-    }
-    esleep(EMC_COMMAND_DELAY);
-  }
-  #endif
-}
-int emcCommandWaitReceived()
-{
-    SIM_BREAK 0;
-    #ifndef SIM_MODE
-    double end;
-    for (end = 0.0; emcTimeout <= 0.0 || end < emcTimeout; end += EMC_COMMAND_DELAY)
-    {
-      poll_status();
-      int serial_diff = emcStatus->echo_serial_number - emcCommandSerialNumber;
-    	if (serial_diff >= 0)
-      {
-    	    return 0;
-    	}
-      esleep(EMC_COMMAND_DELAY);
-    }
-    return -1;
-    #endif
+ return false;
 }
 /* End Private Function */
-
-/* Private Command Functions */
-int sendMachineOn()
-{
-    SIM_BREAK 0;
-    #ifndef SIM_MODE
-    EMC_TASK_SET_STATE state_msg;
-
-    state_msg.state = EMC_TASK_STATE_ON;
-    emcCommandSend(state_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED)
-    {
-      return emcCommandWaitReceived();
-    }
-    else if (emcWaitType == EMC_WAIT_DONE)
-    {
-	     return emcCommandWaitDone();
-    }
-    return 0;
-    #endif
-}
-int sendMdiCmd(const char *mdi)
-{
-    SIM_BREAK 0;
-    #ifndef SIM_MODE
-    EMC_TASK_PLAN_EXECUTE emc_task_plan_execute_msg;
-    strcpy(emc_task_plan_execute_msg.command, mdi);
-    emcCommandSend(emc_task_plan_execute_msg);
-    if (emcWaitType == EMC_WAIT_RECEIVED)
-    {
-	     return emcCommandWaitReceived();
-    }
-    else if (emcWaitType == EMC_WAIT_DONE)
-    {
-	     return emcCommandWaitDone();
-    }
-    return 0;
-    #endif
-}
-/* End Private Command Functions */
 
 void linuxcnc_init(void)
 {
