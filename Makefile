@@ -21,7 +21,7 @@ DCOMPILE_FLAGS = -D DEBUG
 # Additional debug-specific flags
 SIM_COMPILE_FLAGS = -D SIM_MODE
 # Add additional include paths
-INCLUDES = -I $(SRC_PATH) `python-config --includes`
+INCLUDES = -I $(SRC_PATH) `python-config --includes` -I/usr/include/linuxcnc
 # General linker settings
 LINK_FLAGS = `python-config --libs`
 # Additional release-specific linker settings

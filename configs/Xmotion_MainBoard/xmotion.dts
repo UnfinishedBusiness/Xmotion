@@ -1,0 +1,651 @@
+// Copyright 2013
+// Charles Steinkuehler <charles@steinkuehler.net>
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "ti,beaglebone", "ti,beaglebone-black";
+
+	/* identification */
+	part-number = "xmotion";
+	version = "1";
+
+	exclusive-use =
+	/* state the resources this cape uses */
+	//"P9.24",	/* gpio0.15	UartTX	*/
+	//"P9.26",	/* gpio0.14	UartRX	*/
+	/* ------ IO POWER ------ */
+
+		"P8.7",		/* gpio2.2  Power_Enable */
+
+	/* ------ PWM ------ */
+
+		"P8.13",	/* gpio0.23  EHRPWM2B   PWM0  */
+		"ehrpwm1A",
+		"ehrpwm2A",
+
+	/* ------ AUX OUTPUTS ------*/
+
+		"P8.26",	/* gpio1.29	Aux1RLY	*/
+		"P9.28",	/* gpio3.17	Aux2RLY */
+		"P9.41",	/* *P9_41A* gpio0.20	AUX3RLY	*/
+		"P9.27",	/* gpio3.19	Aux4RLY */
+
+
+	/* ------ STEPPERS ------ */
+
+		"P8.12",	/* gpio1.12  #X_STEP */
+		"P8.11",	/* gpio1.13  #X_DIR */
+		"P8.16",	/* gpio1.14  #y1_step */
+		"P8.15",	/* gpio1.15  #y1_dir */
+		"P9.15",	/* gpio1.16  #Z_STEP */
+		"P9.23",	/* gpio1.17  #Z_DIR */
+		"P9.22",	/* gpio0.2   #y2_STEP */
+		//"P9.21",	/* gpio0.3   #y2_dir */
+		"P9.18",	/* gpio0.2   #A_STEP */
+		"P9.17",	/* gpio0.5   #A_DIR */
+							//"P9.12",        /* gpio1.28  DMUX_CLK */
+		"pru1",
+		"pruss",
+
+	/* ------ SENSORS ------ */
+
+		"P8.8",		/* gpio2.3	Home_X	*/
+		"P8.9",		/* gpio2.5	Home_Y1	*/
+		"P8.10",	/* gpio2.4	Home_b	*/
+		"P8.14",	/* gpio0.26	Home_Z	*/
+		"P8.17",	/* gpio0.27	TorchUp	*/
+		"P8.18",	/* gpio2.1	TorchDn	*/
+		"P9.31",	/* gpio3.14	Input4 */
+		"P9.30",	/* gpio3.16	Input3	*/
+		"P9.29",	/* gpio3.15	Input2	*/
+		"P9.25",	/* gpio3.21	Input1	*/
+		"P9.12",	/* gpio1.28	ESTOP	*/
+		"P8.19",	/* gpio0.22	ArcOK	*/
+		"P9.16",	/* gpio1.19	FloHead */
+		"P9.13",	/* gpio0.31	Z_ALERT */
+		//"P9.12",	/* gpio1.28	A_ALERT */
+		"P9.11",	/* gpio0.30	b_ALERT*/
+		"P9.42",	/* gpio3.18	X_ALERT */
+		"P9.14",	/* gpio1.18	Y1_ALERT*/
+
+
+	/* ------ ADC ------ */
+
+		"P9.33",	/* AIN4		ANALOG1	*/
+		"P9.35",	/* AIN6		ANALOG2	*/
+		"P9.36",	/* AIN5		ANALOG3	*/
+		"P9.37",	/* AIN2		ANALOG4 */
+		"tscadc",
+
+	/* ------ LED ------ */
+
+  	"P8.26";        /* gpio1.29       LED     */
+
+		/* ----------- IO ENABLE ------------ */
+
+		fragment@0 {
+			target = <&am33xx_pinmux>;
+			__overlay__ {
+
+				xmotion_io_enable_pins: pinmux_xmotion_io_enable_pins {
+					pinctrl-single,pins = <
+						//0x090 0x07  /*  P8-7 TIMER4     gpmc_advn_ale.gpio2[2] */
+					>;
+				};
+			};
+		};
+
+		fragment@1 {
+			target = <&ocp>;
+			__overlay__ {
+
+				xmotion_io_enables {
+					compatible = "gpio-of-helper";
+					status = "okay";
+					pinctrl-names = "default";
+					pinctrl-0 = <&xmotion_io_enable_pins>;
+
+					/*io_enable_n {
+						gpio-name = "xmotion:io_enable_n";
+						gpio = <&gpio3 2 0>;
+						output;
+						init-high;
+					};*/
+				};
+			};
+		};
+
+		/* ----------- PWM ------------ */
+
+		fragment@11 {
+			target = <&epwmss1>;
+			__overlay__ {
+				status = "okay";
+			};
+		};
+
+		fragment@12 {
+			target = <&ehrpwm1>;
+			__overlay__ {
+				status = "okay";
+			};
+		};
+
+		fragment@13 {
+			target = <&epwmss2>;
+			__overlay__ {
+				status = "okay";
+			};
+		};
+
+		fragment@14 {
+			target = <&ehrpwm2>;
+			__overlay__ {
+				status = "okay";
+			};
+		};
+
+		fragment@15 {
+				target = <&am33xx_pinmux>;
+				__overlay__ {
+
+				// J2_PWM0
+					P8_13_ehrpwm_pin: pinmux_P8_13_ehrpwm_pin {
+						pinctrl-single,pins = <0x024  0x4>; /* P8_13 (ZCZ ball T10) | MODE 4 */
+					};
+
+					P8_13_gpio_pin: pinmux_P8_13_gpio_pin {
+						pinctrl-single,pins = <0x024  0x7>; /* P8_13 (ZCZ ball T10) | MODE 7 */
+					};
+
+					// J3_PWM1
+					/*P8_19_ehrpwm_pin: pinmux_P8_19_ehrpwm_pin {
+						pinctrl-single,pins = <0x020  0x4>; // P8_19 (ZCZ ball U10) | MODE 4
+					};
+
+					P8_19_gpio_pin: pinmux_P8_19_gpio_pin {
+						pinctrl-single,pins = <0x020  0x7>; // P8_19 (ZCZ ball U10) | MODE 7
+					};*/
+
+				// J4_PWM2
+					P9_14_ehrpwm_pin: pinmux_P9_14_ehrpwm_pin {
+						pinctrl-single,pins = <0x048  0x6>; /* P9_14 (ZCZ ball U14) | MODE 6 */
+					};
+
+					P9_14_gpio_pin: pinmux_P9_14_gpio_pin {
+						pinctrl-single,pins = <0x048  0x7>; /* P9_14 (ZCZ ball U14) | MODE 7 */
+					};
+				};
+			};
+
+		fragment@16 {
+			target = <&ocp>;
+			__overlay__ {
+
+				xmotion_pwm_J2_pinmux {
+					compatible = "bone-pinmux-helper";
+					status = "okay";
+
+					pinctrl-names = "default", "gpio";
+					pinctrl-0 = <&P8_13_ehrpwm_pin>;
+					pinctrl-1 = <&P8_13_gpio_pin>;
+				};
+
+				/*xmotion_pwm_J3_pinmux {
+					compatible = "bone-pinmux-helper";
+					status = "okay";
+
+					pinctrl-names = "default", "gpio";
+					pinctrl-0 = <&P8_19_ehrpwm_pin>;
+					pinctrl-1 = <&P8_19_gpio_pin>;
+				};*/
+
+				xmotion_pwm_J2 {
+					compatible	= "pwm_test";
+					pwms		= <&ehrpwm2 1 10000000 0>;
+					pwm-names	= "PWM0_J2_FAN";
+					enabled		= <0>;
+					duty		= <0>;
+					status		= "okay";
+				};
+
+				/*xmotion_pwm_J3 {
+					compatible	= "pwm_test";
+					pwms		= <&ehrpwm2 0 10000000 0>;
+					pwm-names	= "PWM1_J3_EXTR";
+					enabled		= <0>;
+					duty		= <0>;
+					status		= "okay";
+				};*/
+			};
+		};
+
+		/* ----------- STEPPERS & AUX Outputs ------------ */
+
+		fragment@21 {
+			target = <&am33xx_pinmux>;
+			__overlay__ {
+
+				xmotion_stepper_pins: pinmux_xmotion_stepper_pins {
+					status = "okay";
+					pinctrl-single,pins = <
+						/* stepper outputs */
+						0x030 0x07	/* #X_STEP, P8_12, gpio1.12, mode7 out */
+						0x034 0x07	/* #X_DIR, P8_11, gpio1.13, mode7 out */
+
+						0x038 0x07	/* #y1_step, P8_16, gpio1.14, mode7 out */
+						0x03c 0x07	/* #y1_dir, P8_15, gpio1.15, mode7 out */
+
+						0x040 0x07	/* #Z_STEP, P9_15, gpio1.16, mode7 out */
+						0x044 0x07	/* #Z_DIR, P9_23, gpio1.17, mode7 out */
+
+						0x150 0x07	/* #y2_STEP, P9_22, gpio0.2,  mode7 out */
+						0x154 0x07	/* #y2_dir, P9_21, gpio0.3,  mode7 out */
+
+						0x158 0x07	/* #A_STEP, P9_18, gpio0.4,  mode7 out */
+						0x15c 0x07	/* #A_DIR, P9_17, gpio0.5,  mode7 out */
+
+						//0x078 0x07	/* DMUX_CLK P9_12, gpio1.28, mode7 out */
+
+						/* aux outputs */
+						0x07c 0x07	/* #Aux1RLY, P8_26, gpio1.29,  mode7 out */
+						0x19c 0x07	/* #Aux2RLY, P9_28, gpio3.17,  mode7 out */
+						0x1b4 0x07	/* #Aux3RLY, P9_41A, gpio0.20,  mode7 out */
+						0x1a4 0x07	/* #Aux4RLY, P9_27, gpio3.19,  mode7 out */
+
+						0x090 0x07	/* #PwrEN, P8_7, gpio2.2,  mode7 out */
+					>;
+				};
+			};
+		};
+
+		fragment@22 {
+			target = <&ocp>;
+			__overlay__ {
+
+				xmotion_steppers {
+					compatible = "gpio-of-helper";
+					status = "okay";
+					pinctrl-names = "default";
+					pinctrl-0 = <&xmotion_stepper_pins>;
+
+					x_step {
+						gpio-name = "xmotion:x_step";
+						gpio = <&gpio2 12 0>;
+						output;
+						init-low;
+					};
+					x_dir {
+						gpio-name = "xmotion:x_dir";
+						gpio = <&gpio2 13 0>;
+						output;
+						init-low;
+					};
+					y1_step {
+						gpio-name = "xmotion:y1_step";
+						gpio = <&gpio2 14 0>;
+						output;
+						init-low;
+					};
+					y1_dir {
+						gpio-name = "xmotion:y1_dir";
+						gpio = <&gpio2 15 0>;
+						output;
+						init-low;
+					};
+					z_step {
+						gpio-name = "xmotion:z_step";
+						gpio = <&gpio2 16 0>;
+						output;
+						init-low;
+					};
+					z_dir {
+						gpio-name = "xmotion:z_dir";
+						gpio = <&gpio2 17 0>;
+						output;
+						init-low;
+					};
+
+					y2_step {
+						gpio-name = "xmotion:y2_step";
+						gpio = <&gpio1 2 0>;
+						output;
+						init-low;
+					};
+					y2_dir {
+						gpio-name = "xmotion:y2_dir";
+						gpio = <&gpio1 3 0>;
+						output;
+						init-low;
+					};
+					a_step {
+						gpio-name = "xmotion:a_step";
+						gpio = <&gpio1 4 0>;
+						output;
+						init-low;
+					};
+					a_dir {
+						gpio-name = "xmotion:a_dir";
+						gpio = <&gpio1 5 0>;
+						output;
+						init-low;
+					};
+
+					/*dmux_clk {
+						gpio-name = "bebopr:dmux_clk";
+						gpio = <&gpio2 28 0>;
+						output;
+						init-high;
+					};*/
+
+					/* ------- AUX Relays ------------*/
+
+					aux1_relay {
+						gpio-name = "xmotion:aux1_relay";
+						gpio = <&gpio2 29 0>;
+						output;
+						init-low;
+					};
+					aux2_relay {
+						gpio-name = "xmotion:aux2_relay";
+						gpio = <&gpio4 17 0>;
+						output;
+						init-low;
+					};
+					aux3_relay {
+						gpio-name = "xmotion:aux3_relay";
+						gpio = <&gpio1 20 0>;
+						output;
+						init-low;
+					};
+					aux4_relay {
+						gpio-name = "xmotion:aux4_relay";
+						gpio = <&gpio4 19 0>;
+						output;
+						init-low;
+					};
+
+					/* ----------- PWR Enable ---------------- */
+					power_enable {
+						gpio-name = "xmotion:power_enable";
+						gpio = <&gpio3 2 0>;
+						output;
+						init-low;
+					};
+
+				};
+			};
+		};
+
+		fragment@23 {
+			target = <&pruss>;
+			__overlay__ {
+				status = "okay";
+			};
+		};
+
+		/* ----------- SENSORS ------------ */
+
+		fragment@31 {
+			target = <&am33xx_pinmux>;
+			__overlay__ {
+
+				xmotion_sensor_pins: pinmux_xmotion_sensor_pins {
+					status = "okay";
+					pinctrl-single,pins = <
+						0x094 0x3f	/* P8.8		gpio2.3		Home_X	*/
+						0x09c 0x3f	/* P8.9		gpio2.5		Home_Y1	*/
+						0x098 0x3f	/* P8.10	gpio2.4		Home_b	*/
+						0x028 0x3f	/* P8.14	gpio0.26	Home_Z	*/
+						0x02c 0x3f	/* P8.17	gpio0.27	TorchUp	*/
+						0x08c 0x3f	/* P8.18	gpio2.1		TorchDn	*/
+						0x190 0x3f	/* p9.31	gpio3.14	Input4	*/
+						0x198 0x3f	/* p9.30	gpio3.16	Input3	*/
+						0x194 0x3f	/* p9.29	gpio3.15	Input2	*/
+						0x1ac 0x3f	/* p9.25	gpio3.21	Input1	*/
+
+						0x078 0x3f	/* p9.12	gpio1.28	ESTOP	*/
+						0x020 0x3f	/* p8.19	gpio0.22	ArcOK	*/
+						0x04c 0x3f	/* p9.16	gpio1.19	FloHead	*/
+						0x074 0x3f	/* p9.13	gpio0.31	Z_ALERT	*/
+						0x070 0x3f	/* p9.11	gpio0.30	b_ALERT*/
+						0x1a0 0x3f	/* p9.42	gpio3.18	X_ALERT	*/
+						0x048 0x3f	/* p9.14	gpio1.18	Y1_ALERT*/
+					>;
+				};
+			};
+		};
+
+		fragment@33 {
+			target = <&ocp>;
+			__overlay__ {
+
+				xmotion_sensors {
+					compatible = "gpio-of-helper";
+					status = "okay";
+					pinctrl-names = "default";
+					pinctrl-0 = <&xmotion_sensor_pins>;
+
+					home_x {
+						gpio-name = "xmotion:home_x";
+						gpio = <&gpio3 3 0>;
+						input;
+					};
+					home_y1 {
+						gpio-name = "xmotion:home_y1";
+						gpio = <&gpio3 5 0>;
+						input;
+					};
+					home_b {
+						gpio-name = "xmotion:home_b";
+						gpio = <&gpio3 4 0>;
+						input;
+					};
+					home_z {
+						gpio-name = "xmotion:home_z";
+						gpio = <&gpio1 26 0>;
+						input;
+					};
+					torch_up {
+						gpio-name = "xmotion:torch_up";
+						gpio = <&gpio1 27 0>;
+						input;
+					};
+					torch_down {
+						gpio-name = "xmotion:torch_down";
+						gpio = <&gpio3 1 0>;
+						input;
+					};
+					input_4 {
+						gpio-name = "xmotion:input_4";
+						gpio = <&gpio4 14 0>;
+						input;
+					};
+					input_3 {
+						gpio-name = "xmotion:input_3";
+						gpio = <&gpio4 16 0>;
+						input;
+					};
+					input_2 {
+						gpio-name = "xmotion:input_2";
+						gpio = <&gpio4 15 0>;
+						input;
+					};
+					input_1 {
+						gpio-name = "xmotion:input_1";
+						gpio = <&gpio4 21 0>;
+						input;
+					};
+					estop {
+						gpio-name = "xmotion:estop";
+						gpio = <&gpio2 28 0>;
+						input;
+					};
+					arc_ok {
+						gpio-name = "xmotion:arc_ok";
+						gpio = <&gpio1 22 0>;
+						input;
+					};
+					floating_head {
+						gpio-name = "xmotion:floating_head";
+						gpio = <&gpio2 19 0>;
+						input;
+					};
+					z_alert {
+						gpio-name = "xmotion:z_alert";
+						gpio = <&gpio1 31 0>;
+						input;
+					};
+					b_alert {
+						gpio-name = "xmotion:b_alert";
+						gpio = <&gpio1 30 0>;
+						input;
+					};
+					x_alert {
+						gpio-name = "xmotion:x_alert";
+						gpio = <&gpio4 18 0>;
+						input;
+					};
+					y1_alert {
+						gpio-name = "xmotion:y1_alert";
+						gpio = <&gpio2 18 0>;
+						input;
+					};
+				};
+			};
+		};
+
+		/* ----------- ADC ------------ */
+
+	        /* no pinmux needed */
+
+		fragment@41 {
+			target = <&ocp>;
+			__overlay__ {
+
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				tscadc {
+					compatible = "ti,ti-tscadc";
+					status = "okay";
+
+					reg = <0x44e0d000 0x1000>;
+					interrupt-parent = <&intc>;
+					interrupts = <16>;
+					ti,hwmods = "adc_tsc";
+					adc {
+						ti,adc-channels = <0 1 2 3 4 5 6 7>;
+					};
+				};
+
+				xmotion_adc {
+					compatible = "bone-iio-helper";
+					status = "okay";
+					/* scale to raw bit value */
+					vsense-name  = "AIN0", "AIN1", "AIN2", "AIN3", "AIN4", "AIN5", "AIN7";
+					vsense-scale = < 228     228     228     228     228     228     228>;
+				};
+
+			};
+		};
+
+
+		/* ----------- LED ------------ */
+
+		fragment@51 {
+			target = <&am33xx_pinmux>;
+			__overlay__ {
+
+	 			xmotion_led_pins: pinmux_xmotion_led_pins {
+					pinctrl-single,pins = <
+						//0x07c 0x07    /* P8-26 GPIO1_29   gpmc_csn0.gpio1[29]    */
+					>;
+				};
+			};
+		};
+
+		fragment@52 {
+			target = <&ocp>;
+			__overlay__ {
+
+				xmotion_leds {
+					compatible = "gpio-leds";
+					pinctrl-names = "default";
+					pinctrl-0 = <&xmotion_led_pins>;
+
+					status_led {
+						label = "xmotion:status_led";
+						gpios = <&gpio2 29 0>;
+						linux,default-trigger = "heartbeat";
+						default-state = "off";
+					};
+				};
+			};
+		};
+
+		/* ----------- ADS1015 ------------ */
+
+	/*
+		fragment@61 {
+			target = <&i2c2>;
+			__overlay__ {
+				// needed to avoid gripping by DTC
+				#address-cells = <1>;
+				#size-cells = <0>;
+				status = "okay";	// probably already set
+
+				ads1015: ads1015@48 {
+
+					compatible = "ti,ads1015";
+					status = "okay";
+
+			           	#address-cells = <1>;
+					#size-cells = <0>;
+					reg = <0x48>;
+
+					hi_res = <1>;
+
+					channel@1 {
+				   	     	  reg = <4>;
+					     	  ti,gain = <2>;
+					     	  ti,datarate = <2>;
+				   	};
+					channel@2 {
+				   	     	  reg = <5>;
+					     	  ti,gain = <2>;
+					     	  ti,datarate = <2>;
+				   	};
+					channel@3 {
+				   	     	  reg = <6>;
+					     	  ti,gain = <2>;
+					     	  ti,datarate = <2>;
+				   	};
+					channel@4 {
+				   	     	  reg = <0>;
+					     	  ti,gain = <3>;
+					     	  ti,datarate = <2>;
+				   	};
+		        	};
+			};
+
+		};
+	*/
+
+	};

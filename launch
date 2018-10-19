@@ -1,2 +1,7 @@
 #!/bin/bash
-linuxcnc configs/Gen2/Gen2.ini
+#Uncomment the following line to start Xmotion on a I386 LinuxCNC system. Edit the config just like it was any other LinuxCNC config
+#linuxcnc configs/Gen2/Gen2.ini
+
+
+#Uncomment the following line to start Xmotion on the Xmotion Main board (ARM7 + Machinekit)
+machinekit configs/Xmotion_MainBoard/Xmotion.ini

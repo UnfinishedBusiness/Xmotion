@@ -17,11 +17,15 @@
 #include <linux/kd.h>
 
 #ifndef SIM_MODE
-  #include <linuxcnc/emc.hh>
-  #include <linuxcnc/motion.h>
-  #include <linuxcnc/emc_nml.hh>
-  #include <linuxcnc/nml_oi.hh>
-  #include <linuxcnc/timer.hh>
+  #define ULAPI
+  #include "linuxcnc/config.h"
+  #include "linuxcnc/hal.h"
+  #include "linuxcnc/hal_types.h"
+  #include "linuxcnc/emc.hh"
+  #include "linuxcnc/motion.h"
+  #include "linuxcnc/emc_nml.hh"
+  #include "linuxcnc/nml_oi.hh"
+  #include "linuxcnc/timer.hh"
 #endif
 
 #include <iostream>
