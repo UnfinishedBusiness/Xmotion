@@ -52,6 +52,7 @@ linuxcnc_position_t linuxcnc_position;
 linuxcnc_coordinate_t linuxcnc_last_dro_position;
 float jog_speed;
 char error_string[2048];
+bool estop_latch;
 
 /* Private Functions */
 
@@ -122,13 +123,17 @@ void linuxcnc_init(void)
   //emcCommandBuffer = new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc", emc_nmlfile);
   //emcErrorBuffer = new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
 
-
   linuxcnc_position.dro.x = 0;
   linuxcnc_position.dro.y = 0;
   linuxcnc_position.dro.z = 0;
   jog_speed = config.default_jog_speed / 60;
   Py_Initialize();
-  PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\nc.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)\ns = linuxcnc.stat()\ne = linuxcnc.error_channel()");
+  PyRun_SimpleString("import linuxcnc\nc = linuxcnc.command()\ns = linuxcnc.stat()\ne = linuxcnc.error_channel()");
+  if (linuxcnc_get_status_bool("estop") == false)
+  {
+    printf("Estop is off on init!\n");
+    PyRun_SimpleString("c.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)");
+  }
   #endif
 }
 void linuxcnc_close(void)
@@ -488,5 +493,15 @@ void linuxcnc_tick()
     linuxcnc_last_dro_position.y = linuxcnc_position.dro.y;
     linuxcnc_last_dro_position.z = linuxcnc_position.dro.z;
   }
+  if (estop_latch != linuxcnc_get_status_bool("estop"))
+  {
+    printf("Estop changed!\n");
+    if (linuxcnc_get_status_bool("estop") == false)
+    {
+      printf("\tTaking machine out of Estop!\n");
+      PyRun_SimpleString("c.state(linuxcnc.STATE_ESTOP_RESET)\nc.state(linuxcnc.STATE_ON)");
+    }
+  }
+  estop_latch = linuxcnc_get_status_bool("estop");
   #endif
 }
