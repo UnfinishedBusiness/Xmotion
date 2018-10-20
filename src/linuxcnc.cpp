@@ -49,6 +49,7 @@ out the best way to use the NML withouth breaking backwards compatibility. - Tra
 #define EMC_COMMAND_DELAY   0.1	// how long to sleep between checks
 
 linuxcnc_position_t linuxcnc_position;
+linuxcnc_coordinate_t linuxcnc_last_dro_position;
 float jog_speed;
 
 /* Private Functions */
@@ -59,7 +60,39 @@ bool poll_error()
 }
 bool poll_status()
 {
- return false;
+  PyObject *output;
+  PyObject *status;
+  PyRun_SimpleString("s.poll()");
+  PyObject *pModule = PyImport_AddModule("__main__"); //create main module
+  PyObject *catcher = PyObject_GetAttrString(pModule,"s"); //get our catchOutErr created above
+
+
+  status = PyObject_GetAttrString(catcher,"position");
+  output = PyTuple_GetItem(status, 0);
+  linuxcnc_position.mcs.x = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 1);
+  linuxcnc_position.mcs.y = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 2);
+  linuxcnc_position.mcs.z = (float)PyFloat_AsDouble(output);
+
+  status = PyObject_GetAttrString(catcher,"g92_offset");
+  output = PyTuple_GetItem(status, 0);
+  linuxcnc_position.g92_offset.x = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 1);
+  linuxcnc_position.g92_offset.y = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 2);
+  linuxcnc_position.g92_offset.z = (float)PyFloat_AsDouble(output);
+
+  status = PyObject_GetAttrString(catcher,"g5x_offset");
+  output = PyTuple_GetItem(status, 0);
+  linuxcnc_position.work_offset.x = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 1);
+  linuxcnc_position.work_offset.y = (float)PyFloat_AsDouble(output);
+  output = PyTuple_GetItem(status, 2);
+  linuxcnc_position.work_offset.z = (float)PyFloat_AsDouble(output);
+
+  PyErr_Print(); //make python print any errors
+  return true;
 }
 /* End Private Function */
 
@@ -67,9 +100,9 @@ void linuxcnc_init(void)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  emcStatusBuffer = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", emc_nmlfile);
-  emcCommandBuffer = new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc", emc_nmlfile);
-  emcErrorBuffer = new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
+  //emcStatusBuffer = new RCS_STAT_CHANNEL(emcFormat, "emcStatus", "xemc", emc_nmlfile);
+  //emcCommandBuffer = new RCS_CMD_CHANNEL(emcFormat, "emcCommand", "xemc", emc_nmlfile);
+  //emcErrorBuffer = new NML(nmlErrorFormat, "emcError", "xemc", emc_nmlfile);
 
 
   linuxcnc_position.dro.x = 0;
@@ -84,7 +117,7 @@ void linuxcnc_close(void)
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  emcStatusBuffer = NULL;
+  //emcStatusBuffer = NULL;
   Py_Finalize();
   #endif
 }
@@ -220,6 +253,8 @@ void linuxcnc_set_jog_speed(float speed)
 }
 float linuxcnc_get_pin_state(char *pin)
 {
+
+	return false;
   SIM_BREAK true;
   #ifndef SIM_MODE
   char cmd[1024];
@@ -233,7 +268,7 @@ float linuxcnc_get_pin_state(char *pin)
   char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
   pclose(cmd_p);
   line_p[strlen(line_p) - 1] = '\0';
-  //printf("GETP Says: %s\n", line_p);
+  printf("GETP Says: %s\n", line_p);
   if (strcmp(line_p, "TRUE") != 0)
   {
     //printf("\tReturn False!\n");
@@ -384,7 +419,7 @@ void linuxcnc_tick()
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  if (poll_error())
+  /*if (poll_error())
   {
     printf("operator_text_string: %s\n", operator_text_string);
     printf("operator_display_string: %s\n", operator_display_string);
@@ -394,33 +429,21 @@ void linuxcnc_tick()
       gui_elements_message_box_push(800, 60, error_string, 10, 10, 1);
     }
 
-  }
+  }*/
   if (poll_status())
   {
-    if (linuxcnc_position.mcs.x != emcStatus->motion.traj.actualPosition.tran.x || linuxcnc_position.mcs.y != emcStatus->motion.traj.actualPosition.tran.y || linuxcnc_position.mcs.z != emcStatus->motion.traj.actualPosition.tran.z)
-    {
-      gui_elements_viewer_set_redraw_flag();
-    }
-    linuxcnc_position.mcs.x = emcStatus->motion.traj.actualPosition.tran.x;
-    linuxcnc_position.mcs.y = emcStatus->motion.traj.actualPosition.tran.y;
-    linuxcnc_position.mcs.z = emcStatus->motion.traj.actualPosition.tran.z;
-
-    linuxcnc_position.work_offset.x = emcStatus->task.g5x_offset.tran.x;
-    linuxcnc_position.work_offset.y = emcStatus->task.g5x_offset.tran.y;
-    linuxcnc_position.work_offset.z = emcStatus->task.g5x_offset.tran.z;
-
-    linuxcnc_position.g92_offset.x = emcStatus->task.g92_offset.tran.x;
-    linuxcnc_position.g92_offset.y = emcStatus->task.g92_offset.tran.y;
-    linuxcnc_position.g92_offset.z = emcStatus->task.g92_offset.tran.z;
-
-    linuxcnc_position.tool_offset.x = emcStatus->task.toolOffset.tran.x;
-    linuxcnc_position.tool_offset.y = emcStatus->task.toolOffset.tran.y;
-    linuxcnc_position.tool_offset.z = emcStatus->task.toolOffset.tran.z;
-
-
     linuxcnc_position.dro.x = linuxcnc_position.mcs.x - linuxcnc_position.work_offset.x - linuxcnc_position.g92_offset.x - linuxcnc_position.tool_offset.x;
     linuxcnc_position.dro.y = linuxcnc_position.mcs.y - linuxcnc_position.work_offset.y - linuxcnc_position.g92_offset.y - linuxcnc_position.tool_offset.y;
     linuxcnc_position.dro.z = linuxcnc_position.mcs.z - linuxcnc_position.work_offset.z - linuxcnc_position.g92_offset.z - linuxcnc_position.tool_offset.z;
+
+    if (linuxcnc_position.mcs.x != linuxcnc_last_dro_position.x || linuxcnc_position.mcs.y != linuxcnc_last_dro_position.y || linuxcnc_position.mcs.z != linuxcnc_last_dro_position.z)
+    {
+      gui_elements_viewer_set_redraw_flag();
+    }
+
+    linuxcnc_last_dro_position.x = linuxcnc_position.dro.x;
+    linuxcnc_last_dro_position.y = linuxcnc_position.dro.y;
+    linuxcnc_last_dro_position.z = linuxcnc_position.dro.z;
   }
   #endif
 }

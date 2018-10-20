@@ -5,3 +5,8 @@
 
 #Uncomment the following line to start Xmotion on the Xmotion Main board (ARM7 + Machinekit)
 machinekit configs/Xmotion_MainBoard/Xmotion.ini
+
+
+#sleep 5
+
+#sudo ./Xmotion

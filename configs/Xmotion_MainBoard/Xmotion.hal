@@ -202,3 +202,6 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 #setp bb_gpio.p9.out-26.invert 1
 #setp bb_gpio.p9.out-24.invert 1
 
+net torch-on motion.spindle-on => bb_gpio.p8.out-26
+
+
