@@ -56,7 +56,10 @@ float jog_speed;
 
 bool poll_error()
 {
-  return false;
+
+
+
+  return true;
 }
 bool poll_status()
 {
@@ -436,9 +439,10 @@ void linuxcnc_tick()
     linuxcnc_position.dro.y = linuxcnc_position.mcs.y - linuxcnc_position.work_offset.y - linuxcnc_position.g92_offset.y - linuxcnc_position.tool_offset.y;
     linuxcnc_position.dro.z = linuxcnc_position.mcs.z - linuxcnc_position.work_offset.z - linuxcnc_position.g92_offset.z - linuxcnc_position.tool_offset.z;
 
-    if (linuxcnc_position.mcs.x != linuxcnc_last_dro_position.x || linuxcnc_position.mcs.y != linuxcnc_last_dro_position.y || linuxcnc_position.mcs.z != linuxcnc_last_dro_position.z)
+    if (fabs(linuxcnc_position.dro.x - linuxcnc_last_dro_position.x) > 0.002 || fabs(linuxcnc_position.dro.y - linuxcnc_last_dro_position.y) > 0.002 || fabs(linuxcnc_position.dro.z - linuxcnc_last_dro_position.z) > 0.002)
     {
       gui_elements_viewer_set_redraw_flag();
+      //printf("Redraw flag!\n");
     }
 
     linuxcnc_last_dro_position.x = linuxcnc_position.dro.x;
