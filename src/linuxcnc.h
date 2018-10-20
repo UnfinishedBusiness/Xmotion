@@ -41,6 +41,7 @@ void linuxcnc_init(void);
 void linuxcnc_close(void);
 
 bool linuxcnc_get_status_bool(const char *);
+bool linuxcnc_get_status_digital_input(int);
 
 void linuxcnc_jog_x_plus(bool);
 void linuxcnc_jog_x_minus(bool);

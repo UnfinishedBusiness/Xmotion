@@ -32,8 +32,8 @@ void gui_elements_indicators_tick(void)
   gui_elements_indicators_set_led(0, linuxcnc_get_status_bool("estop"));
   gui_elements_indicators_set_led(1, linuxcnc_get_status_bool("spindle_enabled"));
   gui_elements_indicators_set_led(2, linuxcnc_get_status_bool("probe_val"));
-  gui_elements_indicators_set_led(3, false);
-  gui_elements_indicators_set_led(4, false);
+  gui_elements_indicators_set_led(3, linuxcnc_get_status_digital_input(1));
+  gui_elements_indicators_set_led(4, linuxcnc_get_status_digital_input(2));
 }
 void gui_elements_indicators_set_led(int index, bool state)
 {

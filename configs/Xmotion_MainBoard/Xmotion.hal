@@ -206,4 +206,18 @@ net torch-on motion.spindle-on => bb_gpio.p8.out-26
 
 # Probe input
 net probe-in => motion.probe-input
-net probe-in  <= motion.digital-in-01 <= bb_gpio.p9.in-16
+net probe-in  <= motion.digital-in-00 <= bb_gpio.p9.in-16
+setp bb_gpio.p9.in-16.invert 1
+
+# Aux Inputs
+net aux1-in  <= motion.digital-in-01 <= bb_gpio.p9.in-25
+setp bb_gpio.p9.in-25.invert 1
+
+net aux2-in  <= motion.digital-in-02 <= bb_gpio.p9.in-29
+setp bb_gpio.p9.in-29.invert 1
+
+net aux3-in  <= motion.digital-in-03 <= bb_gpio.p9.in-30
+setp bb_gpio.p9.in-30.invert 1
+
+#net aux4-in  <= motion.digital-in-05 <= bb_gpio.p9.in-31
+#setp bb_gpio.p9.in-31.invert 1

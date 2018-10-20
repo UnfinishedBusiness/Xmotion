@@ -162,6 +162,25 @@ bool linuxcnc_get_status_bool(const char *var)
     return false;
   }
 }
+bool linuxcnc_get_status_digital_input(int x)
+{
+  PyObject *output;
+  PyObject *status;
+  PyObject *pModule = PyImport_AddModule("__main__"); //create main module
+  PyObject *catcher = PyObject_GetAttrString(pModule,"s"); //get our catchOutErr created above
+
+  status = PyObject_GetAttrString(catcher,"din");
+  output = PyTuple_GetItem(status, x);
+  float value = (float)PyFloat_AsDouble(output);
+  if (value == 1)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 void wait_complete()
 {
   SIM_BREAK;
@@ -472,7 +491,7 @@ void linuxcnc_tick()
     //printf("error_string: %s\n", error_string);
     if (strlen(error_string) > 1)
     {
-      gui_elements_message_box_push(800, 60, error_string, 10, 10, 1);
+      gui_elements_message_box_push(1650, 60, error_string, 10, 10, 1);
       error_string[0] = '\0';
     }
 
