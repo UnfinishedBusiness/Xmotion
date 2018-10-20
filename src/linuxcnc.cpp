@@ -51,12 +51,27 @@ out the best way to use the NML withouth breaking backwards compatibility. - Tra
 linuxcnc_position_t linuxcnc_position;
 linuxcnc_coordinate_t linuxcnc_last_dro_position;
 float jog_speed;
+char error_string[2048];
 
 /* Private Functions */
 
 bool poll_error()
 {
-
+  PyObject *output;
+  PyObject *status;
+  PyRun_SimpleString("error = e.poll()");
+  PyObject *pModule = PyImport_AddModule("__main__"); //create main module
+  PyObject *error = PyObject_GetAttrString(pModule,"error"); //get our catchOutErr created above
+  if (PyTuple_Check(error))
+  {
+    Py_ssize_t  tuple_size = (Py_ssize_t )PyTuple_Size(error);
+    for (Py_ssize_t x = 1; x < tuple_size; x++)
+    {
+      output = PyTuple_GetItem(error, x);
+      //printf("Error[%ld]: \"%s\"\n", (long)x, PyString_AsString(output));
+      sprintf(error_string, "%s", PyString_AsString(output));
+    }
+  }
 
 
   return true;
@@ -288,28 +303,23 @@ bool linuxcnc_is_axis_homed(int axis)
 {
   SIM_BREAK false;
   #ifndef SIM_MODE
-  usleep(5 * 100000); //Wait two seconds
-  char cmd[1024];
-  sprintf(cmd, "halcmd getp halui.joint.%d.is-homed", axis);
-  FILE *cmd_p = popen(cmd, "r");
-  if (!cmd_p)
+  PyObject *output;
+  PyObject *status;
+  PyRun_SimpleString("s.poll()");
+  PyObject *pModule = PyImport_AddModule("__main__"); //create main module
+  PyObject *catcher = PyObject_GetAttrString(pModule,"s"); //get our catchOutErr created above
+
+
+  status = PyObject_GetAttrString(catcher,"homed");
+  output = PyTuple_GetItem(status, axis);
+  long homed_status = PyInt_AsLong(output);
+  if (homed_status == 1)
   {
-    return false;
-  }
-  char buffer[1024];
-  char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
-  pclose(cmd_p);
-  line_p[strlen(line_p) - 1] = '\0';
-  //printf("GETP Says: %s\n", line_p);
-  if (strcmp(line_p, "TRUE") != 0)
-  {
-    //printf("\tReturn False!\n");
-    return false;
+    return true;
   }
   else
   {
-    //printf("\tReturn True!\n");
-    return true;
+    return false;
   }
   #endif
 }
@@ -356,6 +366,7 @@ void linuxcnc_home_axis(int axis)
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
+  usleep(2 * 100000); //Wait two seconds
   #endif
 }
 void linuxcnc_unhome_axis(int axis)
@@ -422,17 +433,18 @@ void linuxcnc_tick()
 {
   SIM_BREAK;
   #ifndef SIM_MODE
-  /*if (poll_error())
+  if (poll_error())
   {
-    printf("operator_text_string: %s\n", operator_text_string);
-    printf("operator_display_string: %s\n", operator_display_string);
-    printf("error_string: %s\n", error_string);
+    //printf("operator_text_string: %s\n", operator_text_string);
+    //printf("operator_display_string: %s\n", operator_display_string);
+    //printf("error_string: %s\n", error_string);
     if (strlen(error_string) > 1)
     {
       gui_elements_message_box_push(800, 60, error_string, 10, 10, 1);
+      error_string[0] = '\0';
     }
 
-  }*/
+  }
   if (poll_status())
   {
     linuxcnc_position.dro.x = linuxcnc_position.mcs.x - linuxcnc_position.work_offset.x - linuxcnc_position.g92_offset.x - linuxcnc_position.tool_offset.x;

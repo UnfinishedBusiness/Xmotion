@@ -56,7 +56,7 @@ void gui_elements_dro_set_machine_state_indicator(int mode)
     if (mode == DRO_JOG_MODE) lv_label_set_text(dro_mode, "Manual");
     if (mode == DRO_AUTO_MODE) lv_label_set_text(dro_mode, "Auto");
     if (mode == DRO_MDI_MODE) lv_label_set_text(dro_mode, "MDI");
-    if (mode == DRO_ABORT_MODE) lv_label_set_text(dro_mode, "Aborted");
+    if (mode == DRO_ABORT_MODE) lv_label_set_text(dro_mode, "Abort");
   }
 }
 void gui_elements_dro_tick(void)
@@ -240,6 +240,9 @@ lv_obj_t *gui_elements_dro(void)
   lv_obj_set_style(dro_mode, &mode_text_style);
   lv_label_set_text(dro_mode, "Manual");
   lv_obj_align(dro_mode, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -10, -5);
+
+
+  if (linuxcnc_is_axis_homed(0) && linuxcnc_is_axis_homed(1) && linuxcnc_is_axis_homed(2)) gui_elements_dro_homed();
 
   return dro_container;
 }
