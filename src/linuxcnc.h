@@ -40,6 +40,8 @@ extern linuxcnc_position_t linuxcnc_position;
 void linuxcnc_init(void);
 void linuxcnc_close(void);
 
+bool linuxcnc_get_status_bool(const char *);
+
 void linuxcnc_jog_x_plus(bool);
 void linuxcnc_jog_x_minus(bool);
 void linuxcnc_jog_y_plus(bool);

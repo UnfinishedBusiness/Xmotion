@@ -28,11 +28,7 @@ extern "C" {
  **********************/
 lv_obj_t *gui_elements_indicators(void);
 void gui_elements_indicators_close();
-void gui_elements_indicators_set_floating_head_led(bool);
-void gui_elements_indicators_set_torch_on_led(bool);
-void gui_elements_indicators_set_arc_ok_led(bool);
-void gui_elements_indicators_set_torch_up_led(bool);
-void gui_elements_indicators_set_torch_down_led(bool);
+void gui_elements_indicators_set_led(int, bool);
 void gui_elements_indicators_tick(void);
 
 /**********************

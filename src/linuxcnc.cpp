@@ -139,6 +139,24 @@ void linuxcnc_close(void)
   Py_Finalize();
   #endif
 }
+bool linuxcnc_get_status_bool(const char *var)
+{
+  PyObject *output;
+  PyObject *status;
+  PyObject *pModule = PyImport_AddModule("__main__"); //create main module
+  PyObject *catcher = PyObject_GetAttrString(pModule,"s"); //get our catchOutErr created above
+
+  status = PyObject_GetAttrString(catcher, var);
+  float value = (float)PyFloat_AsDouble(status);
+  if (value == 1)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
 void wait_complete()
 {
   SIM_BREAK;
@@ -271,12 +289,12 @@ void linuxcnc_set_jog_speed(float speed)
 }
 float linuxcnc_get_pin_state(char *pin)
 {
-
-	return false;
+  //There is currently no direct way to do this via python and it's super slow via this method...
+  return false;
   SIM_BREAK true;
   #ifndef SIM_MODE
   char cmd[1024];
-  sprintf(cmd, "halcmd getp %s", pin);
+  sprintf(cmd, "halcmd getp %s 2>&1", pin);
   FILE *cmd_p = popen(cmd, "r");
   if (!cmd_p)
   {
@@ -285,18 +303,27 @@ float linuxcnc_get_pin_state(char *pin)
   char buffer[1024];
   char *line_p = fgets(buffer, sizeof(buffer), cmd_p);
   pclose(cmd_p);
-  line_p[strlen(line_p) - 1] = '\0';
-  printf("GETP Says: %s\n", line_p);
-  if (strcmp(line_p, "TRUE") != 0)
+  if (strlen(line_p) > 1)
   {
-    //printf("\tReturn False!\n");
-    return false;
+    //printf("(*) capured stdout!\n");
+    line_p[strlen(line_p) - 1] = '\0';
+    printf("GETP Says: %s\n", line_p);
+    if (strcmp(line_p, "TRUE") != 0)
+    {
+      //printf("\tReturn False!\n");
+      return false;
+    }
+    else
+    {
+      //printf("\tReturn True!\n");
+      return true;
+    }
   }
   else
   {
-    //printf("\tReturn True!\n");
-    return true;
+    return false;
   }
+
   #endif
 }
 bool linuxcnc_is_axis_homed(int axis)

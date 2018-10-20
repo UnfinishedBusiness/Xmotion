@@ -52,31 +52,31 @@ void duty_sim_tick(void)
     {
       a = 0;
       one = !one;
-      gui_elements_indicators_set_floating_head_led(one);
+      gui_elements_indicators_set_led(0, one);
     }
     if (b > 100)
     {
       b = 0;
       two = !two;
-      gui_elements_indicators_set_torch_on_led(two);
+      gui_elements_indicators_set_led(1, two);
     }
     if (c > 100)
     {
       c = 0;
       three = !three;
-      gui_elements_indicators_set_arc_ok_led(three);
+      gui_elements_indicators_set_led(2, three);
     }
     if (d > 100)
     {
       d = 0;
       four = !four;
-      gui_elements_indicators_set_torch_up_led(four);
+      gui_elements_indicators_set_led(3, four);
     }
     if (e > 100)
     {
       e = 0;
       five = !five;
-      gui_elements_indicators_set_torch_down_led(five);
+      gui_elements_indicators_set_led(4, five);
     }
     if (f > 100)
     {

@@ -25,77 +25,27 @@
 #define INDICATORS_BACKGROUND_COLOR LV_COLOR_MAKE(0, 0, 0);
 #define INDICATORS_TEXT_COLOR LV_COLOR_MAKE(0, 255, 0);
 lv_obj_t *indicators_container;
-lv_obj_t *torch_led;
-lv_obj_t *floating_head_led;
-lv_obj_t *arc_ok_led;
-lv_obj_t *torch_up_led;
-lv_obj_t *torch_down_led;
+#define INDICATOR_COUNT 5
+lv_obj_t *indicator[INDICATOR_COUNT];
 void gui_elements_indicators_tick(void)
 {
-  gui_elements_indicators_set_torch_on_led(linuxcnc_get_pin_state((char*)"thcud.torch-on"));
-  gui_elements_indicators_set_torch_up_led(linuxcnc_get_pin_state((char*)"thcud.torch-up"));
-  gui_elements_indicators_set_torch_down_led(linuxcnc_get_pin_state((char*)"thcud.torch-down"));
-  gui_elements_indicators_set_arc_ok_led(linuxcnc_get_pin_state((char*)"thcud.arc-ok"));
-  gui_elements_indicators_set_floating_head_led(linuxcnc_get_pin_state((char*)"motion.probe-input"));
+  gui_elements_indicators_set_led(0, linuxcnc_get_status_bool("estop"));
+  gui_elements_indicators_set_led(1, linuxcnc_get_status_bool("spindle_enabled"));
+  gui_elements_indicators_set_led(2, linuxcnc_get_status_bool("probe_val"));
+  gui_elements_indicators_set_led(3, false);
+  gui_elements_indicators_set_led(4, false);
 }
-void gui_elements_indicators_set_floating_head_led(bool state)
+void gui_elements_indicators_set_led(int index, bool state)
 {
   if (indicators_container == NULL) return;
+  if (index > INDICATOR_COUNT -1) return;//0-4
   if (state)
   {
-    lv_led_on(floating_head_led);
+    lv_led_on(indicator[index]);
   }
   else
   {
-      lv_led_off(floating_head_led);
-  }
-}
-void gui_elements_indicators_set_torch_on_led(bool state)
-{
-  if (indicators_container == NULL) return;
-  if (state)
-  {
-    lv_led_on(torch_led);
-  }
-  else
-  {
-      lv_led_off(torch_led);
-  }
-}
-void gui_elements_indicators_set_arc_ok_led(bool state)
-{
-  if (indicators_container == NULL) return;
-  if (state)
-  {
-    lv_led_on(arc_ok_led);
-  }
-  else
-  {
-      lv_led_off(arc_ok_led);
-  }
-}
-void gui_elements_indicators_set_torch_up_led(bool state)
-{
-  if (indicators_container == NULL) return;
-  if (state)
-  {
-    lv_led_on(torch_up_led);
-  }
-  else
-  {
-      lv_led_off(torch_up_led);
-  }
-}
-void gui_elements_indicators_set_torch_down_led(bool state)
-{
-  if (indicators_container == NULL) return;
-  if (state)
-  {
-    lv_led_on(torch_down_led);
-  }
-  else
-  {
-      lv_led_off(torch_down_led);
+    lv_led_off(indicator[index]);
   }
 }
 lv_obj_t *gui_elements_indicators(void)
@@ -137,59 +87,59 @@ lv_obj_t *gui_elements_indicators(void)
   style_led.body.shadow.width = 10;
 
   //Torch Led
-  lv_obj_t *torch = lv_label_create(indicators_container, NULL);
-  lv_obj_set_style(torch, &small_text_style);
-  lv_label_set_text(torch, "Torch");
-  lv_obj_align(torch, NULL, LV_ALIGN_IN_TOP_LEFT, 17, 10);
+  static lv_obj_t *ind1 = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(ind1, &small_text_style);
+  lv_label_set_text(ind1, "ESTOP");
+  lv_obj_align(ind1, NULL, LV_ALIGN_IN_TOP_LEFT, 17, 10);
   /*Create a LED and switch it ON*/
-  torch_led  = lv_led_create(indicators_container, NULL);
-  lv_obj_set_style(torch_led, &style_led);
-  lv_obj_align(torch_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 15, -15);
-  lv_led_off(torch_led);
+  indicator[0]  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(indicator[0], &style_led);
+  lv_obj_align(indicator[0], NULL, LV_ALIGN_IN_BOTTOM_LEFT, 15, -15);
+  lv_led_off(indicator[0]);
 
   //Floating Head Led
-  lv_obj_t *floating_head = lv_label_create(indicators_container, NULL);
-  lv_obj_set_style(floating_head, &small_text_style);
-  lv_label_set_text(floating_head, "Z Probe");
-  lv_obj_align(floating_head, NULL, LV_ALIGN_IN_TOP_LEFT, 87, 10);
+  static lv_obj_t *ind2 = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(ind2, &small_text_style);
+  lv_label_set_text(ind2, "Spindle");
+  lv_obj_align(ind2, NULL, LV_ALIGN_IN_TOP_LEFT, 87, 10);
   /*Create a LED and switch it ON*/
-  floating_head_led  = lv_led_create(indicators_container, NULL);
-  lv_obj_set_style(floating_head_led, &style_led);
-  lv_obj_align(floating_head_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 89, -15);
-  lv_led_off(floating_head_led);
+  indicator[1]  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(indicator[1], &style_led);
+  lv_obj_align(indicator[1], NULL, LV_ALIGN_IN_BOTTOM_LEFT, 89, -15);
+  lv_led_off(indicator[1]);
 
   //Arc Ok Led
-  lv_obj_t *arc_ok = lv_label_create(indicators_container, NULL);
-  lv_obj_set_style(arc_ok, &small_text_style);
-  lv_label_set_text(arc_ok, "Arc Ok");
-  lv_obj_align(arc_ok, NULL, LV_ALIGN_IN_TOP_LEFT, 161, 10);
+  static lv_obj_t *ind3 = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(ind3, &small_text_style);
+  lv_label_set_text(ind3, "Probe");
+  lv_obj_align(ind3, NULL, LV_ALIGN_IN_TOP_LEFT, 161, 10);
   /*Create a LED and switch it ON*/
-  arc_ok_led  = lv_led_create(indicators_container, NULL);
-  lv_obj_set_style(arc_ok_led, &style_led);
-  lv_obj_align(arc_ok_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 159, -15);
-  lv_led_off(arc_ok_led);
+  indicator[2]  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(indicator[2], &style_led);
+  lv_obj_align(indicator[2], NULL, LV_ALIGN_IN_BOTTOM_LEFT, 159, -15);
+  lv_led_off(indicator[2]);
 
   //Torch Up Led
-  lv_obj_t *torch_up = lv_label_create(indicators_container, NULL);
-  lv_obj_set_style(torch_up, &small_text_style);
-  lv_label_set_text(torch_up, "Torch Up");
-  lv_obj_align(torch_up, NULL, LV_ALIGN_IN_TOP_LEFT, 223, 10);
+  static lv_obj_t *ind4 = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(ind4, &small_text_style);
+  lv_label_set_text(ind4, "Aux 1");
+  lv_obj_align(ind4, NULL, LV_ALIGN_IN_TOP_LEFT, 223, 10);
   /*Create a LED and switch it ON*/
-  torch_up_led  = lv_led_create(indicators_container, NULL);
-  lv_obj_set_style(torch_up_led, &style_led);
-  lv_obj_align(torch_up_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 229, -15);
-  lv_led_off(torch_up_led);
+  indicator[3]  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(indicator[3], &style_led);
+  lv_obj_align(indicator[3], NULL, LV_ALIGN_IN_BOTTOM_LEFT, 229, -15);
+  lv_led_off(indicator[3]);
 
   //Torch Down Led
-  lv_obj_t *torch_down = lv_label_create(indicators_container, NULL);
-  lv_obj_set_style(torch_down, &small_text_style);
-  lv_label_set_text(torch_down, "Torch Down");
-  lv_obj_align(torch_down, NULL, LV_ALIGN_IN_TOP_LEFT, 288, 10);
+  static lv_obj_t *ind5 = lv_label_create(indicators_container, NULL);
+  lv_obj_set_style(ind5, &small_text_style);
+  lv_label_set_text(ind5, "Aux 2");
+  lv_obj_align(ind5, NULL, LV_ALIGN_IN_TOP_LEFT, 288, 10);
   /*Create a LED and switch it ON*/
-  torch_down_led  = lv_led_create(indicators_container, NULL);
-  lv_obj_set_style(torch_down_led, &style_led);
-  lv_obj_align(torch_down_led, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 301, -15);
-  lv_led_off(torch_down_led);
+  indicator[4]  = lv_led_create(indicators_container, NULL);
+  lv_obj_set_style(indicator[4], &style_led);
+  lv_obj_align(indicator[4], NULL, LV_ALIGN_IN_BOTTOM_LEFT, 301, -15);
+  lv_led_off(indicator[4]);
 
 
   return indicators_container;
