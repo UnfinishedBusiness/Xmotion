@@ -170,7 +170,6 @@ bool linuxcnc_get_status_bool(const char *var)
 }
 bool linuxcnc_get_status_digital_input(int x)
 {
-  return true;
   PyObject *output;
   PyObject *status;
   PyObject *pModule = PyImport_AddModule("__main__"); //create main module
@@ -179,6 +178,7 @@ bool linuxcnc_get_status_digital_input(int x)
   status = PyObject_GetAttrString(catcher,"din");
   output = PyTuple_GetItem(status, x);
   float value = (float)PyFloat_AsDouble(output);
+  Py_XDECREF(status);
   if (value == 1)
   {
     return true;
