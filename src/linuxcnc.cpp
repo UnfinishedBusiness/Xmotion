@@ -150,13 +150,14 @@ void linuxcnc_close(void)
 }
 bool linuxcnc_get_status_bool(const char *var)
 {
-  PyObject *output;
+  //return true;
   PyObject *status;
   PyObject *pModule = PyImport_AddModule("__main__"); //create main module
   PyObject *catcher = PyObject_GetAttrString(pModule,"s"); //get our catchOutErr created above
 
   status = PyObject_GetAttrString(catcher, var);
   float value = (float)PyFloat_AsDouble(status);
+  Py_XDECREF(status);
 
   if (value == 1)
   {
@@ -169,6 +170,7 @@ bool linuxcnc_get_status_bool(const char *var)
 }
 bool linuxcnc_get_status_digital_input(int x)
 {
+  return true;
   PyObject *output;
   PyObject *status;
   PyObject *pModule = PyImport_AddModule("__main__"); //create main module
