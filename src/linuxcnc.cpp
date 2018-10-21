@@ -73,8 +73,6 @@ bool poll_error()
       sprintf(error_string, "%s", PyString_AsString(output));
     }
   }
-
-
   return true;
 }
 bool poll_status()
@@ -93,6 +91,8 @@ bool poll_status()
   linuxcnc_position.mcs.y = (float)PyFloat_AsDouble(output);
   output = PyTuple_GetItem(status, 2);
   linuxcnc_position.mcs.z = (float)PyFloat_AsDouble(output);
+  Py_XDECREF(status);
+  Py_XDECREF(output);
 
   status = PyObject_GetAttrString(catcher,"g92_offset");
   output = PyTuple_GetItem(status, 0);
@@ -101,6 +101,8 @@ bool poll_status()
   linuxcnc_position.g92_offset.y = (float)PyFloat_AsDouble(output);
   output = PyTuple_GetItem(status, 2);
   linuxcnc_position.g92_offset.z = (float)PyFloat_AsDouble(output);
+  Py_XDECREF(status);
+  Py_XDECREF(output);
 
   status = PyObject_GetAttrString(catcher,"g5x_offset");
   output = PyTuple_GetItem(status, 0);
@@ -109,6 +111,8 @@ bool poll_status()
   linuxcnc_position.work_offset.y = (float)PyFloat_AsDouble(output);
   output = PyTuple_GetItem(status, 2);
   linuxcnc_position.work_offset.z = (float)PyFloat_AsDouble(output);
+  Py_XDECREF(status);
+  Py_XDECREF(output);
 
   PyErr_Print(); //make python print any errors
   return true;
@@ -153,6 +157,7 @@ bool linuxcnc_get_status_bool(const char *var)
 
   status = PyObject_GetAttrString(catcher, var);
   float value = (float)PyFloat_AsDouble(status);
+
   if (value == 1)
   {
     return true;

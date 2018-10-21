@@ -202,22 +202,34 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 #setp bb_gpio.p9.out-26.invert 1
 #setp bb_gpio.p9.out-24.invert 1
 
-net torch-on motion.spindle-on => bb_gpio.p8.out-26
+net torch-on => motion.spindle-on => bb_gpio.p8.out-26
+setp bb_gpio.p8.out-26.invert 1
 
 # Probe input
 net probe-in => motion.probe-input
-net probe-in  <= motion.digital-in-00 <= bb_gpio.p9.in-16
+net probe-in <= bb_gpio.p9.in-16
 setp bb_gpio.p9.in-16.invert 1
 
 # Aux Inputs
-net aux1-in  <= motion.digital-in-01 <= bb_gpio.p9.in-25
+net aux1-in  <= motion.digital-in-00 <= bb_gpio.p9.in-25
 setp bb_gpio.p9.in-25.invert 1
 
-net aux2-in  <= motion.digital-in-02 <= bb_gpio.p9.in-29
+net aux2-in  <= motion.digital-in-01 <= bb_gpio.p9.in-29
 setp bb_gpio.p9.in-29.invert 1
 
-net aux3-in  <= motion.digital-in-03 <= bb_gpio.p9.in-30
+net aux3-in  <= motion.digital-in-02 <= bb_gpio.p9.in-30
 setp bb_gpio.p9.in-30.invert 1
 
-#net aux4-in  <= motion.digital-in-05 <= bb_gpio.p9.in-31
+#net aux4-in  <= motion.digital-in-03 <= bb_gpio.p9.in-31
 #setp bb_gpio.p9.in-31.invert 1
+
+# Aux Outputs
+#aux1 is torch/spindle on
+net aux2-out  => motion.digital-out-01 => bb_gpio.p9.out-28
+setp bb_gpio.p9.out-28.invert 1
+
+net aux3-out  => motion.digital-out-02 => bb_gpio.p9.out-41
+setp bb_gpio.p9.out-41.invert 1
+
+net aux4-out  => motion.digital-out-03 => bb_gpio.p9.out-27
+setp bb_gpio.p9.out-27.invert 1
