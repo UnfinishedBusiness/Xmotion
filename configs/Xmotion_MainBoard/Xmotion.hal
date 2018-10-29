@@ -23,7 +23,7 @@ loadrt [EMCMOT]EMCMOT base_period_nsec=[EMCMOT]BASE_PERIOD servo_period_nsec=[EM
 # load low-level drivers
 
 #loadrt hal_bb_gpio output_pins=107,126,224,226 input_pins=108,109,110,114,117,118,225
-loadrt hal_bb_gpio output_pins=107,126,228,241,227 input_pins=108,109,110,114,117,118,231,230,229,225,212,119,216,213,211,242,214
+loadrt hal_bb_gpio output_pins=107,126,228,241,227,113 input_pins=108,109,110,114,117,118,231,230,229,225,212,119,216,213,211,242,214
 
 loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CONFIG) halname=hpg
 loadrt pid count=2
@@ -76,6 +76,8 @@ net emcmot.00.pos-cmd => hpg.stepgen.00.position-cmd
 net motor.00.pos-fb <= hpg.stepgen.00.position-fb
 net motor.00.pos-fb => axis.0.motor-pos-fb
 
+setp hpg.stepgen.00.stepinvert 1
+
 
 # timing parameters
 setp hpg.stepgen.00.dirsetup        [AXIS_0]DIRSETUP
@@ -95,9 +97,47 @@ setp hpg.stepgen.00.steppin          0x4C
 # P8.11 GPIO1_13
 setp hpg.stepgen.00.dirpin           0x4D
 
+# ################
+# Y2 [3] Axis
+# ################
+
+# axis enable chain
+newsig emcmot.03.enable bit
+sets emcmot.03.enable FALSE
+
+#net emcmot.03.enable <= axis.1.amp-enable-out
+#net emcmot.03.enable => hpg.stepgen.03.enable
+
+
+# position command and feedback
+#net emcmot.03.pos-cmd <= axis.1.motor-pos-cmd
+#net emcmot.03.pos-cmd => hpg.stepgen.03.position-cmd
+
+#net motor.03.pos-fb <= hpg.stepgen.03.position-fb
+#net motor.03.pos-fb => axis.1.motor-pos-fb
+
+setp hpg.stepgen.03.stepinvert 1
+
+# timing parameters
+setp hpg.stepgen.03.dirsetup        [AXIS_1]DIRSETUP
+setp hpg.stepgen.03.dirhold         [AXIS_1]DIRHOLD
+
+setp hpg.stepgen.03.steplen         [AXIS_1]STEPLEN
+setp hpg.stepgen.03.stepspace       [AXIS_1]STEPSPACE
+
+setp hpg.stepgen.03.position-scale  [AXIS_1]SCALE
+
+setp hpg.stepgen.03.maxvel          [AXIS_1]STEPGEN_MAX_VEL
+setp hpg.stepgen.03.maxaccel        [AXIS_1]STEPGEN_MAX_ACC
+
+#setp hpg.stepgen.03.step_type       0
+# P9.22 GPIO0_2
+setp hpg.stepgen.03.steppin          0x22
+# P9.21 GPIO0_3
+setp hpg.stepgen.03.dirpin           0x23
 
 # ################
-# Y [1] Axis
+# Y1 [1] Axis
 # ################
 
 # axis enable chain
@@ -105,16 +145,17 @@ newsig emcmot.01.enable bit
 sets emcmot.01.enable FALSE
 
 net emcmot.01.enable <= axis.1.amp-enable-out
-net emcmot.01.enable => hpg.stepgen.01.enable
+net emcmot.01.enable => hpg.stepgen.01.enable => => hpg.stepgen.03.enable
 
 
 # position command and feedback
 net emcmot.01.pos-cmd <= axis.1.motor-pos-cmd
-net emcmot.01.pos-cmd => hpg.stepgen.01.position-cmd
+net emcmot.01.pos-cmd => hpg.stepgen.01.position-cmd => hpg.stepgen.03.position-cmd
 
 net motor.01.pos-fb <= hpg.stepgen.01.position-fb
 net motor.01.pos-fb => axis.1.motor-pos-fb
 
+setp hpg.stepgen.01.stepinvert 1
 
 # timing parameters
 setp hpg.stepgen.01.dirsetup        [AXIS_1]DIRSETUP
@@ -154,6 +195,7 @@ net emcmot.02.pos-cmd => hpg.stepgen.02.position-cmd
 net motor.02.pos-fb <= hpg.stepgen.02.position-fb
 net motor.02.pos-fb => axis.2.motor-pos-fb
 
+setp hpg.stepgen.02.stepinvert 1
 
 # timing parameters
 setp hpg.stepgen.02.dirsetup        [AXIS_2]DIRSETUP
@@ -172,6 +214,46 @@ setp hpg.stepgen.02.maxaccel        [AXIS_2]STEPGEN_MAX_ACC
 setp hpg.stepgen.02.steppin          0x50
 # P9.23 GPIO1_17
 setp hpg.stepgen.02.dirpin           0x51
+
+
+# ################
+# A [4] Axis
+# ################
+
+# axis enable chain
+#newsig emcmot.04.enable bit
+#sets emcmot.04.enable FALSE
+
+#net emcmot.04.enable <= axis.4.amp-enable-out
+#net emcmot.04.enable => hpg.stepgen.04.enable
+
+
+# position command and feedback
+#net emcmot.04.pos-cmd <= axis.4.motor-pos-cmd
+#net emcmot.04.pos-cmd => hpg.stepgen.04.position-cmd
+
+#net motor.04.pos-fb <= hpg.stepgen.04.position-fb
+#net motor.04.pos-fb => axis.4.motor-pos-fb
+
+
+# timing parameters
+#setp hpg.stepgen.04.dirsetup        [AXIS_4]DIRSETUP
+#setp hpg.stepgen.04.dirhold         [AXIS_4]DIRHOLD
+
+#setp hpg.stepgen.04.steplen         [AXIS_4]STEPLEN
+#setp hpg.stepgen.04.stepspace       [AXIS_4]STEPSPACE
+
+#setp hpg.stepgen.04.position-scale  [AXIS_4]SCALE
+
+#setp hpg.stepgen.04.maxvel          [AXIS_4]STEPGEN_MAX_VEL
+#setp hpg.stepgen.04.maxaccel        [AXIS_4]STEPGEN_MAX_ACC
+
+#setp hpg.stepgen.04.step_type       0
+# P9.18 GPIO0_4
+#setp hpg.stepgen.04.steppin          0x24
+# P9.17 GPIO0_5
+#setp hpg.stepgen.04.dirpin           0x25
+
 
 
 

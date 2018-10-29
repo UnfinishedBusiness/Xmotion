@@ -38,7 +38,7 @@ export_gpio () {
 	while read PIN DIR JUNK ; do
 		echo "Exporting pin $PIN"
 	        case "$PIN" in
-	        ""|\#*)	
+	        ""|\#*)
 			continue ;;
 	        *)
 			[ -r /sys/class/gpio/gpio$PIN ] && continue
