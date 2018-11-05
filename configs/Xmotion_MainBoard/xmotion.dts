@@ -360,25 +360,25 @@
 						gpio-name = "xmotion:aux1_relay";
 						gpio = <&gpio2 29 0>;
 						output;
-						init-low;
+						init-high;
 					};
 					aux2_relay {
 						gpio-name = "xmotion:aux2_relay";
 						gpio = <&gpio4 17 0>;
 						output;
-						init-low;
+						init-high;
 					};
 					aux3_relay {
 						gpio-name = "xmotion:aux3_relay";
 						gpio = <&gpio1 20 0>;
 						output;
-						init-low;
+						init-high;
 					};
 					aux4_relay {
 						gpio-name = "xmotion:aux4_relay";
 						gpio = <&gpio4 19 0>;
 						output;
-						init-low;
+						init-high;
 					};
 
 					/* ----------- PWR Enable ---------------- */

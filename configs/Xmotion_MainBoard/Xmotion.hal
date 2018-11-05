@@ -29,7 +29,7 @@ loadrt [PRUCONF](DRIVER) prucode=$(HAL_RTMOD_DIR)/[PRUCONF](PRUBIN) [PRUCONF](CO
 loadrt pid count=2
 loadrt limit1 count=2
 loadrt pepper count=1
-
+loadrt pwmgen output_type=0
 
 # Python user-mode HAL module to read ADC value and generate a thermostat output for PWM
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
@@ -51,6 +51,8 @@ addf limit1.1                             servo-thread
 addf hpg.update                           servo-thread
 addf bb_gpio.write                        base-thread
 addf pepper.update			  base-thread
+addf pwmgen.update servo-thread
+addf pwmgen.make-pulses base-thread
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -284,8 +286,8 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 #setp bb_gpio.p9.out-26.invert 1
 #setp bb_gpio.p9.out-24.invert 1
 
-net torch-on => motion.spindle-on => bb_gpio.p8.out-26
-setp bb_gpio.p8.out-26.invert 1
+#net torch-on => motion.spindle-on => bb_gpio.p8.out-26
+#setp bb_gpio.p8.out-26.invert 1
 
 # Probe input
 net probe-in => motion.probe-input
@@ -307,11 +309,23 @@ setp bb_gpio.p9.in-30.invert 1
 
 # Aux Outputs
 #aux1 is torch/spindle on
-net aux2-out  => motion.digital-out-01 => bb_gpio.p9.out-28
-setp bb_gpio.p9.out-28.invert 1
+#net aux2-out  => motion.digital-out-01 => bb_gpio.p9.out-28
+#setp bb_gpio.p9.out-28.invert 1
 
 net aux3-out  => motion.digital-out-02 => bb_gpio.p9.out-41
 setp bb_gpio.p9.out-41.invert 1
 
 net aux4-out  => motion.digital-out-03 => bb_gpio.p9.out-27
 setp bb_gpio.p9.out-27.invert 1
+
+#Spindle Speed
+net spindle-fwd motion.spindle-forward => bb_gpio.p8.out-26 => bb_gpio.p9.out-28
+setp bb_gpio.p8.out-26.invert 1
+setp bb_gpio.p9.out-28.invert 1
+net spindle-speed-cmd motion.spindle-speed-out => pwmgen.0.value
+net spindle-on motion.spindle-on => pwmgen.0.enable
+net spindle-pwm pwmgen.0.pwm => bb_gpio.p8.out-13
+setp bb_gpio.p8.out-13.invert 1
+# Set the spindle's top speed in RPM
+setp pwmgen.0.scale 150000 #Outputs 0-10v from S0 - S5000
+setp pwmgen.0.max-dc 0.035

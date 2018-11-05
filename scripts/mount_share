@@ -1,0 +1,3 @@
+#!/bin/bash
+mount.cifs //192.168.254.46/Digital share/ -o username=offcontact, password=ocontact
+

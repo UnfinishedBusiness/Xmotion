@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo -u machinekit machinekit /opt/Xmotion/configs/Xmotion_MainBoard/Xmotion.ini
