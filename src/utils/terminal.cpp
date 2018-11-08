@@ -22,14 +22,17 @@
 lv_obj_t *terminal_container;
 lv_obj_t *cmd_line;
 lv_obj_t *cmd_line_output;
-char cmd_string[2048];
+char cmd_string[200];
 
 void terminal_add_char(char c)
 {
   if (terminal_container != NULL)
   {
-    sprintf(cmd_string, "%s%c", cmd_string, c);
-    lv_label_set_text(cmd_line, cmd_string);
+    if ((strlen(cmd_string) + 1) < sizeof(cmd_string))
+    {
+      sprintf(cmd_string, "%s%c", cmd_string, c);
+      lv_label_set_text(cmd_line, cmd_string);
+    }
   }
 }
 void terminal_backspace(void)

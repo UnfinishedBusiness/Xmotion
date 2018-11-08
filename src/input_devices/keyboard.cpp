@@ -79,8 +79,17 @@ struct keymap_t keymap[] = {
     {'9', 73, 0, 0, ""},
     {'0', 82, 0, 0, ""},
     {'.', 83, 0, 0, ""},
+    {'-', 74, 0, 0, ""},
+    {'+', 78, 0, 0, ""},
     {'\0', 0, 0, 0, ""}, //End Marker
 };
+/*struct keymap_t {
+   char  letter;
+   int  keycode;
+   int  alt_mod;
+   int  shift_mod;
+   char special[20];
+};*/
 
 #define MAX_KB_DEVICES 5
 int keyboard[MAX_KB_DEVICES]; //Support up to 5 keyboard inputs
@@ -179,7 +188,7 @@ void keyboard_event(int keycode, int state)
   //printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
   if (state == down)
   {
-    //printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
+    printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
   }
   if (keycode == 29 && (state == up || state == down))
   {
@@ -216,6 +225,7 @@ void keyboard_event(int keycode, int state)
   else if (keycode == 1 && state == down) //Escape
   {
     linuxcnc_abort();
+    terminal_close();
     //printf("Bye!\n");
     //kill_main();
     //return;
@@ -298,11 +308,15 @@ void keyboard_event(int keycode, int state)
       linuxcnc_jog_z_minus(false);
     }
   }
-  last_key = keyboard_keymap_lookup(keycode, shift_mod, alt_mod);
-  //printf("Key is %c -> %d\n", last_key, state);
-  last_state = state;
-  if (state == down || state == repeat)
+  else
   {
-    terminal_add_char(last_key);
+    last_key = keyboard_keymap_lookup(keycode, shift_mod, alt_mod);
+    //printf("Key is %c -> %d\n", last_key, state);
+    last_state = state;
+    if (state == down || state == repeat)
+    {
+      terminal_add_char(last_key);
+    }
   }
+
 }
