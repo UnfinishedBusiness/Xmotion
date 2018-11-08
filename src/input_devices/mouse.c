@@ -150,6 +150,9 @@ void mouse_tick(void)
           //gui_elements_viewer_pan_x(event.value);
         }
         current_x += event.value;
+        if (current_x < 0) current_x = 0;
+        if (current_x > LV_HOR_RES) current_x = LV_HOR_RES;
+
       }
       else if (event.type == 2 && event.code == 1) //Y inc
       {
@@ -158,6 +161,8 @@ void mouse_tick(void)
           //gui_elements_viewer_pan_y(event.value);
         }
         current_y += event.value;
+        if (current_y < 0) current_y = 0;
+        if (current_y > LV_VER_RES) current_y = LV_VER_RES;
       }
       else
       {
