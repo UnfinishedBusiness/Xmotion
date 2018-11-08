@@ -209,62 +209,65 @@ lv_obj_t *gui_elements_viewer(void)
 }
 size_t gui_elements_viewer_addEntitity(viewer_point_t *points, int count, char *type)
 {
-  viewer_redraw = true;
-  DEBUG_PRINT(("addEntitity!\n"));
-  ViewerEntity e;
-  for (int x = 0; x < count; x++)
+  if (Entities.size() < config.max_viewer_entities)
   {
-    e.mcs_points[x].x = points[x].x;
-    e.mcs_points[x].y = points[x].y;
+    viewer_redraw = true;
+    DEBUG_PRINT(("addEntitity!\n"));
+    ViewerEntity e;
+    for (int x = 0; x < count; x++)
+    {
+      e.mcs_points[x].x = points[x].x;
+      e.mcs_points[x].y = points[x].y;
 
-    e.matrix_points[x].x = ((e.mcs_points[x].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
-    e.matrix_points[x].y = (((e.mcs_points[x].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
+      e.matrix_points[x].x = ((e.mcs_points[x].x + linuxcnc_position.work_offset.x + linuxcnc_position.g92_offset.x + linuxcnc_position.tool_offset.x) * viewer_zoom) + viewer_offset[0];
+      e.matrix_points[x].y = (((e.mcs_points[x].y + linuxcnc_position.work_offset.y + linuxcnc_position.g92_offset.y + linuxcnc_position.tool_offset.y) * -1) * viewer_zoom + (viewer_offset[1] * -1));
 
-    e.coord_points[x].x = (lv_coord_t)round(e.matrix_points[x].x);
-    e.coord_points[x].y = (lv_coord_t)round(e.matrix_points[x].y);
-  }
-  e.number_of_points = count;
-  e.obj = lv_line_create(viewer_container, NULL);
-  if (e.obj != NULL)
-  {
-    DEBUG_PRINT(("\tLine created ok!\n"));
-    if (!strcmp(type, "boundry"))
-    {
-      lv_line_set_style(e.obj, &style_line_boundry);
+      e.coord_points[x].x = (lv_coord_t)round(e.matrix_points[x].x);
+      e.coord_points[x].y = (lv_coord_t)round(e.matrix_points[x].y);
     }
-    else if (!strcmp(type, "rapid"))
+    e.number_of_points = count;
+    e.obj = lv_line_create(viewer_container, NULL);
+    if (e.obj != NULL)
     {
-      lv_line_set_style(e.obj, &style_line_rapid);
-    }
-    else if (!strcmp(type, "feed"))
-    {
-      lv_line_set_style(e.obj, &style_line_feed);
-    }
-    else if (!strcmp(type, "crosshair"))
-    {
-      lv_line_set_style(e.obj, &style_cross_hair);
+      DEBUG_PRINT(("\tLine created ok!\n"));
+      if (!strcmp(type, "boundry"))
+      {
+        lv_line_set_style(e.obj, &style_line_boundry);
+      }
+      else if (!strcmp(type, "rapid"))
+      {
+        lv_line_set_style(e.obj, &style_line_rapid);
+      }
+      else if (!strcmp(type, "feed"))
+      {
+        lv_line_set_style(e.obj, &style_line_feed);
+      }
+      else if (!strcmp(type, "crosshair"))
+      {
+        lv_line_set_style(e.obj, &style_cross_hair);
+      }
+      else
+      {
+        lv_line_set_style(e.obj, &style_line_boundry);
+      }
+      DEBUG_PRINT(("\tLine style set ok!\n"));
+      //lv_line_set_points(e.obj, e.matrix_points, e.number_of_points); //viewer_tick rounds floats into int16_t aka lv_coord_t!
+      DEBUG_PRINT(("\tLine points set ok!\n"));
+      lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+      DEBUG_PRINT(("\tLine obj aligned ok!\n"));
+      Entities.push_back(e);
+      //gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults. Don't call tick, big time waster!
+      int a = Entities.size()-1;
+
+      lv_line_set_points(e.obj, e.coord_points, e.number_of_points);
+      DEBUG_PRINT(("\tLine pushed back ok!\n"));
+      return Entities.size() -1;
     }
     else
     {
-      lv_line_set_style(e.obj, &style_line_boundry);
+      DEBUG_PRINT(("\tLine not pushed back ok!\n"));
+      return -1;
     }
-    DEBUG_PRINT(("\tLine style set ok!\n"));
-    //lv_line_set_points(e.obj, e.matrix_points, e.number_of_points); //viewer_tick rounds floats into int16_t aka lv_coord_t!
-    DEBUG_PRINT(("\tLine points set ok!\n"));
-    lv_obj_align(e.obj, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-    DEBUG_PRINT(("\tLine obj aligned ok!\n"));
-    Entities.push_back(e);
-    //gui_elements_viewer_tick(); //This is a must otherwise there is a lot of "lv_line_create" objects allocated but none with set points and causes segfaults. Don't call tick, big time waster!
-    int a = Entities.size()-1;
-
-    lv_line_set_points(e.obj, e.coord_points, e.number_of_points);
-    DEBUG_PRINT(("\tLine pushed back ok!\n"));
-    return Entities.size() -1;
-  }
-  else
-  {
-    DEBUG_PRINT(("\tLine not pushed back ok!\n"));
-    return -1;
   }
 }
 void gui_elements_viewer_tick(void)

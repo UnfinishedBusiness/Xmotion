@@ -33,6 +33,10 @@ static int config_handler(void* conf, const char* section, const char* name, con
     {
         pconfig->post_directory = strdup(value);
     }
+    else if (MATCH("system", "max_viewer_entities"))
+    {
+        pconfig->max_viewer_entities = atoi(value);
+    }
     else if (MATCH("motion", "max_jog_speed"))
     {
         pconfig->max_jog_speed = atof(value);
@@ -50,6 +54,7 @@ static int config_handler(void* conf, const char* section, const char* name, con
 void config_handler_set_defaults()
 {
   config.post_directory = "/";
+  config.max_viewer_entities = 200;
 
   config.max_jog_speed = 600;
   config.default_jog_speed = 400;

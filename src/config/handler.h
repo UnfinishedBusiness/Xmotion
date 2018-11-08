@@ -23,6 +23,7 @@ extern "C" {
      const char* screen_size;
      const char* screen_color;
      const char* post_directory;
+     size_t max_viewer_entities;
 
      //motion
      float max_jog_speed;
