@@ -188,7 +188,7 @@ void keyboard_event(int keycode, int state)
   //printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
   if (state == down)
   {
-    printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
+    //printf ("keycode[%d], state[%d], shift_mod[%d], alt_mod[%d]\n", keycode, state, shift_mod, alt_mod);
   }
   if (keycode == 29 && (state == up || state == down))
   {
@@ -235,6 +235,10 @@ void keyboard_event(int keycode, int state)
     terminal_open();
   }
   else if (keycode == 28 && alt_mod == up && shift_mod == up && state == down) //Enter
+  {
+    terminal_enter();
+  }
+  else if (keycode == 96 && alt_mod == up && shift_mod == up && state == down) //Enter
   {
     terminal_enter();
   }

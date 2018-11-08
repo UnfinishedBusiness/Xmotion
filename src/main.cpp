@@ -27,6 +27,7 @@
 #include <stdbool.h>
 #include <linux/input.h>
 #include <linux/kd.h>
+#include <signal.h>
 
 #include <string>
 #include <iostream>
@@ -39,6 +40,13 @@ void kill_main(void)
 {
   kill_main_flag = true;
 }
+void segfault_sigaction(int signal, siginfo_t *si, void *arg)
+{
+    printf("Caught segfault, switching back to text mode!\n");
+    hardware_utils_set_text_mode();
+    exit(0);
+}
+
 void delay(int millis)
 {
   usleep(millis * 300);
@@ -66,9 +74,15 @@ void task1(void)
 
 int main(void)
 {
-    //gcode_parse("test/gcode_parser/3.ngc");
-    //gcode_stack_dump();
-    //return;
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(struct sigaction));
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = segfault_sigaction;
+    sa.sa_flags   = SA_SIGINFO;
+
+    sigaction(SIGSEGV, &sa, NULL);
+
     DEBUG_PRINT(("Debug Mode!\n"));
     config_handler_init();
     /*LittlevGL init*/

@@ -119,7 +119,6 @@ void terminal_set_output_text(char* text)
 }
 void terminal_eval(char cmd[2048])
 {
-
   if (!strcmp(cmd, "sim=true"))
   {
     duty_sim_dro(true);
@@ -129,6 +128,12 @@ void terminal_eval(char cmd[2048])
   {
     duty_sim_dro(false);
     terminal_set_output_text("SIM off!");
+  }
+  else if (!strcmp(cmd, "segfault"))
+  {
+    int *foo = NULL;
+    /* Cause a seg fault */
+    *foo = 1;
   }
   else if (!strcmp(cmd, "msgtest"))
   {
