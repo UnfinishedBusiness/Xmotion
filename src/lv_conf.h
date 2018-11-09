@@ -67,9 +67,9 @@
 
 /*Color settings*/
 #ifdef XMOTION_EMBEDDED
-  #define LV_COLOR_DEPTH     24                     /*Color depth: 1/8/16/24*/
+  #define LV_COLOR_DEPTH     16                     /*Color depth: 1/8/16/24*/
 #else
-  #define LV_COLOR_DEPTH     24
+  #define LV_COLOR_DEPTH     16
 #endif
 #define LV_COLOR_TRANSP    LV_COLOR_LIME          /*Images pixels with this color will not be drawn (with chroma keying)*/
 
