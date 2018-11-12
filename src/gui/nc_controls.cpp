@@ -91,7 +91,7 @@ static lv_res_t btnm_action(lv_obj_t * btnm, const char *txt)
   else if (!strcmp("Go Home", txt))
   {
     printf("Return Home!\n");
-    linuxcnc_mdi((char*)"G53 G0 X0.010 Y0.010 Z-0.010");
+    linuxcnc_mdi((char*)"G53 G0 X0 Y0 Z0");
   }
   else if (!strcmp("X=0", txt))
   {

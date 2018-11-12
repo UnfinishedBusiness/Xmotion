@@ -115,6 +115,15 @@ bool poll_status()
   Py_XDECREF(output);
 
   PyErr_Print(); //make python print any errors
+
+  if (linuxcnc_is_axis_homed(0) && linuxcnc_is_axis_homed(1) && linuxcnc_is_axis_homed(2))
+  {
+    gui_elements_dro_homed();
+  }
+  else
+  {
+    gui_elements_dro_unhomed();
+  }
   return true;
 }
 /* End Private Function */
@@ -424,7 +433,7 @@ void linuxcnc_home_axis(int axis)
   sprintf(cmd, "c.home(%d)\n", axis);
   PyRun_SimpleString(cmd);
   wait_complete();
-  usleep(2 * 100000); //Wait two seconds
+  //usleep(2 * 100000); //Wait two seconds
   #endif
 }
 void linuxcnc_unhome_axis(int axis)

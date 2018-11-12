@@ -329,3 +329,11 @@ setp bb_gpio.p8.out-13.invert 1
 # Set the spindle's top speed in RPM
 setp pwmgen.0.scale 150000 #Outputs 0-10v from S0 - S5000
 setp pwmgen.0.max-dc 0.035
+
+#Homing Inputs
+net X-home bb_gpio.p8.in-08 => axis.0.home-sw-in
+#setp bb_gpio.p8.in-08.invert 1
+net Y-home bb_gpio.p8.in-09 => axis.1.home-sw-in
+#setp bb_gpio.p8.in-09.invert 1
+net Z-home bb_gpio.p8.in-14 => axis.2.home-sw-in
+#setp bb_gpio.p8.in-14.invert 1
