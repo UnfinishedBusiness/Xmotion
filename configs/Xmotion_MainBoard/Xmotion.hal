@@ -35,6 +35,7 @@ loadrt pwmgen output_type=0
 # t = Thermistor table (only epcos_B57560G1104 or 1 supported for now)
 # a = analog input channel
 loadusr -Wn Therm ./ReadTemp.py -n Therm --num_chan 2 -t 1 1 -a 4 5
+loadrt debounce
 
 # ################################################
 # THREADS
@@ -53,6 +54,8 @@ addf bb_gpio.write                        base-thread
 addf pepper.update			  base-thread
 addf pwmgen.update servo-thread
 addf pwmgen.make-pulses base-thread
+addf debounce.0 servo-thread
+
 
 # ######################################################
 # Axis-of-motion Specific Configs (not the GUI)
@@ -264,7 +267,8 @@ setp hpg.stepgen.02.dirpin           0x51
 # ##################################################
 
 # create a signal for the estop loopback
-net estop-loop bb_gpio.p9.in-12 => iocontrol.0.emc-enable-in
+net debounced-estop <= bb_gpio.p9.in-12 => debounce.0.1.in
+net estop-loop debounce.0.1.out => iocontrol.0.emc-enable-in
 
 # create signals for tool loading loopback
 net tool-prep-loop iocontrol.0.tool-prepare => iocontrol.0.tool-prepared
@@ -276,6 +280,7 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 #
 # Link pepper component as last item in io_enable chain
 #
+setp debounce.0.delay 10
 #net estop-loop => pepper.io-ena.in
 #net io-enable pepper.io-ena.out => bb_gpio.p8.out-07
 #setp bb_gpio.p8.out-07.invert 1
@@ -290,8 +295,9 @@ net tool-change-loop iocontrol.0.tool-change => iocontrol.0.tool-changed
 #setp bb_gpio.p8.out-26.invert 1
 
 # Probe input
-net probe-in => motion.probe-input
-net probe-in <= bb_gpio.p9.in-16
+net debounced-probe-in <= bb_gpio.p9.in-16 => debounce.0.0.in
+net probe-in debounce.0.0.out => motion.probe-input
+
 setp bb_gpio.p9.in-16.invert 1
 
 # Aux Inputs
